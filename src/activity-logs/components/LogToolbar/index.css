@@ -1,0 +1,27 @@
+.wptl-log-toolbar {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.wptl-log-toolbar-actions {
+	justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+	.wptl-log-toolbar {
+		align-items: stretch !important;
+	}
+
+	.wptl-log-toolbar .wptl-search-input {
+		width: 100%;
+	}
+
+	.wptl-log-toolbar-actions {
+		justify-content: stretch;
+	}
+
+	.wptl-log-toolbar .psm-button {
+		flex: 1;
+		justify-content: center;
+	}
+}

@@ -1,0 +1,33 @@
+.wptl-dashboard-bar-card {
+	display: flex;
+
+	flex-direction: column;
+
+	height: 100%;
+}
+
+.wptl-dashboard-bar-chart {
+	width: 100%;
+
+	flex: 1 1 auto;
+
+	min-height: 290px;
+}
+
+@media (max-width: 640px) {
+	.wptl-dashboard-bar-chart {
+		min-height: 260px;
+	}
+}
+
+/*
+ * Recharts gives each bar a tabIndex for keyboard accessibility, so a
+ * plain mouse click also leaves it focused and the browser draws its
+ * default (black, in Chrome) focus outline around the SVG shape.
+ * Suppress that for mouse/click focus only — :focus-visible still gets
+ * an outline so keyboard navigation isn't affected.
+ */
+.wptl-dashboard-bar-chart .recharts-bar-rectangle:focus:not(:focus-visible),
+.wptl-dashboard-bar-chart .recharts-surface:focus:not(:focus-visible) {
+	outline: none;
+}

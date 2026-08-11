@@ -1,0 +1,24 @@
+.wptl-avatar {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+
+	border-radius: 50%;
+	overflow: hidden;
+
+	color: #fff;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.wptl-avatar-image {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: cover;
+}
+
+.wptl-avatar-initials {
+	text-transform: uppercase;
+}

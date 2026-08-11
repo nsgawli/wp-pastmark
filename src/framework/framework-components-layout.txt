@@ -1,0 +1,2207 @@
+=== COMPONENT META ===
+Component: AdminPageHeader
+Location: src/framework/components/AdminPageHeader/
+Type: Reusable Framework Component
+Purpose: Reusable admin page header component for WordPress dashboard pages. Displays page title, icon, and quick action buttons such as Documentation and Support links.
+Dependencies:
+* @framework/components
+* @framework/hooks/useScreenSize
+* @wordpress/i18n
+* react
+* react-icons/bs
+Used In:
+* Not detected by search
+Props:
+* icon
+* title
+* docLink
+* helpLink
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { __ } from '@wordpress/i18n';
+import { Flex, Button, Title } from '@framework/components';
+import { useScreenSize } from '@framework/hooks/useScreenSize';
+import { BsBook, BsQuestionCircle } from 'react-icons/bs';
+import './index.css';
+
+const AdminPageHeader = ({ icon, title, docLink, helpLink }) => {
+	const { screenSize } = useScreenSize();
+
+	return (
+		<Flex
+			className="psmfr-admin-page-header"
+			justify="space-between"
+			align="center"
+		>
+			<Flex align="center" gap={10}>
+				{icon}
+				<Title level={1}>{title}</Title>
+			</Flex>
+			{screenSize != 'xs' && (
+				<Flex gap={5}>
+					<Button
+						size="small"
+						icon={<BsBook />}
+						onClick={() => {
+							window.open(docLink, '_blank');
+						}}
+					>
+						{__('Documentation', 'psmwraq')}
+					</Button>
+					<Button
+						size="small"
+						icon={<BsQuestionCircle />}
+						onClick={() => {
+							window.open(helpLink, '_blank');
+						}}
+					>
+						{__('Support', 'psmwraq')}
+					</Button>
+				</Flex>
+			)}
+		</Flex>
+	);
+};
+
+export default AdminPageHeader;
+
+=== CSS ===
+/* AdminPageHeader */
+.toplevel-psmfr-page #wpcontent {
+	font-size: 0.75rem;
+	padding-left: 0;
+	font-family: Inter, sans-serif;
+	color: #3c434a;
+}
+#wpbody-content > .notice,
+#wpbody-content > .error {
+	display: none !important;
+}
+.psmfr-admin-page-header {
+	padding: 0 1.5rem;
+	border-bottom: 1px solid #e5e5e5;
+	background-color: #fff;
+}
+.psmfr-admin-page-header svg.product-icon {
+	height: 1.875rem;
+	padding: 0.875rem 0;
+}
+.psmfr-admin-page-header h1 {
+	font-size: 0.8125rem;
+	color: #3c434a;
+}
+.psm-setting-title {
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: AlertContainer
+Location: src/framework/components/AlertContainer/
+Type: Reusable Framework Component
+Purpose: Reusable alert notification container component for displaying success, info, warning, and error messages inside the WordPress admin interface.
+Dependencies:
+* @framework/components
+* @framework/hooks/useAlerts
+* react
+* react-icons/io
+Used In:
+* Not detected by search
+Props:
+* None
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useEffect } from 'react';
+import { Flex, Title } from '@framework/components';
+import { useAlerts } from '@framework/hooks/useAlerts';
+import { IoMdClose } from 'react-icons/io';
+import './index.css';
+
+const AlertContainer = () => {
+	const { alerts, removeAlert } = useAlerts();
+
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			if (alerts.length) {
+				removeAlert(alerts[0].id);
+			}
+		}, 5000);
+		return () => clearTimeout(timeout);
+	}, [alerts]);
+
+	return (
+		<Flex className="psm-alert-container" gap={10} vertical>
+			{alerts.map((alert) => (
+				<Flex
+					className={`psm-alert psm-alert-${alert.type}`}
+					gap={5}
+					vertical
+				>
+					{alert.title && <Title level={4}>{alert.title}</Title>}
+					{alert.description && <span>{alert.description}</span>}
+					<IoMdClose onClick={() => removeAlert(alert.id)} />
+				</Flex>
+			))}
+		</Flex>
+	);
+};
+
+export default AlertContainer;
+
+=== CSS ===
+/* AlertContainer */
+.psm-alert-container {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 1.25rem;
+	box-sizing: border-box;
+	width: 31.25rem;
+	max-height: 80vh;
+	overflow-y: auto;
+	z-index: var(--psmfr-popup-z-index);
+}
+@media (max-width: 48rem) {
+	.psm-alert-container {
+		width: 100vw;
+	}
+}
+@keyframes psmAlertSlide {
+	0% {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	100% {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+.psm-alert {
+	padding: 0.625rem 1.25rem;
+	border-radius: 0.25rem;
+	border: 0.0625rem solid;
+	animation: psmAlertSlide 0.5s ease-out;
+	position: relative;
+}
+.psm-alert svg {
+	position: absolute;
+	top: 0.3125rem;
+	right: 0.3125rem;
+	cursor: pointer;
+	font-size: 1.125rem;
+	opacity: 0.6;
+}
+.psm-alert svg:hover {
+	opacity: 1;
+}
+.psm-alert-success {
+	background-color: #f6ffed;
+	border-color: #b7eb8f;
+	color: #389e0d;
+}
+.psm-alert-info {
+	background-color: #e6f7ff;
+	border-color: #91d5ff;
+	color: #1966da;
+}
+.psm-alert-warning {
+	background-color: #fffbe6;
+	border-color: #ffe58f;
+	color: #d48806;
+}
+.psm-alert-error {
+	background-color: #fff1f0;
+	border-color: #ffa39e;
+	color: #cf1322;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Badge
+Location: src/framework/components/Badge/
+Type: Reusable Framework Component
+Purpose: Reusable badge component for status labels, counters, and compact metadata indicators across admin UI cards and tables.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* type
+* children
+* className
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Badge = ({
+	type = 'default',
+	children,
+	className = '',
+}) => {
+	return (
+		<span className={`wptl-badge wptl-badge-${type} ${className}`}>
+			{children}
+		</span>
+	);
+};
+
+export default Badge;
+=== CSS ===
+.wptl-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.wptl-badge-default {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.wptl-badge-success {
+	background: #edfaef;
+	color: #137333;
+}
+
+.wptl-badge-warning {
+	background: #fff8e1;
+	color: #b26a00;
+}
+
+.wptl-badge-error {
+	background: #fdecec;
+	color: #c62828;
+}
+
+.wptl-badge-info {
+	background: #e8f0fe;
+	color: #1967d2;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Button
+Location: src/framework/components/Button/
+Type: Reusable Framework Component
+Purpose: Reusable button component with support for multiple button types, sizes, loading states, icons, and link-based navigation.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* type
+* size
+* disabled
+* href
+* target
+* htmlType
+* icon
+* iconPosition
+* loading
+* onClick
+* className
+* style
+* children
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex, Spinner } from '@framework/components';
+import './index.css';
+
+const Button = ({
+	type = 'default',
+	size = 'medium',
+	disabled = false,
+	href = null,
+	target = null,
+	htmlType = 'button',
+	icon = null,
+	iconPosition = 'start',
+	loading = false,
+	onClick = null,
+	className = '',
+	style = {},
+	children,
+}) => {
+	let classNames = ['psm-button', size];
+	if (type !== 'default') {
+		classNames.push(type);
+	}
+	if (className !== '') {
+		classNames = [...classNames, ...className.split(' ')];
+	}
+
+	const gap = size == 'small' ? 5 : 10;
+	disabled = loading || disabled;
+
+	return !href ? (
+		<button
+			type={htmlType}
+			className={classNames.join(' ')}
+			style={style}
+			onClick={onClick}
+			disabled={disabled}
+		>
+			{icon && !loading && (
+				<Flex align="center" gap={gap}>
+					{iconPosition === 'start' && icon}
+					{children}
+					{iconPosition === 'end' && icon}
+				</Flex>
+			)}
+			{loading && (
+				<Flex align="center" gap={gap}>
+					{iconPosition === 'start' && <Spinner />}
+					{children}
+					{iconPosition === 'end' && <Spinner />}
+				</Flex>
+			)}
+			{!icon && !loading && children}
+		</button>
+	) : (
+		<a href={href} target={target}>
+			<button className={classNames.join(' ')} style={style}>
+				{icon && (
+					<Flex align="center" gap={gap}>
+						{iconPosition === 'start' && icon}
+						{children}
+						{iconPosition === 'end' && icon}
+					</Flex>
+				)}
+				{!icon && children}
+			</button>
+		</a>
+	);
+};
+
+export default Button;
+
+=== CSS ===
+/* Button */
+.psm-button {
+	border: 1px solid;
+	text-decoration: none;
+	font-weight: 400;
+	cursor: pointer;
+	background-color: #fff;
+	border-color: #d9d9d9;
+	width: fit-content;
+	height: fit-content;
+}
+.psm-button:hover {
+	color: var(--psmfr-primary-color);
+	background-color: #fff;
+	border-color: var(--psmfr-primary-color);
+}
+.psm-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.psm-button.small {
+	font-size: 0.75rem;
+	padding: 0.3125rem 0.625rem;
+	border-radius: 0.1875rem;
+}
+.psm-button.medium {
+	font-size: 0.875rem;
+	padding: 0.4375rem 0.9375rem;
+	line-height: 1rem;
+	border-radius: 0.25rem;
+}
+.psm-button.large {
+	font-size: 0.875rem;
+	padding: 0.625rem 0.9375rem;
+	line-height: 1.125rem;
+	border-radius: 0.375rem;
+}
+.psm-button.primary {
+	color: #fff;
+	background-color: var(--psmfr-primary-color);
+	border-color: var(--psmfr-primary-color);
+}
+.psm-button.primary:hover {
+	opacity: 0.8;
+}
+.psm-setting-info {
+	font-size: smaller;
+}
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: Card
+Location: src/framework/components/Card/
+Type: Reusable Framework Component
+Purpose: Reusable card container component for grouping related content, actions, and summaries with consistent spacing and visual hierarchy.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* children
+* className
+* style
+* padding
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Card = ({
+	children,
+	className = '',
+	style = {},
+	padding = true,
+}) => {
+	return (
+		<div
+			className={`
+				wptl-card
+				${padding ? 'wptl-card-padding' : ''}
+				${className}
+			`}
+			style={style}
+		>
+			{children}
+		</div>
+	);
+};
+
+export default Card;
+=== CSS ===
+.wptl-card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	box-sizing: border-box;
+}
+
+.wptl-card-padding {
+	padding: 20px;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Content
+Location: src/framework/components/Content/
+Type: Reusable Framework Component
+Purpose: Reusable layout content wrapper component for consistent page spacing and section structure in admin screens.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* children
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Content = React.memo(({ children, style = {} }) => {
+	return (
+		<div className="psm-content" style={style}>
+			{children}
+		</div>
+	);
+});
+
+export default Content;
+
+=== CSS ===
+/* Content */
+.psm-content {
+	border-radius: 0.625rem;
+	background-color: #fff;
+	box-sizing: border-box;
+	padding: 1.25rem;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Divider
+Location: src/framework/components/Divider/
+Type: Reusable Framework Component
+Purpose: Reusable divider component for visually separating content blocks and improving readability in settings UIs.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* None
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Divider = React.memo(() => {
+	return <hr className="psm-divider" />;
+});
+
+export default Divider;
+
+=== CSS ===
+/* Divider */
+.psm-divider {
+	width: 100%;
+	border-top: 0.0625rem solid #dcdcde;
+	border-bottom: 0.0625rem solid #f6f7f7;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Drawer
+Location: src/framework/components/Drawer/
+Type: Reusable Framework Component
+Purpose: Reusable slide-in drawer panel component for contextual actions, details, and forms without leaving the current page.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* isOpen
+* onClose
+* children
+* direction
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useEffect } from 'react';
+import './index.css';
+
+const Drawer = ({ isOpen, onClose, children, direction = 'right' }) => {
+	const drawerDirectionClass = `drawer-${direction}`;
+	const backdropClass = `psm-drawer-backdrop ${drawerDirectionClass}`;
+	const contentClass = `psm-drawer-content ${drawerDirectionClass}`;
+
+	useEffect(() => {
+		const handleEsc = (event) => {
+			if (event.keyCode === 27) onClose(); // 27 is the ESC key
+		};
+
+		if (isOpen) {
+			document.addEventListener('keydown', handleEsc);
+		}
+
+		return () => {
+			document.removeEventListener('keydown', handleEsc);
+		};
+	}, [isOpen, onClose]); // Re-run the effect if isOpen or onClose changes
+
+	if (!isOpen) return null;
+
+	// Function to stop propagation for modal content clicks
+	const stopPropagation = (e) => {
+		e.stopPropagation();
+	};
+
+	return (
+		<div className={backdropClass} onClick={onClose}>
+			<div className={contentClass} onClick={stopPropagation}>
+				{children}
+			</div>
+		</div>
+	);
+};
+
+export default Drawer;
+
+=== CSS ===
+/* Drawer */
+@keyframes psmDrawerSlideRight {
+	from {
+		transform: translateX(100vw);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+@keyframes psmDrawerSlideLeft {
+	from {
+		transform: translateX(-100vw);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+.psm-drawer-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+	display: flex;
+	flex-flow: column;
+	justify-content: flex-start;
+	z-index: var(--psmfr-popup-z-index);
+}
+.psm-drawer-backdrop.drawer-right {
+	align-items: flex-end;
+}
+.psm-drawer-backdrop.drawer-left {
+	align-items: flex-start;
+}
+.psm-drawer-content {
+	background-color: #fff;
+	margin: 0;
+	box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+	max-width: 80%;
+	height: 100vh;
+	min-width: 15.625rem;
+	overflow-y: auto;
+	padding: 1.25rem;
+	box-sizing: border-box;
+}
+.psm-drawer-content.drawer-right {
+	animation: psmDrawerSlideRight 0.5s ease-out forwards;
+}
+.psm-drawer-content.drawer-left {
+	animation: psmDrawerSlideLeft 0.5s ease-out forwards;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Dropdown
+Location: src/framework/components/Dropdown/
+Type: Reusable Framework Component
+Purpose: Reusable dropdown menu component for compact action lists and option selection in toolbar and list contexts.
+Dependencies:
+* @framework/components
+* react
+* react-icons/fa6
+Used In:
+* Not detected by search
+Props:
+* items
+* isOpenMenu
+* setIsOpenMenu
+* onMenuItemClick
+* label
+* icon
+* size
+* menuPosition
+* className
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useEffect, useRef } from 'react';
+import { Flex, MenuItem, Button } from '@framework/components';
+import { FaAngleDown } from 'react-icons/fa6';
+import './index.css';
+
+const Dropdown = ({
+	items,
+	isOpenMenu,
+	setIsOpenMenu,
+	onMenuItemClick,
+	label = null,
+	icon = null,
+	size = 'medium',
+	menuPosition = 'left',
+	className = '',
+}) => {
+	const menuRef = useRef();
+	const closeMenu = () => {
+		setIsOpenMenu(false);
+	};
+	useEffect(() => {
+		const handleOutsideClick = (event) => {
+			if (menuRef.current && !menuRef.current.contains(event.target)) {
+				closeMenu();
+			}
+		};
+		const handleEscPress = (event) => {
+			if (event.keyCode === 27) {
+				closeMenu();
+			}
+		};
+		document.addEventListener('mousedown', handleOutsideClick);
+		document.addEventListener('keydown', handleEscPress);
+		return () => {
+			document.removeEventListener('mousedown', handleOutsideClick);
+			document.removeEventListener('keydown', handleEscPress);
+		};
+	}, []);
+
+	className = `psm-dropdown-conatiner ${className}`;
+	const menuClassName = `psm-dropdown-menu ${menuPosition}`;
+
+	return (
+		<div ref={menuRef} className={className}>
+			<Button
+				onClick={() => setIsOpenMenu(!isOpenMenu)}
+				icon={icon || <FaAngleDown />}
+				iconPosition="end"
+				size={size}
+			>
+				{label}
+			</Button>
+			{isOpenMenu && (
+				<Flex className={menuClassName} vertical>
+					{items.map((item) => (
+						<MenuItem
+							{...item}
+							onClick={() => onMenuItemClick(item.key)}
+							gap={10}
+						/>
+					))}
+				</Flex>
+			)}
+		</div>
+	);
+};
+
+export default Dropdown;
+
+=== CSS ===
+/* Dropdown */
+.psm-dropdown-conatiner {
+	position: relative;
+	display: inline-block;
+	width: fit-content;
+}
+.psm-dropdown-menu {
+	position: absolute;
+	padding: 0.3125rem;
+	background-color: #f9f9f9;
+	min-width: 10rem;
+	border-radius: 0.25rem;
+	box-shadow: 0rem 0.5rem 1rem 0rem rgba(0, 0, 0, 0.2);
+	z-index: var(--psmfr-popup-z-index);
+}
+.psm-dropdown-menu.left {
+	left: 0;
+}
+.psm-dropdown-menu.right {
+	right: 0;
+}
+.psm-dropdown-menu .psm-menu-item {
+	border-radius: 0.25rem;
+	line-height: normal;
+	font-weight: normal;
+	border-bottom: none;
+}
+.psm-dropdown-menu .psm-menu-item:hover {
+	background-color: #f4f2f5;
+	border-bottom: none !important;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: EmptyState
+Location: src/framework/components/EmptyState/
+Type: Reusable Framework Component
+Purpose: Reusable empty state component for showing friendly no-data messages with optional guidance and call-to-action links.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* title
+* description
+* icon
+* action
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex } from '@framework/components';
+import './index.css';
+
+const EmptyState = ({
+	title = 'No Data Found',
+	description = '',
+	icon = null,
+	action = null,
+}) => {
+	return (
+		<Flex
+			className="wptl-empty-state"
+			vertical
+			align="center"
+			gap={15}
+		>
+			{icon && (
+				<div className="wptl-empty-state-icon">
+					{icon}
+				</div>
+			)}
+
+			<div className="wptl-empty-state-title">
+				{title}
+			</div>
+
+			{description && (
+				<div className="wptl-empty-state-description">
+					{description}
+				</div>
+			)}
+
+			{action}
+		</Flex>
+	);
+};
+
+export default EmptyState;
+=== CSS ===
+.wptl-empty-state {
+	padding: 60px 20px;
+	text-align: center;
+}
+
+.wptl-empty-state-icon {
+	font-size: 48px;
+	color: #8c8f94;
+}
+
+.wptl-empty-state-title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wptl-empty-state-description {
+	max-width: 500px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #646970;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Flex
+Location: src/framework/components/Flex/
+Type: Reusable Framework Component
+Purpose: Reusable flexbox layout utility component for building responsive horizontal and vertical alignments with configurable gaps.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* vertical
+* wrap
+* justify
+* align
+* gap
+* id
+* className
+* onClick
+* children
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+
+const Flex = React.memo(
+	({
+		vertical = false,
+		wrap = false,
+		justify = '',
+		align = '',
+		gap = 0,
+		id = '',
+		className = '',
+		onClick = null,
+		children,
+		style = {},
+	}) => {
+		let styles = {
+			display: 'flex',
+		};
+
+		if (wrap) {
+			styles.flexWrap = 'wrap';
+		}
+
+		if (vertical) {
+			styles.flexFlow = 'column';
+		}
+
+		if (justify !== '') {
+			styles.justifyContent = justify;
+		}
+
+		if (align !== '') {
+			styles.alignItems = align;
+		}
+
+		if (gap > 0) {
+			styles.gap = gap;
+		}
+
+		styles = { ...styles, ...style };
+
+		return (
+			<div id={id} className={className} onClick={onClick} style={styles}>
+				{children}
+			</div>
+		);
+	}
+);
+
+export default Flex;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: MenuItem
+Location: src/framework/components/MenuItem/
+Type: Reusable Framework Component
+Purpose: Reusable menu item component for side and top navigation entries with active, hover, and icon support.
+Dependencies:
+* @framework/components
+* @framework/hooks/useScreenSize
+* react
+Used In:
+* Not detected by search
+Props:
+* label
+* onClick
+* icon
+* gap
+* current
+* parentType
+* collapsed
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { useScreenSize } from '@framework/hooks/useScreenSize';
+import { Flex } from '@framework/components';
+import './index.css';
+
+const MenuItem = React.memo(
+	({
+		label,
+		onClick,
+		icon = null,
+		gap = 5,
+		current = false,
+		parentType = 'side',
+		collapsed = false,
+	}) => {
+		const { screenSize } = useScreenSize();
+		const isMobile = ['xs', 'sm'].includes(screenSize);
+		const className = 'psm-menu-item' + (current ? ' current' : '');
+		const showIconOnly = collapsed || isMobile;
+		const style = {};
+		if (parentType == 'side' && !showIconOnly) {
+			style.minWidth = '8.75rem';
+		}
+		return (
+			<Flex
+				align="center"
+				gap={gap}
+				className={className}
+				style={style}
+				onClick={onClick}
+			>
+				{icon && icon}
+				{parentType === 'top' && label}
+				{parentType === 'side' && !showIconOnly && label}
+			</Flex>
+		);
+	}
+);
+
+export default MenuItem;
+
+=== CSS ===
+/* MenuItem */
+.psm-menu-item {
+	font-size: 0.75rem;
+	padding: 0.375rem 0.75rem;
+	border: none;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: ModalPopup
+Location: src/framework/components/ModalPopup/
+Type: Reusable Framework Component
+Purpose: Reusable modal popup component for confirmations, alerts, and focused interactions that require user attention.
+Dependencies:
+* react
+* react-icons/io
+Used In:
+* Not detected by search
+Props:
+* isOpen
+* onClose
+* children
+* size
+* closeIcon
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useEffect } from 'react';
+import { IoMdClose } from 'react-icons/io';
+import './index.css';
+
+const ModalPopup = ({
+	isOpen,
+	onClose,
+	children,
+	size = 'medium',
+	closeIcon = true,
+}) => {
+	useEffect(() => {
+		const handleEsc = (event) => {
+			if (event.keyCode === 27) onClose(); // 27 is the ESC key
+		};
+
+		if (isOpen) {
+			document.addEventListener('keydown', handleEsc);
+		}
+
+		return () => {
+			document.removeEventListener('keydown', handleEsc);
+		};
+	}, [isOpen, onClose]); // Re-run the effect if isOpen or onClose changes
+
+	if (!isOpen) return null;
+
+	// Function to stop propagation for modal content clicks
+	const stopPropagation = (e) => {
+		e.stopPropagation();
+	};
+
+	return (
+		<div className="modal-backdrop" onClick={onClose}>
+			<div
+				className="modal-content"
+				onClick={stopPropagation}
+				style={{
+					width:
+						size === 'small'
+							? '400px'
+							: size === 'medium'
+								? '600px'
+								: '800px',
+				}}
+			>
+				{children}
+				{closeIcon && (
+					<IoMdClose
+						className="psm-modal-close-icon"
+						onClick={onClose}
+					/>
+				)}
+			</div>
+		</div>
+	);
+};
+
+export default ModalPopup;
+
+=== CSS ===
+/* ModalPopup */
+@keyframes psmModalSlideDown {
+	from {
+		transform: translateY(-100vh); /* Start above the viewport */
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0); /* End at the original position */
+		opacity: 1;
+	}
+}
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	z-index: var(--psmfr-popup-z-index);
+}
+.modal-content {
+	animation: psmModalSlideDown 0.5s ease-out forwards;
+	background-color: #fff;
+	padding: 1.25rem;
+	margin-top: 10vh; /* 20% from the top */
+	border-radius: 0.3125rem;
+	box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+	max-width: 80%; /* Responsive purposes */
+	max-height: 80vh; /* Responsive purposes */
+	overflow-y: auto;
+}
+.psm-modal-close-icon {
+	position: absolute;
+	top: 0.9375rem;
+	right: 0.9375rem;
+	cursor: pointer;
+	font-size: 1.5625rem;
+	color: rgba(0, 0, 0, 0.45);
+	opacity: 0.6;
+}
+.psm-modal-close-icon:hover {
+	opacity: 1;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Pagination
+Location: src/framework/components/Pagination/
+Type: Reusable Framework Component
+Purpose: Reusable pagination component for navigating large datasets with page controls, current state display, and callback-based page changes.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* current
+* total
+* onChange
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex, Button } from '@framework/components';
+import './index.css';
+
+const Pagination = ({
+	current = 1,
+	total = 1,
+	onChange = null,
+}) => {
+	const pages = [];
+
+	for (let i = 1; i <= total; i++) {
+		pages.push(i);
+	}
+
+	return (
+		<Flex
+			className="wptl-pagination"
+			align="center"
+			gap={10}
+		>
+			<Button
+				size="small"
+				disabled={current === 1}
+				onClick={() => onChange(current - 1)}
+			>
+				Previous
+			</Button>
+
+			<Flex gap={5}>
+				{pages.map((page) => (
+					<button
+						key={page}
+						className={`
+							wptl-pagination-page
+							${current === page ? 'active' : ''}
+						`}
+						onClick={() => onChange(page)}
+					>
+						{page}
+					</button>
+				))}
+			</Flex>
+
+			<Button
+				size="small"
+				disabled={current === total}
+				onClick={() => onChange(current + 1)}
+			>
+				Next
+			</Button>
+		</Flex>
+	);
+};
+
+export default Pagination;
+=== CSS ===
+.wptl-pagination {
+	padding: 20px 0;
+}
+
+.wptl-pagination-page {
+	min-width: 34px;
+	height: 34px;
+	border: 1px solid #dcdcde;
+	background: #fff;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.wptl-pagination-page.active {
+	background: var(--psmfr-primary-color);
+	border-color: var(--psmfr-primary-color);
+	color: #fff;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: ScreenLoader
+Location: src/framework/components/ScreenLoader/
+Type: Reusable Framework Component
+Purpose: Reusable full-screen loading component for blocking UI during async operations such as API fetches or save actions.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* None
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex, Spinner } from '@framework/components';
+import './index.css';
+
+const ScreenLoader = () => {
+	return (
+		<Flex className="psm-screen-loader" justify="center">
+			<Spinner />
+		</Flex>
+	);
+};
+
+export default ScreenLoader;
+
+=== CSS ===
+/* ScreenLoader */
+.psm-screen-loader {
+	padding: 6.25rem 0;
+	font-size: 1.875rem;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: SearchInput
+Location: src/framework/components/SearchInput/
+Type: Reusable Framework Component
+Purpose: Reusable search input component for filtering lists and tables with debounced or immediate query change handling.
+Dependencies:
+* react
+* react-icons/io5
+Used In:
+* Not detected by search
+Props:
+* value
+* onChange
+* placeholder
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { IoSearchOutline } from 'react-icons/io5';
+import './index.css';
+
+const SearchInput = ({
+	value = '',
+	onChange = null,
+	placeholder = 'Search...',
+}) => {
+	return (
+		<div className="wptl-search-input">
+			<IoSearchOutline />
+
+			<input
+				type="text"
+				value={value}
+				placeholder={placeholder}
+				onChange={(event) => {
+					onChange(event.target.value);
+				}}
+			/>
+		</div>
+	);
+};
+
+export default SearchInput;
+=== CSS ===
+.wptl-search-input {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 12px;
+	height: 40px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	min-width: 260px;
+	box-sizing: border-box;
+}
+
+.wptl-search-input svg {
+	font-size: 18px;
+	color: #646970;
+}
+
+.wptl-search-input input {
+	flex: 1;
+	border: none !important;
+	outline: none !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	background: transparent !important;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: SideMenu
+Location: src/framework/components/SideMenu/
+Type: Reusable Framework Component
+Purpose: Reusable side navigation menu component for organizing admin sections and handling route-based active states.
+Dependencies:
+* @framework/components
+* @framework/hooks/useScreenSize
+* @wordpress/i18n
+* react
+* react-icons/bs
+Used In:
+* Not detected by search
+Props:
+* items
+* current
+* onClick
+* className
+* collapseKey
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useState } from 'react';
+import { __ } from '@wordpress/i18n';
+import { useScreenSize } from '@framework/hooks/useScreenSize';
+import { Flex, MenuItem, Tooltip } from '@framework/components';
+import { BsChevronDoubleLeft, BsChevronDoubleRight } from 'react-icons/bs';
+import './index.css';
+
+const SideMenu = ({
+	items = [],
+	current = null,
+	onClick = null,
+	className = '',
+	collapseKey = 'psmSideMenuCollapse',
+	style = {},
+}) => {
+	const { screenSize } = useScreenSize();
+	const isMobile = ['xs', 'sm'].includes(screenSize);
+
+	const [isMenuCollapsed, setIsMenuCollapsed] = useState(() => {
+		return JSON.parse(localStorage.getItem(collapseKey)) || false;
+	});
+
+	let classNames = ['psm-side-menu'];
+	if (className !== '') {
+		classNames = [...classNames, ...className.split(' ')];
+	}
+
+	const toggleMenuCollapse = () => {
+		setIsMenuCollapsed((prev) => {
+			const newState = !prev;
+			localStorage.setItem(collapseKey, JSON.stringify(newState));
+			return newState;
+		});
+	};
+
+	return (
+		<Flex vertical className={classNames.join(' ')} gap={5} style={style}>
+			{items.map((item) =>
+				!isMobile && isMenuCollapsed ? (
+					<Tooltip content={item.label} key={item.key}>
+						<MenuItem
+							{...item}
+							current={item.key == current}
+							onClick={() => onClick(item.key)}
+							gap={10}
+							parentType="side"
+							collapsed={isMenuCollapsed}
+						/>
+					</Tooltip>
+				) : (
+					<MenuItem
+						{...item}
+						current={item.key == current}
+						onClick={() => onClick(item.key)}
+						gap={10}
+						parentType="side"
+						collapsed={isMenuCollapsed}
+					/>
+				)
+			)}
+			{!isMobile &&
+				(isMenuCollapsed ? (
+					<Tooltip content={__('Expand', 'psmwraq')}>
+						<MenuItem
+							icon={<BsChevronDoubleRight />}
+							label={__('Expand', 'psmwraq')}
+							onClick={toggleMenuCollapse}
+							gap={10}
+							parentType="side"
+							collapsed={isMenuCollapsed}
+						/>
+					</Tooltip>
+				) : (
+					<MenuItem
+						icon={<BsChevronDoubleLeft />}
+						label={__('Collapse', 'psmwraq')}
+						onClick={toggleMenuCollapse}
+						gap={10}
+						parentType="side"
+						collapsed={isMenuCollapsed}
+					/>
+				))}
+		</Flex>
+	);
+};
+
+export default SideMenu;
+
+=== CSS ===
+/* SideMenu */
+.psm-side-menu {
+	padding: 1.25rem;
+	border-radius: 0.625rem;
+	background-color: #fff;
+	height: fit-content;
+}
+.psm-side-menu .psm-menu-item {
+	border-radius: 0.3125rem;
+}
+.psm-side-menu .psm-menu-item:hover {
+	background-color: #e5e5e5;
+}
+.psm-side-menu .psm-menu-item.current {
+	color: #fff;
+	background-color: var(--psmfr-primary-color);
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Spinner
+Location: src/framework/components/Spinner/
+Type: Reusable Framework Component
+Purpose: Reusable spinner indicator component for inline loading feedback in buttons, forms, and content containers.
+Dependencies:
+* react
+* react-icons/fa
+Used In:
+* Not detected by search
+Props:
+* className
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { FaSpinner } from 'react-icons/fa';
+import './index.css';
+
+const Spinner = React.memo(({ className = '' }) => (
+	<FaSpinner
+		className={`psm-spinner-icon${className ? ' ' + className : ''}`}
+	/>
+));
+
+export default Spinner;
+
+=== CSS ===
+/* Spinner */
+.psm-spinner-icon {
+	animation: psmSpinIconAnimation 2s linear infinite;
+}
+@keyframes psmSpinIconAnimation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: StatCard
+Location: src/framework/components/StatCard/
+Type: Reusable Framework Component
+Purpose: Reusable stat card component for displaying key metrics, trends, and highlight values in dashboard-style layouts.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* title
+* value
+* icon
+* description
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex } from '@framework/components';
+import './index.css';
+
+const StatCard = ({
+	title,
+	value,
+	icon = null,
+	description = '',
+}) => {
+	return (
+		<Flex
+			className="wptl-stat-card"
+			justify="space-between"
+			align="center"
+		>
+			<Flex vertical gap={6}>
+				<div className="wptl-stat-card-title">
+					{title}
+				</div>
+
+				<div className="wptl-stat-card-value">
+					{value}
+				</div>
+
+				{description && (
+					<div className="wptl-stat-card-description">
+						{description}
+					</div>
+				)}
+			</Flex>
+
+			{icon && (
+				<div className="wptl-stat-card-icon">
+					{icon}
+				</div>
+			)}
+		</Flex>
+	);
+};
+
+export default StatCard;
+=== CSS ===
+.wptl-stat-card {
+	padding: 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	min-height: 120px;
+	box-sizing: border-box;
+}
+
+.wptl-stat-card-title {
+	font-size: 13px;
+	color: #646970;
+}
+
+.wptl-stat-card-value {
+	font-size: 28px;
+	font-weight: 700;
+	color: #1d2327;
+	line-height: 1;
+}
+
+.wptl-stat-card-description {
+	font-size: 12px;
+	color: #8c8f94;
+}
+
+.wptl-stat-card-icon {
+	font-size: 36px;
+	color: var(--psmfr-primary-color);
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Table
+Location: src/framework/components/Table/
+Type: Reusable Framework Component
+Purpose: Reusable table component for rendering structured datasets with consistent admin styling and extensible cell rendering.
+Dependencies:
+* @framework/components
+* react
+Used In:
+* Not detected by search
+Props:
+* columns
+* data
+* rowKey
+* loading
+* emptyText
+* onRowClick
+* selectable
+* selectedRows
+* onSelectRow
+* stickyHeader
+* className
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex, Spinner } from '@framework/components';
+import './index.css';
+
+const Table = ({
+	columns = [],
+	data = [],
+	rowKey = 'id',
+	loading = false,
+	emptyText = 'No data found',
+	onRowClick = null,
+	selectable = false,
+	selectedRows = [],
+	onSelectRow = null,
+	stickyHeader = false,
+	className = '',
+}) => {
+	const tableClassName = `
+		wptl-table-wrapper
+		${stickyHeader ? 'wptl-table-sticky-header' : ''}
+		${className}
+	`;
+
+	const isSelected = (rowId) => {
+		return selectedRows.includes(rowId);
+	};
+
+	const renderCell = (column, row) => {
+		if (column.render) {
+			return column.render(row[column.dataIndex], row);
+		}
+
+		return row[column.dataIndex];
+	};
+
+	return (
+		<div className={tableClassName}>
+			<table className="wptl-table">
+				<thead>
+					<tr>
+						{selectable && (
+							<th className="wptl-table-checkbox-column"></th>
+						)}
+
+						{columns.map((column) => (
+							<th
+								key={column.key}
+								style={{
+									width: column.width || 'auto',
+									textAlign: column.align || 'left',
+								}}
+							>
+								<Flex align="center" gap={5}>
+									{column.title}
+
+									{column.sortable && (
+										<span className="wptl-table-sort-icon">
+											↕
+										</span>
+									)}
+								</Flex>
+							</th>
+						))}
+					</tr>
+				</thead>
+
+				<tbody>
+					{loading && (
+						<tr>
+							<td
+								colSpan={
+									selectable
+										? columns.length + 1
+										: columns.length
+								}
+							>
+								<Flex
+									className="wptl-table-loader"
+									justify="center"
+									align="center"
+								>
+									<Spinner />
+								</Flex>
+							</td>
+						</tr>
+					)}
+
+					{!loading && data.length === 0 && (
+						<tr>
+							<td
+								colSpan={
+									selectable
+										? columns.length + 1
+										: columns.length
+								}
+							>
+								<div className="wptl-table-empty">
+									{emptyText}
+								</div>
+							</td>
+						</tr>
+					)}
+
+					{!loading &&
+						data.map((row) => {
+							const rowId = row[rowKey];
+
+							return (
+								<tr
+									key={rowId}
+									className={
+										onRowClick
+											? 'wptl-table-clickable-row'
+											: ''
+									}
+									onClick={() => {
+										if (onRowClick) {
+											onRowClick(row);
+										}
+									}}
+								>
+									{selectable && (
+										<td
+											onClick={(event) => {
+												event.stopPropagation();
+
+												if (onSelectRow) {
+													onSelectRow(row);
+												}
+											}}
+										>
+											<input
+												type="checkbox"
+												checked={isSelected(rowId)}
+												readOnly
+											/>
+										</td>
+									)}
+
+									{columns.map((column) => (
+										<td
+											key={column.key}
+											style={{
+												textAlign:
+													column.align || 'left',
+											}}
+										>
+											{renderCell(column, row)}
+										</td>
+									))}
+								</tr>
+							);
+						})}
+				</tbody>
+			</table>
+		</div>
+	);
+};
+
+export default Table;
+=== CSS ===
+.wptl-table-wrapper {
+	width: 100%;
+	overflow-x: auto;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+}
+
+.wptl-table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 900px;
+}
+
+.wptl-table thead {
+	background-color: #f6f7f7;
+}
+
+.wptl-table th {
+	padding: 14px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+	border-bottom: 1px solid #dcdcde;
+	white-space: nowrap;
+}
+
+.wptl-table td {
+	padding: 14px 16px;
+	font-size: 13px;
+	color: #3c434a;
+	border-bottom: 1px solid #f0f0f1;
+	vertical-align: middle;
+}
+
+.wptl-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.wptl-table tbody tr:hover {
+	background-color: #f9fafb;
+}
+
+.wptl-table-clickable-row {
+	cursor: pointer;
+}
+
+.wptl-table-loader {
+	padding: 40px 0;
+}
+
+.wptl-table-empty {
+	padding: 50px 20px;
+	text-align: center;
+	color: #646970;
+	font-size: 13px;
+}
+
+.wptl-table-sort-icon {
+	font-size: 10px;
+	opacity: 0.5;
+}
+
+.wptl-table-checkbox-column {
+	width: 50px;
+}
+
+.wptl-table-sticky-header thead th {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background: #f6f7f7;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Tag
+Location: src/framework/components/Tag/
+Type: Reusable Framework Component
+Purpose: Reusable tag/badge component for labeling status, categories, and metadata with consistent admin styling.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* color
+* bgColor
+* className
+* children
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Tag = ({
+	color = '#FFFFFF',
+	bgColor = '#FF9351',
+	className = '',
+	children,
+}) => {
+	const classNames = className ? `psm-tag ${className}` : 'psm-tag';
+	return (
+		<span
+			className={classNames}
+			style={{ color, backgroundColor: bgColor }}
+		>
+			{children}
+		</span>
+	);
+};
+
+export default Tag;
+
+=== CSS ===
+.psm-tag {
+	padding: 0.3125rem 0.625rem;
+	border-radius: 0.3125rem;
+	font-weight: 500;
+	width: fit-content;
+}
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: Title
+Location: src/framework/components/Title/
+Type: Reusable Framework Component
+Purpose: Reusable typography title component for standardized heading levels and page/section title presentation.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* level
+* style
+* children
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import './index.css';
+
+const Title = React.memo(({ level, style = {}, children }) => {
+	const TitleTag = `h${level}`;
+	return (
+		<TitleTag className="psm-title" style={style}>
+			{children}
+		</TitleTag>
+	);
+});
+
+export default Title;
+
+=== CSS ===
+/* Title */
+.psm-title {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Tooltip
+Location: src/framework/components/Tooltip/
+Type: Reusable Framework Component
+Purpose: Reusable tooltip component for contextual help text and inline guidance on form fields and action icons.
+Dependencies:
+* react
+Used In:
+* Not detected by search
+Props:
+* children
+* content
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useState } from 'react';
+import './index.css';
+
+const Tooltip = ({ children, content }) => {
+	const [visible, setVisible] = useState(false);
+
+	const showTooltip = () => setVisible(true);
+	const hideTooltip = () => setVisible(false);
+
+	return (
+		<div
+			className="psm-tooltip-container"
+			onMouseEnter={showTooltip}
+			onMouseLeave={hideTooltip}
+		>
+			{children}
+			{visible && <div className="psm-tooltip-content">{content}</div>}
+		</div>
+	);
+};
+
+export default Tooltip;
+
+=== CSS ===
+/* Tooltip */
+.psm-tooltip-container {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.psm-tooltip-content {
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 5px;
+	padding: 0.5rem 0.625rem;
+	position: absolute;
+	z-index: var(--psmfr-popup-z-index);
+	bottom: 125%;
+	left: 50%;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+	width: max-content;
+	max-width: 12.5rem;
+	font-weight: 400;
+}
+.psm-tooltip-container:hover .psm-tooltip-content {
+	visibility: visible;
+	opacity: 1;
+	transform: translateX(-50%) translateY(-5px);
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: TopMenu
+Location: src/framework/components/TopMenu/
+Type: Reusable Framework Component
+Purpose: Reusable top menu/navigation component for quick access actions and section switching in admin pages.
+Dependencies:
+* @framework/components
+* react
+* react-icons/bs
+Used In:
+* Not detected by search
+Props:
+* items
+* current
+* onClick
+* className
+* maxRenderMenuItems
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useState } from 'react';
+import { Flex, MenuItem, Dropdown } from '@framework/components';
+import { BsThreeDots } from 'react-icons/bs';
+import './index.css';
+
+const TopMenu = ({
+	items = [],
+	current = null,
+	onClick = null,
+	className = '',
+	maxRenderMenuItems = 3,
+}) => {
+	const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+	const onDropdownMenuItemClick = (key) => {
+		onClick(key);
+		setIsOpenDropdown(false);
+	};
+
+	let classNames = ['psm-top-menu'];
+	if (className !== '') {
+		classNames = [...classNames, ...className.split(' ')];
+	}
+
+	// extract first maxRenderMenuItems from items
+	const renderMenuItems = items.slice(0, maxRenderMenuItems);
+
+	// extract the rest of items
+	const restMenuItems = items.slice(maxRenderMenuItems);
+
+	return (
+		<Flex className={classNames.join(' ')} align="center">
+			{renderMenuItems.map((item) => (
+				<MenuItem
+					{...item}
+					current={item.key == current}
+					onClick={() => onClick(item.key)}
+					parentType="top"
+				/>
+			))}
+			{restMenuItems.length > 0 && (
+				<Dropdown
+					items={restMenuItems}
+					size="small"
+					icon={<BsThreeDots />}
+					isOpenMenu={isOpenDropdown}
+					setIsOpenMenu={setIsOpenDropdown}
+					onMenuItemClick={onDropdownMenuItemClick}
+					menuPosition="right"
+					className="psm-top-menu-dropdown"
+				/>
+			)}
+		</Flex>
+	);
+};
+
+export default TopMenu;
+
+=== CSS ===
+/* TopMenu */
+.psm-top-menu {
+	border-bottom: 1px solid #dcdcde;
+}
+.psm-top-menu .psm-menu-item {
+	border-bottom: 2px solid transparent;
+	font-weight: 500;
+}
+.psm-top-menu .psm-menu-item.current {
+	color: var(--psmfr-primary-color);
+	border-bottom: 2px solid var(--psmfr-primary-color);
+}
+.psm-top-menu .psm-menu-item:not(.current):hover {
+	border-bottom: 2px solid #777;
+}
+.psm-top-menu-dropdown {
+	margin-left: 0.625rem;
+}
+
+============================================================
+

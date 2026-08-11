@@ -1,0 +1,28 @@
+/* Select */
+.psm-select__control {
+	border: 1px solid #ccc !important;
+	border-radius: 4px !important;
+}
+.psm-select__control--is-focused {
+	border-color: var(--psmfr-primary-color) !important;
+	box-shadow: 0 0 0 1px var(--psmfr-primary-color) !important;
+}
+.psm-form-field .psm-select__input {
+	min-height: 26px !important;
+}
+.psm-form-field input[type="text"].psm-select__input:focus {
+	box-shadow: none !important;
+}
+.psm-select__menu {
+	border: 0.0625rem solid #ccc !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	margin: 0.3125rem 0 0 !important;
+}
+.psm-select__option--is-focused {
+	background-color: #eee !important;
+}
+.psm-select__option--is-selected {
+	background-color: var(--psmfr-primary-color) !important;
+	color: #fff !important;
+}

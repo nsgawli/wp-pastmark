@@ -1,0 +1,98 @@
+.wptl-log-filters {
+	width: 100%;
+	min-width: 0;
+	height: fit-content;
+	box-sizing: border-box;
+	border: 1px solid #d7dde4;
+	border-radius: 12px;
+	box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+	background: #ffffff;
+}
+
+.wptl-log-filters-title {
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	color: #0f172a;
+}
+
+.wptl-log-filters-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ecf0f4;
+}
+
+.wptl-log-filters-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border: 1px solid #d0d7e2;
+	border-radius: 8px;
+	background: #fff;
+	color: #334155;
+	cursor: pointer;
+	transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.wptl-log-filters-close:hover {
+	border-color: var(--psmfr-primary-color);
+	color: var(--psmfr-primary-hover-color);
+	background-color: var(--psmfr-primary-soft-color);
+	transform: translateY(-1px);
+}
+
+.wptl-log-filters-close:focus-visible {
+	outline: 2px solid var(--psmfr-primary-color);
+	outline-offset: 2px;
+}
+
+.wptl-log-filters-grid > .psm-form-field {
+	flex: 1 1 calc(33.333% - 10px);
+	min-width: 220px;
+}
+
+.wptl-log-filters .psm-form-field label {
+	font-size: 12px;
+	font-weight: 700;
+	color: #334155;
+	letter-spacing: 0.01em;
+}
+
+.wptl-log-filters .psm-form-field input,
+.wptl-log-filters .psm-form-field .psm-select__control {
+	border-color: #d7dde4;
+	border-radius: 8px;
+	min-height: 38px;
+}
+
+.wptl-log-filters .psm-form-field .psm-select__control:hover {
+	border-color: #a5b4fc;
+}
+
+.wptl-log-filters .psm-form-field .psm-select__control--is-focused {
+	border-color: var(--psmfr-primary-color);
+	box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.wptl-log-filters form > .wptl-flex:last-child,
+.wptl-log-filters form > div > .wptl-flex:last-child {
+	padding-top: 4px;
+}
+
+@media (max-width: 1200px) {
+	.wptl-log-filters-grid > .psm-form-field {
+		flex-basis: calc(50% - 8px);
+	}
+}
+
+@media (max-width: 768px) {
+	.wptl-log-filters-grid > .psm-form-field {
+		flex-basis: 100%;
+		min-width: 100%;
+	}
+}

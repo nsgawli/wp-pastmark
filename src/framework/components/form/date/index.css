@@ -1,0 +1,4 @@
+/* Datepicker */
+.react-datepicker-popper {
+	z-index: var(--psmfr-popup-z-index) !important;
+}

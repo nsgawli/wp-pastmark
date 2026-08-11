@@ -1,0 +1,38 @@
+.wptl-log-level-active {
+	border: 2px solid var(
+		--wp-admin-theme-color
+	);
+}
+
+.wptl-log-level-card-content {
+	position: relative;
+	padding-top: 2px;
+	padding-right: 66px;
+	min-height: 72px;
+}
+
+.wptl-log-level-title {
+	display: inline-block;
+	margin-bottom: 8px;
+}
+
+.wptl-log-level-description {
+	font-size: 13px;
+	opacity: 0.75;
+}
+
+.wptl-log-level-active-badge {
+	position: absolute;
+	top: -4px;
+	right: 0;
+	background: #178f46 !important;
+	color: #ffffff !important;
+	box-shadow: 0 2px 6px rgba(23, 143, 70, 0.35);
+}
+
+.wptl-log-level-counters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 20px;
+}

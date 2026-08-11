@@ -1,0 +1,136 @@
+.wptl-event-browser {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.wptl-events-card.wptl-card-padding {
+	padding: 14px 16px;
+}
+
+.wptl-event-group-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
+
+.wptl-event-group-meta {
+	min-width: 0;
+}
+
+.wptl-event-group-toggle {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1f2937;
+	text-align: left;
+}
+
+.wptl-event-group-toggle span:last-child {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.wptl-event-group-chevron {
+	font-size: 12px;
+	line-height: 1;
+}
+
+.wptl-event-group-controls {
+	flex-wrap: nowrap;
+}
+
+.wptl-event-group-button {
+	white-space: nowrap;
+}
+
+.wptl-event-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin-top: 20px;
+}
+
+.wptl-event-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 0;
+	border-top: 1px solid #eee;
+}
+
+.wptl-event-row:first-child {
+	border-top: none;
+	padding-top: 0;
+}
+
+.wptl-event-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.wptl-event-main {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	flex: 1;
+}
+
+.wptl-event-title {
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.wptl-event-main .wptl-event-title {
+	margin-bottom: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.wptl-event-description {
+	font-size: 13px;
+	color: #666;
+	margin: 2px 0 6px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.wptl-event-meta {
+	display: flex;
+	gap: 8px;
+	flex: 0 0 auto;
+}
+
+@media (max-width: 782px) {
+	.wptl-events-card.wptl-card-padding {
+		padding: 12px 14px;
+	}
+
+	.wptl-event-group-header {
+		flex-wrap: wrap;
+	}
+
+	.wptl-event-group-controls {
+		width: 100%;
+		justify-content: flex-end;
+	}
+
+	.wptl-event-row {
+		gap: 10px;
+		padding: 9px 0;
+	}
+}

@@ -1,0 +1,17 @@
+/* Title */
+.psm-title {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+h3.psm-title {
+	font-size: 1rem;
+}
+
+h4.psm-title {
+	font-size: 0.9375rem;
+}
+
+h5.psm-title {
+	font-size: 0.875rem;
+}

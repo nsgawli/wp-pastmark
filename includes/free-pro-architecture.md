@@ -1,0 +1,5 @@
+This is the pro add-on for the "logtrail-pro" WordPress plugin (free version lives at /var/www/html/wp-content/plugins/logtrail-pro, React frontend under src/, built with @wordpress/scripts). Free and pro must stay two separate plugins/codebases — pro should NOT copy free's code.
+
+The extensibility mechanism is @wordpress/hooks (already a dependency in free's package.json, currently unused). Free's extensible UI regions (settings tabs in src/admin-settings, log-list columns/filters in src/activity-logs, dashboard widgets in src/dashboard) expose their config through applyFilters('logtrail.xxx', defaultValue) calls made at render time. Pro ships its own separate webpack entry/bundle that calls addFilter('logtrail.xxx', 'logtrail-pro/...', fn) to inject its own tabs/columns/widgets/components, plus PHP that only enqueues pro's script (as a dependent of free's script handle) when free is active.
+
+Help me: (1) confirm/build the filter points on the free plugin side if not already refactored, and (2) scaffold the pro plugin's JS bundle + PHP enqueue that hooks into them — without duplicating any of free's existing code.

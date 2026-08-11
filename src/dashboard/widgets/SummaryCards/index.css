@@ -1,0 +1,25 @@
+/*
+ * Fixed column counts (5 / 3 / 1) instead of auto-fill: with exactly 5
+ * cards, an auto-fill grid can land on 4 columns at some viewport widths
+ * and strand the 5th card alone on its own row. 5 and 3 both divide 5
+ * cards without a lonely leftover (3 -> 3 + 2), so those are the only
+ * two multi-column counts used.
+ */
+.wptl-dashboard-summary-grid {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 16px;
+	width: 100%;
+}
+
+@media (max-width: 1024px) {
+	.wptl-dashboard-summary-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 480px) {
+	.wptl-dashboard-summary-grid {
+		grid-template-columns: 1fr;
+	}
+}

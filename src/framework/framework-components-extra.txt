@@ -1,0 +1,375 @@
+=== FILE META ===
+File: useAlerts.js
+Location: src/framework/hooks/
+Module: useAlerts
+Type: React Hook
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: Custom React hook for managing in-app alert state, including adding, removing, and auto-dismissing notification messages.
+Dependencies:
+* react
+Exports:
+* AlertsProvider
+* useAlerts
+Used In:
+* activity-logs
+* admin-settings
+* events-setting
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+import React, { createContext, useContext, useState } from 'react';
+
+const AlertsContext = createContext();
+
+export const AlertsProvider = ({ children }) => {
+	const [alerts, setAlerts] = useState([]);
+	const addAlert = (alert) => {
+		setAlerts([...alerts, alert]);
+	};
+	const removeAlert = (id) => {
+		setAlerts(alerts.filter((alert) => alert.id !== id));
+	};
+
+	return (
+		<AlertsContext.Provider value={{ alerts, addAlert, removeAlert }}>
+			{children}
+		</AlertsContext.Provider>
+	);
+};
+
+export const useAlerts = () => {
+	return useContext(AlertsContext);
+};
+
+
+============================================================
+
+=== FILE META ===
+File: useScreenSize.js
+Location: src/framework/hooks/
+Module: useScreenSize
+Type: React Hook
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: Custom React hook for tracking viewport size and responsive breakpoints to drive adaptive UI behavior.
+Dependencies:
+* react
+Exports:
+* ScreenSizeProvider
+* useScreenSize
+Used In:
+* activity-logs
+* admin-settings
+* events-setting
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const sizes = {
+	xs: 0,
+	sm: 576,
+	md: 768,
+	lg: 992,
+	xl: 1200,
+};
+
+const getElementScreenSize = (element) => {
+	if (element) {
+		const width = element.clientWidth;
+		if (width >= sizes.xl) return 'xl';
+		else if (width >= sizes.lg) return 'lg';
+		else if (width >= sizes.md) return 'md';
+		else if (width >= sizes.sm) return 'sm';
+		else return 'xs';
+	}
+	return 'xs';
+};
+
+const ScreenSizeContext = createContext();
+
+export const ScreenSizeProvider = ({ element, children }) => {
+	const [screenSize, setScreenSize] = useState('xs');
+
+	useEffect(() => {
+		const updateScreenSize = () => {
+			setScreenSize(getElementScreenSize(element));
+		};
+		updateScreenSize();
+		window.addEventListener('resize', updateScreenSize);
+		return () => window.removeEventListener('resize', updateScreenSize);
+	}, [element]);
+
+	return (
+		<ScreenSizeContext.Provider value={{ screenSize }}>
+			{children}
+		</ScreenSizeContext.Provider>
+	);
+};
+
+export const useScreenSize = () => {
+	return useContext(ScreenSizeContext);
+};
+
+
+============================================================
+
+=== FILE META ===
+File: useTimeZones.js
+Location: src/framework/hooks/
+Module: useTimeZones
+Type: React Hook
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: Custom React hook for providing timezone option data and helper lookups used by timezone-related form controls.
+Dependencies:
+* @wordpress/api-fetch
+* @wordpress/url
+* react
+Exports:
+* default: useTimeZones
+Used In:
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+import { useState } from 'react';
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+
+const useTimeZones = () => {
+	const [defaultTimeZone, setDefaultTimeZone] = useState(null);
+
+	const filterTimeZones = (keyword, timezones) => {
+		const escapedKeyword = keyword.replace(/[+:]/g, '\\$&');
+		const regex = new RegExp(escapedKeyword, 'i');
+		return timezones.filter((timezone) => regex.test(timezone.label));
+	};
+
+	const loadOptions = async (keyword) => {
+		const path = addQueryArgs('/psmfr/v1/timezones', {
+			locale: psmfr.locale,
+		});
+		return apiFetch({
+			path,
+			useApiCache: true,
+		})
+			.then((response) => {
+				if (!defaultTimeZone && response.length > 0) {
+					let currentTimeZone = response.find(
+						(timezone) => timezone.selected
+					);
+					setDefaultTimeZone({
+						value: currentTimeZone.value,
+						label: currentTimeZone.label,
+					});
+				}
+				return response.map((timezone) => {
+					return { value: timezone.value, label: timezone.label };
+				});
+			})
+			.then((timeZones) => filterTimeZones(keyword, timeZones))
+			.catch((error) => {
+				console.error(error);
+				return [];
+			});
+	};
+
+	return { loadOptions, defaultTimeZone };
+};
+
+export default useTimeZones;
+
+
+============================================================
+
+=== FILE META ===
+File: apiCatche.js
+Location: src/framework/middlewares/
+Module: apiCatche
+Type: Middleware Module
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: API middleware utility for centralized request error handling and consistent fallback behavior across async calls.
+Dependencies:
+* None
+Exports:
+* default: apiCache
+Used In:
+* admin-settings
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+// Cache initialization
+const cache = {
+	data: new Map(), // Stores the data of resolved API calls
+	promises: new Map(), // Stores the promises of ongoing API calls
+};
+
+// Generate a unique key for each request based on the path and parameters
+const generateCacheKey = (options) =>
+	`${options.path}-${JSON.stringify(options.data || {})}`;
+
+// Middleware function
+const apiCache = (options, next) => {
+	// return if the cache is disabled
+	if (!options.useApiCache) {
+		return next(options);
+	}
+
+	// Generate a unique key for the request
+	const key = generateCacheKey(options);
+
+	// Check if the data is already cached and return it
+	if (cache.data.has(key)) {
+		return Promise.resolve(cache.data.get(key));
+	}
+
+	// If a request is in progress, return the existing promise
+	if (cache.promises.has(key)) {
+		return cache.promises.get(key);
+	}
+
+	// Proceed with the API call and cache the promise
+	const promise = next(options)
+		.then((result) => {
+			cache.data.set(key, result); // Cache the result
+			cache.promises.delete(key); // Remove the promise from the cache
+			return result;
+		})
+		.catch((error) => {
+			cache.promises.delete(key); // Ensure to clean up even in case of an error
+			throw error;
+		});
+
+	cache.promises.set(key, promise);
+
+	return promise;
+};
+
+// Add a method to clear cache entries by pattern
+apiCache.clear = (pattern) => {
+	for (const key of cache.data.keys()) {
+		if (key.includes(pattern)) {
+			cache.data.delete(key);
+		}
+	}
+	for (const key of cache.promises.keys()) {
+		if (key.includes(pattern)) {
+			cache.promises.delete(key);
+		}
+	}
+};
+
+export default apiCache;
+
+
+============================================================
+
+=== FILE META ===
+File: index.js
+Location: src/framework/middlewares/
+Module: index
+Type: Middleware Module
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: Middleware barrel module that re-exports middleware utilities from a single import entry point.
+Dependencies:
+* ./apiCatche
+Exports:
+* named: { apiCache }
+Used In:
+* admin-settings
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+import apiCache from './apiCatche';
+
+export { apiCache };
+
+
+============================================================
+
+=== FILE META ===
+File: formatdate.js
+Location: src/framework/utils/
+Module: formatdate
+Type: Utility Module
+Runtime: React Admin Frontend (WordPress plugin)
+Purpose: Date/time utility module for formatting, localization helpers, and reusable transformation functions used by date-related components.
+Dependencies:
+* @wordpress/i18n
+* date-fns
+* date-fns/locale/en-US
+Exports:
+* formatDate
+* formatDateTime
+* formatTime
+* customLocale
+Used In:
+* framework
+Notes:
+* Metadata generated from static source inspection.
+* Validate runtime behavior with integration tests for critical paths.
+=== JS ===
+import { __ } from '@wordpress/i18n';
+import { format } from 'date-fns';
+import enUS from 'date-fns/locale/en-US';
+
+export const formatDate = (date) => {
+	return format(date, 'yyyy-MM-dd');
+};
+
+export const formatDateTime = (date) => {
+	return format(date, 'yyyy-MM-dd HH:mm:ss');
+};
+
+export const formatTime = (date) => {
+	return format(date, 'HH:mm');
+};
+
+export const customLocale = {
+	...enUS,
+	localize: {
+		...enUS.localize,
+		month: (n) =>
+			[
+				__('January', 'psmwraq'),
+				__('February', 'psmwraq'),
+				__('March', 'psmwraq'),
+				__('April', 'psmwraq'),
+				__('May', 'psmwraq'),
+				__('June', 'psmwraq'),
+				__('July', 'psmwraq'),
+				__('August', 'psmwraq'),
+				__('September', 'psmwraq'),
+				__('October', 'psmwraq'),
+				__('November', 'psmwraq'),
+				__('December', 'psmwraq'),
+			][n],
+		day: (n) =>
+			[
+				__('Sun', 'psmwraq'),
+				__('Mon', 'psmwraq'),
+				__('Tue', 'psmwraq'),
+				__('Wed', 'psmwraq'),
+				__('Thu', 'psmwraq'),
+				__('Fri', 'psmwraq'),
+				__('Sat', 'psmwraq'),
+			][n],
+		dayPeriod: (period) =>
+			({
+				am: __('AM', 'psmwraq'),
+				pm: __('PM', 'psmwraq'),
+			})[period],
+	},
+};
+
+
+============================================================
+

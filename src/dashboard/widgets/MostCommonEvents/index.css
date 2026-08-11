@@ -1,0 +1,43 @@
+.wptl-dashboard-category-item {
+	margin-bottom: 18px;
+}
+
+.wptl-dashboard-category-header {
+	display: flex;
+
+	justify-content: space-between;
+
+	margin-bottom: 6px;
+
+	font-size: 14px;
+}
+
+.wptl-dashboard-category-track {
+	height: 8px;
+
+	background: #eef2f6;
+
+	border-radius: 20px;
+
+	overflow: hidden;
+}
+
+.wptl-dashboard-category-fill {
+	height: 8px;
+
+	background: var(--psmfr-primary-color);
+
+	border-radius: 20px;
+
+	transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+	.wptl-dashboard-category-item {
+		margin-bottom: 14px;
+	}
+
+	.wptl-dashboard-category-header {
+		font-size: 13px;
+	}
+}

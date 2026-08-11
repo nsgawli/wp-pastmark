@@ -1,0 +1,50 @@
+/* Form Field Error Message */
+.psm-form-field-error-msg,
+.psm-form-field-required {
+	color: var(--psmfr-danger-color);
+}
+
+/* Form Field Helper Text */
+.psm-form-field > small {
+	font-size: 0.75rem;
+	line-height: 1.5;
+}
+
+.psm-form-field > small:not(.psm-form-field-error-msg) {
+	color: var(--psmfr-text-secondary-color, #475569);
+}
+
+/* Input fields */
+.psm-form-field input[type="date"],
+.psm-form-field input[type="datetime-local"],
+.psm-form-field input[type="email"],
+.psm-form-field input[type="number"],
+.psm-form-field input[type="password"],
+.psm-form-field input[type="text"],
+.psm-form-field input[type="time"],
+.psm-form-field input[type="url"] {
+	width: 100%;
+	padding: 0 0.5rem;
+	min-height: 2.5rem;
+	border: 0.0625rem solid #ccc;
+	border-radius: 0.25rem;
+}
+.psm-form-field textarea {
+	padding: 0.5rem;
+	border: 0.0625rem solid #ccc;
+	border-radius: 0.25rem;
+}
+.psm-form-field input[type="datetime-local"]:focus,
+.psm-form-field input[type="date"]:focus,
+.psm-form-field input[type="email"]:focus,
+.psm-form-field input[type="number"]:focus,
+.psm-form-field input[type="password"]:focus,
+.psm-form-field input[type="text"]:focus,
+.psm-form-field input[type="time"]:focus,
+.psm-form-field input[type="url"]:focus,
+.psm-form-field input[type="checkbox"]:focus,
+.psm-form-field input[type="radio"]:focus,
+.psm-form-field textarea:focus {
+	border-color: var(--psmfr-primary-color) !important;
+	box-shadow: 0 0 0 1px var(--psmfr-primary-color) !important;
+}

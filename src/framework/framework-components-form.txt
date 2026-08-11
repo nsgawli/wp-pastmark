@@ -1,0 +1,2221 @@
+=== COMPONENT META ===
+Component: ColorPicker
+Location: src/framework/components/form/ColorPicker/
+Type: Reusable Framework Component
+Purpose: Reusable form color picker component integrated with react-hook-form for selecting and validating color values.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-colorful
+* react-hook-form
+* react-icons/ri
+* react-icons/rx
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useState } from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { HexColorPicker } from 'react-colorful';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+import './index.css'; // ColorPicker specific styles
+
+import { RiArrowGoBackLine } from 'react-icons/ri';
+import { RxTransparencyGrid } from 'react-icons/rx';
+
+const ColorPicker = (props) => {
+	const {
+		name,
+		control,
+		label = null,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		style = {},
+	} = props;
+
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	const [displayColorPicker, setDisplayColorPicker] = useState(false);
+	const toggleColorPicker = () => setDisplayColorPicker(!displayColorPicker);
+
+	return (
+		<Flex
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			vertical
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<div>
+						<Flex
+							className="psm-color-picker-container"
+							gap={10}
+							align="center"
+						>
+							<Flex
+								className="psm-color-picker-trigger"
+								onClick={toggleColorPicker}
+							>
+								{field.value ? (
+									<div
+										style={{
+											width: '28px',
+											height: '28px',
+											background: field.value,
+											borderRadius: '4px',
+										}}
+									/>
+								) : (
+									<RxTransparencyGrid
+										style={{
+											fontSize: '28px',
+											borderRadius: '4px',
+										}}
+									/>
+								)}
+							</Flex>
+							<input
+								{...field}
+								type="text"
+								className="psm-colorpicker-input"
+								onChange={(e) => {
+									field.onChange(e.target.value);
+								}}
+								placeholder="transparent"
+							/>
+							<RiArrowGoBackLine
+								className="psm-colorpicker-reset"
+								onClick={() => field.onChange('')}
+							/>
+						</Flex>
+						{displayColorPicker && (
+							<div className="psm-color-picker-popover">
+								<div
+									className="psm-color-picker-cover"
+									onClick={toggleColorPicker}
+								/>
+								<HexColorPicker
+									color={field.value}
+									onChange={(value) => {
+										field.onChange(value);
+									}}
+								/>
+							</div>
+						)}
+					</div>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default ColorPicker;
+
+=== CSS ===
+/* Color Picker */
+.psm-color-picker-container,
+.psm-color-picker-trigger {
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: #fff;
+}
+.psm-color-picker-container {
+	width: fit-content;
+	padding: 0.625rem;
+}
+.psm-color-picker-trigger {
+	cursor: pointer;
+}
+svg.psm-colorpicker-reset {
+	cursor: pointer;
+	color: #ccc;
+	font-size: 20px;
+}
+svg.psm-colorpicker-reset:hover {
+	color: #000;
+}
+.psm-color-picker-popover {
+	position: absolute;
+	z-index: var(--psmfr-popup-z-index);
+}
+.psm-color-picker-cover {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+.psm-colorpicker-input {
+	max-width: 100px;
+	min-height: 30px !important;
+	height: 30px !important;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Input
+Location: src/framework/components/form/Input/
+Type: Reusable Framework Component
+Purpose: Reusable form text input component integrated with react-hook-form for controlled values, validation, and helper messages.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* htmlAutoComplete
+* readonly
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const Input = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	htmlAutoComplete = false,
+	readonly = false,
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						{...field}
+						type="text"
+						readOnly={readonly}
+						maxLength={maxlength}
+						placeholder={placeholder}
+						autoComplete={htmlAutoComplete ? 'on' : 'off'}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default Input;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputEmail
+Location: src/framework/components/form/InputEmail/
+Type: Reusable Framework Component
+Purpose: Reusable form email input component integrated with react-hook-form, including email validation and error handling.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* htmlAutoComplete
+* readonly
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const InputEmail = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	htmlAutoComplete = false,
+	readonly = false,
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex vertical className={className} style={style} gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						{...field}
+						type="email"
+						readOnly={readonly}
+						maxLength={maxlength}
+						placeholder={placeholder}
+						autoComplete={htmlAutoComplete ? 'on' : 'off'}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputEmail;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputFile
+Location: src/framework/components/form/InputFile/
+Type: Reusable Framework Component
+Purpose: Reusable form file upload input component integrated with react-hook-form for selecting files and validating file-related rules.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* accept
+* label
+* validations
+* className
+* extaInfo
+* multiple
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const InputFile = (props) => {
+	const {
+		name,
+		control,
+		accept,
+		label = null,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		multiple = false,
+		style = {},
+	} = props;
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+	return (
+		<Flex
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			vertical
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						type="file"
+						onChange={(e) => {
+							field.onChange(e.target.files);
+						}}
+						multiple={multiple}
+						accept={accept}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputFile;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputNumber
+Location: src/framework/components/form/InputNumber/
+Type: Reusable Framework Component
+Purpose: Reusable form numeric input component integrated with react-hook-form for number constraints and validation feedback.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* htmlAutoComplete
+* readonly
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const InputNumber = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	htmlAutoComplete = false,
+	readonly = false,
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						{...field}
+						type="number"
+						readOnly={readonly}
+						maxLength={maxlength}
+						placeholder={placeholder}
+						autoComplete={htmlAutoComplete ? 'on' : 'off'}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputNumber;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputPassword
+Location: src/framework/components/form/InputPassword/
+Type: Reusable Framework Component
+Purpose: Reusable form password input component integrated with react-hook-form for secure entry and validation rules.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const InputPassword = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						{...field}
+						type="password"
+						maxLength={maxlength}
+						placeholder={placeholder}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputPassword;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputTimeZone
+Location: src/framework/components/form/InputTimeZone/
+Type: Reusable Framework Component
+Purpose: Reusable form timezone selector component integrated with react-hook-form for choosing and storing timezone settings.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* @framework/hooks/useTimeZones
+* react
+* react-hook-form
+* react-select/async
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* isDisabled
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React, { useEffect } from 'react';
+import AsyncSelect from 'react-select/async';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+import useTimeZones from '@framework/hooks/useTimeZones';
+
+const InputTimeZone = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	isDisabled = false,
+	style = {},
+}) => {
+	const { field, fieldState } = useController({
+		name,
+		control,
+	});
+
+	const { loadOptions, defaultTimeZone } = useTimeZones();
+
+	useEffect(() => {
+		if (typeof field.value === 'undefined' && defaultTimeZone) {
+			field.onChange(defaultTimeZone);
+		}
+	}, [defaultTimeZone, field.value]);
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				defaultValue={null}
+				render={({ field }) => (
+					<AsyncSelect
+						{...field}
+						loadOptions={loadOptions}
+						isDisabled={isDisabled}
+						classNamePrefix="psm-select"
+						isClearable
+						cacheOptions
+						defaultOptions
+						onChange={(value) => {
+							field.onChange(value);
+						}}
+					/>
+				)}
+			/>
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputTimeZone;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputURL
+Location: src/framework/components/form/InputURL/
+Type: Reusable Framework Component
+Purpose: Reusable form URL input component integrated with react-hook-form for link entry and URL format validation.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* htmlAutoComplete
+* readonly
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const InputURL = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	htmlAutoComplete = false,
+	readonly = false,
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<input
+						{...field}
+						type="url"
+						readOnly={readonly}
+						maxLength={maxlength}
+						placeholder={placeholder}
+						autoComplete={htmlAutoComplete ? 'on' : 'off'}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputURL;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: Label
+Location: src/framework/components/form/Label/
+Type: Reusable Framework Component
+Purpose: Reusable form label component for consistent field captions, required indicators, and accessible label rendering.
+Dependencies:
+* @framework/components
+* react
+* react-icons/bs
+Used In:
+* Not detected by search
+Props:
+* text
+* required
+* info
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Flex, Tooltip } from '@framework/components';
+import { BsQuestionCircle } from 'react-icons/bs';
+import './../index.css'; // form styles
+import './index.css'; // component styles
+
+const Label = ({ text, required, info = '' }) => {
+	return (
+		<Flex className="psm-form-field-label" gap={3}>
+			{text}
+			{info && (
+				<Tooltip content={info}>
+					<BsQuestionCircle />
+				</Tooltip>
+			)}
+			{required && <span className="psm-form-field-required">*</span>}
+		</Flex>
+	);
+};
+
+export default Label;
+
+=== CSS ===
+/* Label */
+.psm-form-field-label {
+	font-size: 12px;
+	font-weight: 600;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: RadioButton
+Location: src/framework/components/form/RadioButton/
+Type: Reusable Framework Component
+Purpose: Reusable radio button group component integrated with react-hook-form for single-choice selections and validation.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* options
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+import './index.css'; // radio button styles
+
+const RadioButton = ({
+	name,
+	options,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			{extaInfo && <small>{extaInfo}</small>}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				defaultValue={[]}
+				render={({ field }) => (
+					<>
+						{options.map((option, index) => (
+							<label key={index}>
+								<input
+									type="radio"
+									{...field}
+									value={option.value}
+									checked={field.value === option.value}
+									onChange={() => {
+										field.onChange(option.value);
+									}}
+								/>
+								{option.label}
+							</label>
+						))}
+					</>
+				)}
+			/>
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default RadioButton;
+
+=== CSS ===
+/* RadioButton */
+.psm-form-field input[type="radio"] {
+	border: 0.0625rem solid #ccc !important;
+	border-radius: 50% !important;
+	height: 1rem;
+	width: 1rem;
+}
+.psm-form-field input[type="radio"]:checked::before {
+	content: "";
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 0.5rem;
+	height: 0.5rem;
+	margin: 0.1875rem;
+	background-color: var(--psmfr-primary-color);
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Switch
+Location: src/framework/components/form/Switch/
+Type: Reusable Framework Component
+Purpose: Reusable toggle switch component integrated with react-hook-form for boolean settings and on/off controls.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* disabled
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+import './index.css'; // switch styles
+
+const Switch = (props) => {
+	const {
+		name,
+		control,
+		label = null,
+		disabled = false,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		style = {},
+	} = props;
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	return (
+		<Flex
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			vertical
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			{extaInfo && <small>{extaInfo}</small>}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				defaultValue={false}
+				render={({ field }) => (
+					<label className="psm-switch">
+						<input
+							type="checkbox"
+							{...field}
+							disabled={disabled}
+							checked={field.value}
+							onChange={(e) => {
+								field.onChange(e.target.checked);
+							}}
+						/>
+						<span
+							className={`psm-switch-slider${disabled ? ' disabled' : ''}`}
+						></span>
+					</label>
+				)}
+			/>
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default Switch;
+
+=== CSS ===
+/* Switch */
+.psm-switch {
+	position: relative;
+	display: inline-block;
+	width: 2.875rem;
+	height: 1.25rem;
+}
+.psm-switch input,
+.psm-switch input:disabled {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+.psm-switch-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: 0.4s;
+	border-radius: 34px;
+}
+.psm-switch-slider:before {
+	position: absolute;
+	content: "";
+	height: 0.75rem;
+	width: 0.75rem;
+	left: 0.25rem;
+	bottom: 0.25rem;
+	background-color: white;
+	transition: 0.4s;
+	border-radius: 50%;
+}
+input:checked + .psm-switch-slider {
+	background-color: var(--psmfr-primary-color);
+}
+input:focus + .psm-switch-slider {
+	box-shadow: 0 0 1px var(--psmfr-primary-color);
+}
+input:checked + .psm-switch-slider:before {
+	transform: translateX(1.625rem);
+}
+.psm-switch-slider.disabled {
+	cursor: not-allowed;
+	opacity: 0.3;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: Textarea
+Location: src/framework/components/form/Textarea/
+Type: Reusable Framework Component
+Purpose: Reusable textarea input component integrated with react-hook-form for multi-line content and validation messaging.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* readonly
+* maxlength
+* placeholder
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../index.css'; // form styles
+
+const Textarea = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	readonly = false,
+	maxlength = null,
+	placeholder = null,
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<textarea
+						{...field}
+						readOnly={readonly}
+						maxLength={maxlength}
+						placeholder={placeholder}
+						rows={4}
+						onChange={(e) => {
+							field.onChange(e);
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default Textarea;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: Checkbox
+Location: src/framework/components/form/checkbox/Checkbox/
+Type: Reusable Framework Component
+Purpose: Reusable checkbox group component integrated with react-hook-form for multi-select options and rule-based validation.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* options
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // checkbox styles
+
+const Checkbox = ({
+	name,
+	options,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	extaInfo = '',
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			{extaInfo && <small>{extaInfo}</small>}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<>
+						{options.map((option, index) => {
+							const isChecked = Array.isArray(field.value)
+								? field.value.some(
+										(item) => item === option.value
+									)
+								: false;
+							return (
+								<label key={index}>
+									<input
+										type="checkbox"
+										value={option.value}
+										checked={isChecked}
+										onChange={(e) => {
+											let newValue = Array.isArray(
+												field.value
+											)
+												? [...field.value]
+												: [];
+											if (e.target.checked) {
+												if (
+													!newValue.some(
+														(item) =>
+															item ===
+															option.value
+													)
+												) {
+													newValue.push(option.value);
+												}
+											} else {
+												newValue = newValue.filter(
+													(item) =>
+														item !== option.value
+												);
+											}
+											field.onChange(newValue);
+										}}
+									/>
+									{option.label}
+								</label>
+							);
+						})}
+					</>
+				)}
+			/>
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default Checkbox;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: CheckboxSingle
+Location: src/framework/components/form/checkbox/CheckboxSingle/
+Type: Reusable Framework Component
+Purpose: Reusable single checkbox component integrated with react-hook-form for consent flags and boolean field inputs.
+Dependencies:
+* @framework/components
+* react
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import '../../index.css'; // form styles
+import '../index.css'; // checkbox styles
+
+const CheckboxSingle = ({
+	name,
+	control,
+	label = null,
+	validations = {},
+	className = '',
+	style = {},
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<label>
+						<input
+							type="checkbox"
+							{...field}
+							checked={field.value}
+							onChange={(e) => {
+								field.onChange(e.target.checked);
+							}}
+						/>
+						{label}
+					</label>
+				)}
+			/>
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default CheckboxSingle;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: DateTime
+Location: src/framework/components/form/date/DateTime/
+Type: Reusable Framework Component
+Purpose: Reusable date-time picker component integrated with react-hook-form for selecting, formatting, and validating date/time values.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* @framework/utils/formatdate
+* @wordpress/i18n
+* react
+* react-datepicker
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { __ } from '@wordpress/i18n';
+import { Controller, useController } from 'react-hook-form';
+
+// datepicker
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { formatDateTime, customLocale } from '@framework/utils/formatdate';
+registerLocale('custom-en', customLocale);
+
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // date styles
+
+const DateTime = (props) => {
+	const {
+		name,
+		control,
+		label = null,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		style = {},
+	} = props;
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	return (
+		<Flex
+			vertical
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<DatePicker
+						showTimeSelect
+						timeIntervals={props.timeIntervals || 30}
+						selected={
+							field.value ? new Date(field.value) : new Date()
+						}
+						onChange={(date) => {
+							field.onChange(formatDateTime(date));
+						}}
+						timeCaption={__('Time', 'psmwraq')}
+						dateFormat="yyyy/MM/dd h:mm aa"
+						minDate={props.minDate ? new Date(props.minDate) : null}
+						maxDate={props.maxDate ? new Date(props.maxDate) : null}
+						minTime={
+							props.minTime
+								? new Date(`2024-01-01T${props.minTime}:00`)
+								: null
+						}
+						maxTime={
+							props.maxTime
+								? new Date(`2024-01-01T${props.maxTime}:00`)
+								: null
+						}
+						locale="custom-en"
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default DateTime;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputDate
+Location: src/framework/components/form/date/InputDate/
+Type: Reusable Framework Component
+Purpose: Reusable date picker input component integrated with react-hook-form for selecting and validating calendar dates.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* @framework/utils/formatdate
+* react
+* react-datepicker
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { Controller, useController } from 'react-hook-form';
+
+// datepicker
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { formatDate, customLocale } from '@framework/utils/formatdate';
+registerLocale('custom-en', customLocale);
+
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // date styles
+
+const InputDate = (props) => {
+	const {
+		name,
+		control,
+		label,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		style = {},
+	} = props;
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	return (
+		<Flex
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			vertical
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<DatePicker
+						showTimeSelect={false}
+						selected={
+							field.value ? new Date(field.value) : new Date()
+						}
+						onChange={(date) => {
+							field.onChange(formatDate(date));
+						}}
+						dateFormat="yyyy/MM/dd"
+						minDate={props.minDate ? new Date(props.minDate) : null}
+						maxDate={props.maxDate ? new Date(props.maxDate) : null}
+						locale="custom-en"
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputDate;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: Time
+Location: src/framework/components/form/date/Time/
+Type: Reusable Framework Component
+Purpose: Reusable time picker input component integrated with react-hook-form for selecting and validating time values.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* @framework/utils/formatdate
+* @wordpress/i18n
+* react
+* react-datepicker
+* react-hook-form
+Used In:
+* Not detected by search
+Props:
+* name
+* control
+* label
+* validations
+* className
+* extaInfo
+* style
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import { __ } from '@wordpress/i18n';
+import { Controller, useController } from 'react-hook-form';
+
+// datepicker
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { formatTime, customLocale } from '@framework/utils/formatdate';
+registerLocale('custom-en', customLocale);
+
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // date styles
+
+const Time = (props) => {
+	const {
+		name,
+		control,
+		label = null,
+		validations = {},
+		className = '',
+		extaInfo = '',
+		style = {},
+	} = props;
+
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	return (
+		<Flex
+			className={
+				className ? `psm-form-field ${className}` : 'psm-form-field'
+			}
+			style={style}
+			vertical
+			gap={3}
+		>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<DatePicker
+						showTimeSelect
+						showTimeSelectOnly
+						timeIntervals={props.timeIntervals || 30}
+						selected={
+							field.value
+								? new Date(`2024-01-01 ${field.value}:00`)
+								: new Date()
+						}
+						onChange={(date) => {
+							field.onChange(formatTime(date));
+						}}
+						timeCaption={__('Time', 'psmwraq')}
+						dateFormat="h:mm aa"
+						minTime={
+							props.minTime
+								? new Date(`2024-01-01T${props.minTime}:00`)
+								: null
+						}
+						maxTime={
+							props.maxTime
+								? new Date(`2024-01-01T${props.maxTime}:00`)
+								: null
+						}
+						locale="custom-en"
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default Time;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: form
+Location: src/framework/components/form/
+Type: Reusable Framework Component
+Purpose: Reusable form composition wrapper module that aggregates shared field components, styles, and form-related exports.
+Dependencies:
+* None
+Used In:
+* admin-settings
+Props:
+* None
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import Input from './Input';
+import InputNumber from './InputNumber';
+import InputDate from './date/InputDate';
+import Time from './date/Time';
+import DateTime from './date/DateTime';
+import ColorPicker from './ColorPicker';
+import InputSelect from './select/InputSelect';
+import InputSelectAsync from './select/InputSelectAsync';
+import InputURL from './InputURL';
+import InputPassword from './InputPassword';
+import InputEmail from './InputEmail';
+import Checkbox from './checkbox/Checkbox';
+import RadioButton from './RadioButton';
+import Textarea from './Textarea';
+import InputTimeZone from './InputTimeZone';
+import Switch from './Switch';
+import Label from './Label';
+import CheckboxSingle from './checkbox/CheckboxSingle';
+import InputFile from './InputFile';
+
+export {
+	Input,
+	InputNumber,
+	InputDate,
+	Time,
+	DateTime,
+	ColorPicker,
+	InputSelect,
+	InputSelectAsync,
+	InputURL,
+	InputPassword,
+	InputEmail,
+	Checkbox,
+	RadioButton,
+	Textarea,
+	InputTimeZone,
+	Switch,
+	Label,
+	CheckboxSingle,
+	InputFile,
+};
+
+=== CSS ===
+/* Form Field Error Message */
+.psm-form-field-error-msg,
+.psm-form-field-required {
+	color: var(--psmfr-danger-color);
+}
+
+/* Input fields */
+.psm-form-field input[type="date"],
+.psm-form-field input[type="datetime-local"],
+.psm-form-field input[type="email"],
+.psm-form-field input[type="number"],
+.psm-form-field input[type="password"],
+.psm-form-field input[type="text"],
+.psm-form-field input[type="time"],
+.psm-form-field input[type="url"] {
+	width: 100%;
+	padding: 0 0.5rem;
+	min-height: 2.5rem;
+	border: 0.0625rem solid #ccc;
+	border-radius: 0.25rem;
+}
+.psm-form-field textarea {
+	padding: 0.5rem;
+	border: 0.0625rem solid #ccc;
+	border-radius: 0.25rem;
+}
+.psm-form-field input[type="datetime-local"]:focus,
+.psm-form-field input[type="date"]:focus,
+.psm-form-field input[type="email"]:focus,
+.psm-form-field input[type="number"]:focus,
+.psm-form-field input[type="password"]:focus,
+.psm-form-field input[type="text"]:focus,
+.psm-form-field input[type="time"]:focus,
+.psm-form-field input[type="url"]:focus,
+.psm-form-field input[type="checkbox"]:focus,
+.psm-form-field input[type="radio"]:focus,
+.psm-form-field textarea:focus {
+	border-color: var(--psmfr-primary-color) !important;
+	box-shadow: 0 0 0 1px var(--psmfr-primary-color) !important;
+}
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputSelect
+Location: src/framework/components/form/select/InputSelect/
+Type: Reusable Framework Component
+Purpose: Reusable select dropdown component integrated with react-hook-form, supporting single/multi-select and custom option rendering.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+* react-select
+Used In:
+* Not detected by search
+Props:
+* name
+* options
+* control
+* placeholder
+* label
+* validations
+* extaInfo
+* isMulti
+* isDisabled
+* isClearable
+* className
+* style
+* styles
+* formatOptionLabel
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import Select from 'react-select';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // component styles
+
+const InputSelect = ({
+	name,
+	options,
+	control,
+	placeholder = '',
+	label = null,
+	validations = {},
+	extaInfo = '',
+	isMulti = false,
+	isDisabled = false,
+	isClearable = true,
+	className = '',
+	style = {},
+	styles = {}, // react-select styles
+	formatOptionLabel = (e) => e.label, // react-select formatOptionLabel. We can override this function if needed
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	// Ensure options are in the correct format for react-select
+	const setFieldValue = (field) => {
+		const value = field.value;
+		if (isMulti) {
+			field.value = value.map((item) =>
+				item?.label
+					? item
+					: options.find((option) => option.value === item)
+			);
+		} else {
+			field.value = value?.label
+				? value
+				: options.find((option) => option.value === value);
+		}
+		return field;
+	};
+
+	// Function to get the field value in the format expected by our application
+	const getFieldValue = (value) => {
+		if (value == null) return isMulti ? [] : '';
+		if (isMulti) {
+			return value.map((item) => item.value);
+		} else {
+			return value.value;
+		}
+	};
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && (
+				<Label
+					text={label}
+					required={validations.required ? true : false}
+				/>
+			)}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<Select
+						{...setFieldValue(field)}
+						placeholder={placeholder}
+						options={options}
+						isMulti={isMulti}
+						isDisabled={isDisabled}
+						isClearable={isClearable}
+						menuPortalTarget={document.body}
+						classNamePrefix="psm-select"
+						styles={styles}
+						formatOptionLabel={formatOptionLabel}
+						onChange={(value) => {
+							field.onChange(getFieldValue(value));
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputSelect;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+
+=== COMPONENT META ===
+Component: InputSelectAsync
+Location: src/framework/components/form/select/InputSelectAsync/
+Type: Reusable Framework Component
+Purpose: Reusable async select component integrated with react-hook-form for remote option loading, searching, and selection.
+Dependencies:
+* @framework/components
+* @framework/components/form
+* react
+* react-hook-form
+* react-select/async
+Used In:
+* Not detected by search
+Props:
+* name
+* loadOptions
+* control
+* placeholder
+* label
+* validations
+* extaInfo
+* isMulti
+* isDisabled
+* isClearable
+* className
+* style
+* styles
+* formatOptionLabel
+Notes:
+* Uses wptl prefixed CSS classes when defined in component styles.
+* JS and CSS sections are copied from index.js and index.css.
+=== JS ===
+import React from 'react';
+import AsyncSelect from 'react-select/async';
+import { Controller, useController } from 'react-hook-form';
+import { Flex } from '@framework/components';
+import { Label } from '@framework/components/form';
+import '../../index.css'; // form styles
+import '../index.css'; // component styles
+
+const InputSelectAsync = ({
+	name,
+	loadOptions,
+	control,
+	placeholder = '',
+	label = null,
+	validations = {},
+	extaInfo = '',
+	isMulti = false,
+	isDisabled = false,
+	isClearable = true,
+	className = '',
+	style = {},
+	styles = {}, // react-select styles
+	formatOptionLabel = (e) => e.label, // react-select formatOptionLabel. We can override this function if needed
+}) => {
+	const { fieldState } = useController({
+		name,
+		control,
+	});
+
+	// Ensure options are in the correct format for react-select
+	const setFieldValue = (field, options) => {
+		const value = field.value;
+		if (!options) return field;
+		if (isMulti) {
+			field.value = value.map(
+				(item) =>
+					options.find(
+						(option) =>
+							option.value ===
+							(item && item.value !== undefined
+								? item.value
+								: item)
+					) || item
+			);
+		}
+		return field;
+	};
+
+	// Function to get the field value in the format expected by our application
+	const getFieldValue = (value) => {
+		if (isMulti) {
+			return Array.isArray(value) ? value.map((item) => item.value) : [];
+		} else {
+			return value ? value : '';
+		}
+	};
+
+	className = className ? `psm-form-field ${className}` : 'psm-form-field';
+
+	return (
+		<Flex className={className} style={style} vertical gap={3}>
+			{label && <Label text={label} required={!!validations.required} />}
+			<Controller
+				name={name}
+				control={control}
+				rules={validations}
+				render={({ field }) => (
+					<AsyncSelect
+						{...setFieldValue(
+							field,
+							field.options || (field._f && field._f.options)
+						)}
+						placeholder={placeholder}
+						loadOptions={loadOptions}
+						isMulti={isMulti}
+						isDisabled={isDisabled}
+						isClearable={isClearable}
+						menuPortalTarget={document.body}
+						classNamePrefix="psm-select"
+						styles={styles}
+						formatOptionLabel={formatOptionLabel}
+						cacheOptions
+						defaultOptions
+						onChange={(value) => {
+							field.onChange(getFieldValue(value));
+						}}
+					/>
+				)}
+			/>
+			{extaInfo && <small>{extaInfo}</small>}
+			{fieldState.error && fieldState.error.message && (
+				<small className="psm-form-field-error-msg">
+					{fieldState.error.message}
+				</small>
+			)}
+		</Flex>
+	);
+};
+
+export default InputSelectAsync;
+
+=== CSS ===
+[No index.css found in this component folder]
+
+
+============================================================
+

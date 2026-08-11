@@ -1,0 +1,213 @@
+.wptl-logs-timeline {
+	width: 100%;
+	box-sizing: border-box;
+	position: relative;
+}
+
+.wptl-timeline-loading-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.65);
+	backdrop-filter: blur(2px);
+	z-index: 2;
+	border-radius: 12px;
+}
+
+.wptl-timeline-loader {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 0;
+}
+
+.wptl-timeline-empty {
+	padding: 50px 20px;
+	text-align: center;
+	color: #646970;
+	font-size: 13px;
+}
+
+.wptl-timeline-group + .wptl-timeline-group {
+	margin-top: 26px;
+}
+
+.wptl-timeline-day-header {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	padding: 4px 0 12px;
+}
+
+.wptl-timeline-day-label {
+	font-size: 13px;
+	font-weight: 700;
+	color: #101828;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.wptl-timeline-day-count {
+	font-size: 12px;
+	color: #667085;
+}
+
+.wptl-timeline-list {
+	position: relative;
+	padding-left: 28px;
+}
+
+.wptl-timeline-list::before {
+	content: '';
+	position: absolute;
+	left: 9px;
+	top: 4px;
+	bottom: 4px;
+	width: 2px;
+	background: #e4e9f0;
+}
+
+.wptl-timeline-item {
+	position: relative;
+	display: flex;
+	gap: 14px;
+	padding: 14px;
+	margin-bottom: 10px;
+	border: 1px solid #d6dde6;
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: 0 6px 16px rgba(16, 24, 40, 0.04);
+	transition: background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.wptl-timeline-item:last-child {
+	margin-bottom: 0;
+}
+
+.wptl-timeline-item-clickable {
+	cursor: pointer;
+}
+
+.wptl-timeline-item-clickable:hover {
+	background: #f4f8ff;
+	box-shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
+}
+
+.wptl-timeline-item-active {
+	background: #eaf3ff;
+	border-color: #bfd8ff;
+}
+
+.wptl-timeline-marker {
+	position: absolute;
+	left: -27px;
+	top: 18px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	border: 2px solid #ffffff;
+	box-shadow: 0 0 0 2px #e4e9f0;
+	background: #98a2b3;
+	flex-shrink: 0;
+}
+
+.wptl-timeline-marker-success {
+	background: #12b76a;
+}
+
+.wptl-timeline-marker-info {
+	background: #2e90fa;
+}
+
+.wptl-timeline-marker-warning {
+	background: #f79009;
+}
+
+.wptl-timeline-marker-error {
+	background: #f04438;
+}
+
+.wptl-timeline-content {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.wptl-timeline-item-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.wptl-timeline-user {
+	font-size: 13px;
+	font-weight: 600;
+	color: #101828;
+	white-space: nowrap;
+}
+
+.wptl-timeline-time {
+	font-size: 12px;
+	font-weight: 600;
+	color: #475467;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.wptl-timeline-time-ago {
+	font-size: 12px;
+	color: #98a2b3;
+	white-space: nowrap;
+}
+
+.wptl-timeline-actions {
+	margin-left: auto;
+}
+
+.wptl-timeline-message {
+	font-size: 13px;
+	line-height: 1.5;
+	color: #1f2937;
+	white-space: normal;
+	word-break: break-word;
+}
+
+.wptl-timeline-item-footer {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+	font-size: 12px;
+	color: #667085;
+}
+
+.wptl-timeline-footer-sep {
+	color: #d0d5dd;
+}
+
+.wptl-timeline-id {
+	font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+	.wptl-timeline-list {
+		padding-left: 20px;
+	}
+
+	.wptl-timeline-marker {
+		left: -19px;
+	}
+
+	.wptl-timeline-item {
+		padding: 12px;
+	}
+
+	.wptl-timeline-actions {
+		margin-left: 0;
+	}
+}

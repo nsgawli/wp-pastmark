@@ -1,0 +1,26 @@
+.wptl-dashboard-user-row {
+	display: flex;
+
+	justify-content: space-between;
+
+	padding: 10px 0;
+
+	border-bottom: 1px solid #eef2f6;
+}
+
+.wptl-dashboard-user-row:last-child {
+	border-bottom: none;
+}
+
+.wptl-dashboard-user-cell {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+@media (max-width: 768px) {
+	.wptl-dashboard-user-row {
+		padding: 9px 0;
+		font-size: 13px;
+	}
+}

@@ -1,0 +1,48 @@
+/* Button */
+.psm-button {
+	border: 1px solid;
+	text-decoration: none;
+	font-weight: 400;
+	cursor: pointer;
+	background-color: #fff;
+	border-color: #d9d9d9;
+	width: fit-content;
+	height: fit-content;
+}
+.psm-button:hover {
+	color: var(--psmfr-primary-hover-color, var(--psmfr-primary-color));
+	background-color: #fff;
+	border-color: var(--psmfr-primary-hover-color, var(--psmfr-primary-color));
+}
+.psm-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+.psm-button.small {
+	font-size: 0.75rem;
+	padding: 0.3125rem 0.625rem;
+	border-radius: 0.1875rem;
+}
+.psm-button.medium {
+	font-size: 0.875rem;
+	padding: 0.4375rem 0.9375rem;
+	line-height: 1rem;
+	border-radius: 0.25rem;
+}
+.psm-button.large {
+	font-size: 0.875rem;
+	padding: 0.625rem 0.9375rem;
+	line-height: 1.125rem;
+	border-radius: 0.375rem;
+}
+.psm-button.primary {
+	color: #fff;
+	background-color: var(--psmfr-primary-color);
+	border-color: var(--psmfr-primary-color);
+}
+.psm-button.primary:hover {
+	opacity: 0.8;
+}
+.psm-setting-info {
+	font-size: 0.8125rem;
+}

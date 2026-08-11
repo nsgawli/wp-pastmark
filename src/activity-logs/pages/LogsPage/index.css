@@ -1,0 +1,27 @@
+.wptl-logs-page {
+	min-height: 100vh;
+	background: #f0f0f1;
+}
+
+.wptl-logs-page-content {
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	box-sizing: border-box;
+}
+
+.wptl-logs-main-card {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.wptl-applied-filters-summary {
+	padding: 8px 0;
+}
+
+.wptl-applied-filters-summary-label {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+}

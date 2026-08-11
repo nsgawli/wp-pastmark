@@ -1,0 +1,49 @@
+.wptl-dashboard-failed-login-table-wrap {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.wptl-dashboard-failed-login-table {
+	width: 100%;
+
+	border-collapse: collapse;
+
+	font-size: 14px;
+}
+
+.wptl-dashboard-failed-login-table th {
+	text-align: left;
+
+	padding: 10px 12px;
+
+	border-bottom: 1px solid #e2e8f0;
+
+	font-weight: 600;
+}
+
+.wptl-dashboard-failed-login-table td {
+	padding: 10px 12px;
+
+	border-bottom: 1px solid #f1f5f9;
+
+	vertical-align: middle;
+}
+
+.wptl-dashboard-failed-login-table tr:last-child td {
+	border-bottom: none;
+}
+
+.wptl-dashboard-failed-login-ip {
+	font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+	.wptl-dashboard-failed-login-table {
+		font-size: 13px;
+	}
+
+	.wptl-dashboard-failed-login-table th,
+	.wptl-dashboard-failed-login-table td {
+		padding: 8px 10px;
+	}
+}

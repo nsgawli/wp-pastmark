@@ -1,0 +1,526 @@
+Event → Logger Category Mapping
+1. Authentication
+
+Handles login, logout, sessions, access control.
+
+Includes events like:
+
+User logged in
+
+User logged out
+
+Failed login attempt
+
+Failed login attempt with a non-existing user
+
+Login blocked
+
+User logged in with existing session(s)
+
+User logged out all other sessions
+
+User session destroyed and logged out
+
+Switched to another user
+
+Plugin terminated idle session
+
+User was denied access to the page
+
+👉 Single logger: Authentication_Logger
+Hooks: wp_login, wp_logout, wp_authenticate, authenticate, wp_login_failed, switch_to_user
+
+2. Posts (Content)
+
+Anything related to posts, pages, CPTs, content lifecycle.
+
+Includes:
+
+User created a new post (draft)
+
+User published a post
+
+User modified a post
+
+User deleted post (trash / permanent)
+
+User restored post from trash
+
+User submitted post for review
+
+User scheduled a post
+
+User changed post status
+
+User changed post author
+
+User changed post URL
+
+User changed post visibility
+
+User changed post date
+
+User set / removed sticky
+
+User changed parent of page
+
+User changed page template
+
+User modified post content
+
+User opened a post in editor
+
+User viewed a post
+
+Ownership of the post changed
+
+A plugin created a post
+
+A plugin deleted a post
+
+👉 Single logger: Post_Logger
+Hooks: save_post, transition_post_status, wp_trash_post, untrash_post, before_delete_post
+
+3. Comments
+
+All comment lifecycle events.
+
+Includes:
+
+User posted a comment
+
+User approved / unapproved comment
+
+User replied to comment
+
+User edited comment
+
+Marked comment as spam / not spam
+
+Comment moved to trash
+
+Comment restored
+
+Comment permanently deleted
+
+👉 Single logger: Comment_Logger
+Hooks: comment_post, edit_comment, transition_comment_status, wp_set_comment_status
+
+4. Users
+
+User accounts, profiles, roles, permissions.
+
+Includes:
+
+New user created
+
+Visitor registered as user
+
+User deleted by another user
+
+User role changed
+
+User granted / revoked Super Admin
+
+Existing user added to site
+
+User removed from site
+
+Network user created
+
+User opened another user profile
+
+User changed own password
+
+User changed another user’s password
+
+User changed email (self / other)
+
+User profile fields changed
+
+User custom fields added / updated / deleted
+
+Application password created / revoked
+
+Admin sent password reset
+
+Network user signed up
+
+👉 Single logger: User_Logger
+Hooks: user_register, profile_update, set_user_role, delete_user, add_user_to_blog
+
+5. Media
+
+Uploads directory and attachments.
+
+Includes:
+
+User uploaded file
+
+User deleted file
+
+User updated media
+
+Featured image updated
+
+Site icon added / changed / removed
+
+👉 Single logger: Media_Logger
+Hooks: add_attachment, edit_attachment, delete_attachment, update_option_site_icon
+
+6. Menus
+
+Navigation menus only.
+
+Includes:
+
+User created menu
+
+User deleted menu
+
+User renamed menu
+
+User changed menu settings
+
+User added content to menu
+
+User removed content from menu
+
+User reordered menu items
+
+User moved items as sub-item
+
+User modified menu content
+
+👉 Single logger: Menu_Logger
+Hooks: wp_update_nav_menu, create_nav_menu, delete_nav_menu
+
+7. Plugins
+
+Plugin lifecycle and behavior.
+
+Includes:
+
+User installed plugin
+
+Activated / deactivated plugin
+
+Uninstalled plugin
+
+Upgraded plugin
+
+Plugin failed to install
+
+Plugin created / modified / deleted tables
+
+Plugin created / deleted posts
+
+Reset plugin settings
+
+Automatic updates setting changed for plugin
+
+👉 Single logger: Plugin_Logger
+Hooks: activated_plugin, deactivated_plugin, upgrader_process_complete
+
+8. Themes
+
+Theme lifecycle and theme files.
+
+Includes:
+
+User installed theme
+
+Activated theme
+
+Uninstalled theme
+
+Network activate / deactivate theme
+
+User updated theme
+
+Theme created / modified / deleted tables
+
+Changed theme file using editor
+
+👉 Single logger: Theme_Logger
+Hooks: switch_theme, delete_theme, upgrader_process_complete
+
+9. Core Settings
+
+WordPress settings and configuration.
+
+Includes:
+
+Site title changed
+
+Site URL / Home URL changed
+
+Timezone / date / time format changed
+
+Permalinks changed
+
+Anyone Can Register changed
+
+Default role changed
+
+Discourage search engines setting
+
+Comment settings changes
+
+Language changed
+
+Automatic updates setting changed
+
+WordPress admin email changed
+
+Homepage / posts page changed
+
+👉 Single logger: Core_Settings_Logger
+Hooks: updated_option
+
+10. Cron
+
+Scheduled tasks.
+
+Includes:
+
+One-time task created
+
+Recurring task created
+
+Cron modified
+
+Cron executed
+
+Cron deleted
+
+👉 Single logger: Cron_Logger
+Hooks: _get_cron_array, schedule_event, wp_cron
+
+11. Database
+
+Schema-level operations.
+
+Includes:
+
+WordPress created tables
+
+WordPress modified tables
+
+WordPress deleted tables
+
+Plugin / theme created / modified / deleted tables
+
+Unknown component DB changes
+
+👉 Single logger: Database_Logger
+Hooks: low-level, filters around dbDelta, plugin activation hooks
+
+12. Notifications
+
+Emails, alerts, summaries, integrations.
+
+Includes:
+
+Email sent
+
+Daily / weekly summary enabled or modified
+
+Notification recipients modified
+
+Custom notification added / updated / deleted
+
+Integration connection added / modified / deleted
+
+Login page notification changed
+
+👉 Single logger: Notification_Logger
+Hooks: wp_mail, plugin-specific hooks
+
+
+WooCommerce:
+[FREE] = shipped in the free plugin (includes/ActivityLoggers/WooCommerce/*ActivityLogger.php). 38 of the events below are done.
+Unmarked lines below are still open — that's the remaining pool for the pro add-on.
+
+[FREE] User created a new product
+[FREE] User published a product
+[FREE] User created a new product category
+[FREE] User changed the category of a product
+User modified the short description of a product
+User modified the text of a product
+User changed the URL of a product
+User changed the Product Data of a product
+User changed the date of a product
+User changed the visibility of a product
+User modified the product
+[FREE] User moved a product to trash
+[FREE] User permanently deleted a product
+[FREE] User restored a product from the trash
+[FREE] User changed status of a product
+[FREE] User changed type of a price
+[FREE] User changed the SKU of a product
+[FREE] User changed the stock status of a product
+[FREE] User changed the stock quantity
+	Log all stock changes. Disable this setting to only keep a log of stock changes done manually via the WooCommerce dashboard. Therefore automated stock changes typically done via customers placing orders or via other plugins will not be logged.
+User set a product type
+User changed the weight of a product
+User changed the dimensions of a product
+User added the Downloadable File to a product
+User Removed the Downloadable File from a product
+User changed the name of a Downloadable File in a product
+User changed the URL of the Downloadable File in a product
+User changed the Weight Unit
+User changed the Dimensions Unit
+User changed the Base Location
+User enabled/disabled taxes
+User changed the currency
+User enabled/disabled the use of coupons during checkout
+User enabled/disabled guest checkout
+User enabled/disabled Cash on delivery
+[FREE] A WooCommerce order has been placed
+	Keep a log of visitor orders, stock changes and other public events?
+[FREE] WooCommerce order status changed
+[FREE] User moved a WooCommerce order to trash
+[FREE] User moved a WooCommerce order out of trash
+[FREE] User permanently deleted a WooCommerce order
+[FREE] User edited a WooCommerce order
+[FREE] User refunded a WooCommerce order
+[FREE] User changed the catalog visibility of a product
+User changed the setting Featured Product of a product
+User changed the Allow Backorders setting of a product
+User added/removed products to upsell of a product
+User added/removed products to cross-sells of a product
+Added a new attribute of a product
+Modified the value of an attribute of a product
+Changed the name of an attribute of a product
+Deleted an attribute of a product
+Set the attribute visibility of a product
+[FREE] User deleted a product category
+User changed the slug of a product category
+User changed the parent category of a product category
+User changed the display type of a product category
+User changed the name of a product category
+User created a new attribute
+User deleted an attribute
+User changed the slug of an attribute
+User changed the name of an attribute
+User changed the default sort order of an attribute
+User enabled/disabled the option Enable Archives of an attribute
+[FREE] User published a new coupon
+User changed the discount type of a coupon
+[FREE] User changed the coupon amount of a coupon
+User changed the coupon expire date of a coupon
+User changed the usage restriction settings of a coupon
+User changed the usage limits settings of a coupon
+User changed the description of a coupon
+[FREE] User changed the status of a coupon
+[FREE] User renamed a WooCommerce coupon
+User opened a product in the editor
+User viewed a product
+User enabled/disabled a payment gateway
+User modified a payment gateway
+[FREE] User renamed a product
+User modified prices with tax option
+User modified tax calculation base
+User modified shipping tax class
+User enabled/disabled rounding of tax
+User modified a shipping zone
+User changed the billing address details
+User changed the shipping address details
+User modified selling location(s)
+User modified excluded selling location(s)
+User modified exclusive selling location(s)
+User modified shipping location(s)
+User modified exclusive shipping location(s)
+User modified default customer location
+User modified the cart page
+User modified the checkout page
+User modified the my account page
+User modified the terms and conditions page
+Added or deleted a product image
+Modified a product image
+Modified the download limit of the product
+Modified the download expiry setting of the product
+A product was downloaded
+Changed the status of the Enable product reviews setting in the store
+User created a new product tag
+User deleted a product tag
+User renamed product tag
+User changed product tag slug
+[FREE] System changed the stock quantity of a product
+[FREE] Third-party plugin changed the stock quantity of a product
+Changed the status of the Show "verified owner" label on customer reviews setting in the store
+Changed the status of the Reviews can only be left by "verified owners" setting in the store
+Changed the status of the Star rating on reviews setting in the store
+Changed the status of the Star ratings should be required setting in the store
+A Checkout endpoint has been modified
+An Account endpoint has been modified
+The Tax status of a product has been modified
+The Tax class of a product has been modified
+The Currency position setting has been modified
+The Thousand separator setting has been modified
+The Decimal separator setting has been modified
+The Number of decimals position setting has been modified
+User changed the low stock threshold of a product
+User added a webhook
+User removed a webhook
+User modified a webhook
+[FREE] Moved a coupon to trash.
+[FREE] Permanently deleted the coupon
+User changed the visibility of a coupon
+User changed the date of a coupon
+[FREE] Restored a coupon from trash
+User added/removed a product from an order
+User modified a quantity in an order
+User added/removed a fee from an order
+User modified a fee from an order
+User added/removed a coupon from an order
+User added/removed a tax from an order
+User removed a refund from an order
+User added/removed shipping from an order
+Copied the product
+Changed the status of the Shipping options: Enable the shipping calculator on the cart page setting in the store.
+Changed the status of the Shipping option: Hide shipping costs until an address is entered setting in the store.
+Changed the setting Shipping option: Shipping destination
+Changed the status of the Debug mode setting in the store.
+User enabled/disabled the store setting Allow customers to log into an existing account during checkout
+User enabled/disabled the store setting Allow customers to create an account during checkout
+User enabled/disabled the store setting Allow customers to create an account on the "My account" page
+User enabled/disabled the store setting When creating an account, automatically generate an account username for the customer based on their name, surname or email
+User enabled/disabled the store setting When creating an account, send the new user a link to set their password
+User enabled/disabled the store setting Remove personal data from orders on request
+User enabled/disabled the store setting Remove access to downloads on request
+User enabled/disabled the store setting Allow personal data to be removed in bulk from orders
+Changed the setting Registration privacy policy message
+Changed the setting Checkout privacy policy message
+User opened an order in the editor
+[FREE] Order note is added
+[FREE] Order note is deleted
+One item per product is enabled
+One item per product is disabled
+Changed the visibility status of the store
+[FREE] A new review was posted for the product
+[FREE] Unapproved a review that was posted for the product
+[FREE] Approved a review that was posted for the product
+[FREE] Marked a review that was posted for the product as spam.
+[FREE] Moved a review that was posted for the product to trash.
+Restored a review that was posted for the product from trash.
+[FREE] Permanently deleted a review that was posted for the product.
+Edited a review that was posted for the product.
+Changed the status of the Manage Stock store setting.
+Changed the value of the Hold stock (minutes).
+Changed the status of the low stock notification.
+Changed the status of the out of stock notification.
+Changed the Notifications recipient(s) email address.
+Changed the value of the Low stock threshold.
+Changed the value of the Out of stock threshold.
+Changed the status of the Out of stock visibility.
+Changed the Out of stock threshold setting.
+Changed the Status of the webhook
+
+AI introduction ideas:
+1. Anomaly / risk flagging on events (strongest fit)
+Your core problem as a log plugin is that logs are noisy — nobody reads 500 rows a day. Score/flag unusual events automatically: login from a new IP/geo at 3am, mass content deletion, role escalation, bulk plugin/theme changes, repeated failed logins. This can be simple statistical/rule-based detection marketed as "smart alerts" — doesn't require calling an external LLM, keeps data on-site, and directly solves "tell me what matters" instead of "here's more data." This is the one I'd build first.
+
+2. Plain-English digests ("what happened this week")
+Turn the raw log into a short readable summary instead of a table — "3 posts published, 1 plugin updated, 2 failed logins from unfamiliar IPs." Real value for site owners who don't want to parse filters. This is where an actual LLM call makes sense (summarization is genuinely a language task).

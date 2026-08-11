@@ -1,0 +1,30 @@
+/* Tooltip */
+.psm-tooltip-container {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.psm-tooltip-content {
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 5px;
+	padding: 0.5rem 0.625rem;
+	position: absolute;
+	z-index: var(--psmfr-popup-z-index);
+	bottom: 125%;
+	left: 50%;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+	width: max-content;
+	max-width: 12.5rem;
+	font-weight: 400;
+}
+.psm-tooltip-container:hover .psm-tooltip-content {
+	visibility: visible;
+	opacity: 1;
+	transform: translateX(-50%) translateY(-5px);
+}

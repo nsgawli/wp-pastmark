@@ -1,0 +1,23 @@
+/* Common backend styles for Logtrail plugin */
+:root {
+	--psmfr-primary-color: #4f46e5;
+	--psmfr-link-color: #4338ca;
+	--psmfr-primary-hover-color: #4338ca;
+	--psmfr-primary-soft-color: #eef2ff;
+	--psmfr-danger-color: #dc2626;
+	--psmfr-success-color: #059669;
+	--psmfr-warning-color: #d97706;
+	--psmfr-info-color: #2563eb;
+	--psmfr-info-soft-color: #eff6ff;
+	--psmfr-text-primary-color: #0f172a;
+	--psmfr-text-secondary-color: #475569;
+	--psmfr-border-color: #e2e8f0;
+	--psmfr-border-color-strong: #cbd5e1;
+	--psmfr-text-tertiary-color: #94a3b8;
+	--psmfr-surface-color: #ffffff;
+	--psmfr-app-bg-color: #f8fafc;
+	--psmfr-popup-z-index: 9999;
+	--psmfr-radius-pill: 999px;
+	--psmfr-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.15);
+	--psmfr-transition-fast: 120ms ease;
+}

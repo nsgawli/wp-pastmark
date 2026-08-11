@@ -1,0 +1,46 @@
+/* ModalPopup */
+@keyframes psmModalSlideDown {
+	from {
+		transform: translateY(-100vh); /* Start above the viewport */
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0); /* End at the original position */
+		opacity: 1;
+	}
+}
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	z-index: var(--psmfr-popup-z-index);
+}
+.modal-content {
+	animation: psmModalSlideDown 0.5s ease-out forwards;
+	background-color: #fff;
+	padding: 1.25rem;
+	margin-top: 10vh; /* 20% from the top */
+	border-radius: 0.3125rem;
+	box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+	max-width: 80%; /* Responsive purposes */
+	max-height: 80vh; /* Responsive purposes */
+	overflow-y: auto;
+}
+.psm-modal-close-icon {
+	position: absolute;
+	top: 0.9375rem;
+	right: 0.9375rem;
+	cursor: pointer;
+	font-size: 1.5625rem;
+	color: rgba(0, 0, 0, 0.45);
+	opacity: 0.6;
+}
+.psm-modal-close-icon:hover {
+	opacity: 1;
+}

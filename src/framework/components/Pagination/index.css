@@ -1,0 +1,18 @@
+.wptl-pagination {
+	width: 100%;
+	padding-top: 10px;
+	box-sizing: border-box;
+}
+
+.wptl-pagination-info {
+	font-size: 13px;
+	color: #50575e;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+	.wptl-pagination {
+		justify-content: center !important;
+	}
+}
