@@ -5,6 +5,7 @@ import { Controller, useController } from 'react-hook-form';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { formatDate, customLocale } from '@framework/utils/formatdate';
+import { parseDateOnly } from '@framework/utils/dateOnly';
 registerLocale('custom-en', customLocale);
 
 import { Flex } from '@framework/components';
@@ -49,15 +50,32 @@ const InputDate = (props) => {
 				render={({ field }) => (
 					<DatePicker
 						showTimeSelect={false}
+						// `null` (not `new Date()`) when unset — otherwise
+						// the picker highlights today as if it were already
+						// chosen, and a field left untouched (e.g. the "To"
+						// side of a range, on a day that happens to match
+						// today) silently submits an empty value while
+						// looking selected.
 						selected={
-							field.value ? new Date(field.value) : new Date()
+							field.value ? parseDateOnly(field.value) : null
 						}
+						openToDate={
+							field.value
+								? parseDateOnly(field.value)
+								: new Date()
+						}
+						placeholderText={props.placeholderText || 'Select date'}
+						isClearable
 						onChange={(date) => {
-							field.onChange(formatDate(date));
+							field.onChange(date ? formatDate(date) : '');
 						}}
 						dateFormat="yyyy/MM/dd"
-						minDate={props.minDate ? new Date(props.minDate) : null}
-						maxDate={props.maxDate ? new Date(props.maxDate) : null}
+						minDate={
+							props.minDate ? parseDateOnly(props.minDate) : null
+						}
+						maxDate={
+							props.maxDate ? parseDateOnly(props.maxDate) : null
+						}
 						locale="custom-en"
 					/>
 				)}

@@ -8,6 +8,7 @@ import {
 	Title,
 	Button,
 	Card,
+	Table,
 	SeverityBadge,
 	EventBadge,
 	Dropdown,
@@ -20,6 +21,8 @@ import {
 	getLogJson,
 	getLogMarkdown,
 } from '../../utils/logDetails';
+
+import { buildContextRows, buildDiffRows } from '../../utils/logFieldFormat';
 
 import './index.css';
 
@@ -112,17 +115,33 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 		},
 	];
 
-	const renderJson = (value) => {
-		if (!value) {
-			return '-';
-		}
+	const diffRows = buildDiffRows(log.before_data, log.after_data);
+	const { rows: detailRows, technicalRows } = buildContextRows(log.context);
 
-		try {
-			return JSON.stringify(JSON.parse(value), null, 2);
-		} catch (e) {
-			return value;
-		}
-	};
+	const diffColumns = [
+		{ key: 'field', title: 'Field', dataIndex: 'label', width: '30%' },
+		{
+			key: 'before',
+			title: 'Before',
+			dataIndex: 'before',
+			render: (value) => (
+				<span className="wptl-drawer-diff-before">{value}</span>
+			),
+		},
+		{
+			key: 'after',
+			title: 'After',
+			dataIndex: 'after',
+			render: (value) => (
+				<span className="wptl-drawer-diff-after">{value}</span>
+			),
+		},
+	];
+
+	const detailColumns = [
+		{ key: 'field', title: 'Field', dataIndex: 'label', width: '40%' },
+		{ key: 'value', title: 'Value', dataIndex: 'value' },
+	];
 
 	return (
 		<Drawer isOpen={isOpen} onClose={onClose}>
@@ -183,11 +202,32 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 								</span>
 							</div>
 
+							{log.object_label && (
+								<div className="wptl-drawer-log-details-item">
+									<span className="wptl-drawer-log-details-label">
+										Target
+									</span>
+									<span className="wptl-drawer-log-details-value">
+										{log.object_url ? (
+											<a
+												href={log.object_url}
+												target="_blank"
+												rel="noreferrer"
+											>
+												{log.object_label}
+											</a>
+										) : (
+											log.object_label
+										)}
+									</span>
+								</div>
+							)}
+
 							<div className="wptl-drawer-log-details-item">
 								<span className="wptl-drawer-log-details-label">
 									Severity
 								</span>
-								<SeverityBadge severity={log.severity_label} />
+								<SeverityBadge severity={log.severity} />
 							</div>
 
 							<div className="wptl-drawer-log-details-item">
@@ -230,38 +270,47 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 					</Flex>
 				</Card>
 
-				{log.before_data && (
+				{diffRows.length > 0 && (
 					<Card>
 						<Flex vertical gap={10}>
-							<Title level={5}>Before Data</Title>
+							<Title level={5}>Changes</Title>
 
-							<pre className="wptl-drawer-log-json">
-								{renderJson(log.before_data)}
-							</pre>
+							<Table
+								className="wptl-drawer-log-table"
+								columns={diffColumns}
+								data={diffRows}
+								rowKey="key"
+							/>
 						</Flex>
 					</Card>
 				)}
 
-				{log.after_data && (
+				{detailRows.length > 0 && (
 					<Card>
 						<Flex vertical gap={10}>
-							<Title level={5}>After Data</Title>
+							<Title level={5}>Details</Title>
 
-							<pre className="wptl-drawer-log-json">
-								{renderJson(log.after_data)}
-							</pre>
+							<Table
+								className="wptl-drawer-log-table"
+								columns={detailColumns}
+								data={detailRows}
+								rowKey="key"
+							/>
 						</Flex>
 					</Card>
 				)}
 
-				{log.context && (
+				{technicalRows.length > 0 && (
 					<Card>
 						<Flex vertical gap={10}>
-							<Title level={5}>Context</Title>
+							<Title level={5}>Technical Details</Title>
 
-							<pre className="wptl-drawer-log-json">
-								{renderJson(log.context)}
-							</pre>
+							<Table
+								className="wptl-drawer-log-table wptl-drawer-log-table-muted"
+								columns={detailColumns}
+								data={technicalRows}
+								rowKey="key"
+							/>
 						</Flex>
 					</Card>
 				)}

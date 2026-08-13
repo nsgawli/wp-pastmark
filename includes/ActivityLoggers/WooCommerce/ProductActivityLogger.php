@@ -83,7 +83,16 @@ class ProductActivityLogger extends AbstractLogger {
 			return;
 		}
 
-		if ( 'auto-draft' === $old_status ) {
+		// `auto-draft` is the admin-UI creation flow (autosave, then a real status
+		// on publish/save); `new` is a product inserted directly with its real
+		// status already set (e.g. the REST API, an importer, or CLI code) and
+		// never passing through an auto-draft stage. Both mean "just created".
+		if ( 'auto-draft' === $old_status || 'new' === $old_status ) {
+
+			if ( 'auto-draft' === $new_status ) {
+				// Still just the empty autosave staging row; nothing to report yet.
+				return;
+			}
 
 			if ( 'publish' === $new_status ) {
 				$this->log_event(
@@ -203,11 +212,38 @@ class ProductActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		// Fired on `before_delete_post`, so the product row/meta are still
+		// intact - capture a snapshot now or a permanently-deleted product
+		// leaves nothing behind to show in the log's detail view.
+		$product = wc_get_product( $post_id );
+
 		$this->log_event(
 			Actions::PRODUCT_DELETE,
 			$post,
 			sprintf( 'Product "%s" permanently deleted.', $post->post_title ),
-			Severity::WARNING
+			Severity::WARNING,
+			$product ? $this->prepare_product_snapshot( $post, $product ) : array()
+		);
+	}
+
+	/**
+	 * Prepare a snapshot of a product's key fields, for deletion logging.
+	 *
+	 * @param WP_Post    $post Product post object.
+	 * @param WC_Product $product Product object.
+	 * @return array
+	 */
+	protected function prepare_product_snapshot( WP_Post $post, WC_Product $product ): array {
+
+		return array(
+			'post_title'         => $post->post_title,
+			'post_status'        => $post->post_status,
+			'sku'                => $product->get_sku(),
+			'regular_price'      => $product->get_regular_price(),
+			'sale_price'         => $product->get_sale_price(),
+			'stock_status'       => $product->get_stock_status(),
+			'stock_quantity'     => $product->get_stock_quantity(),
+			'catalog_visibility' => $product->get_catalog_visibility(),
 		);
 	}
 
@@ -380,17 +416,23 @@ class ProductActivityLogger extends AbstractLogger {
 		$after_stock_quantity = $product->get_stock_quantity();
 
 		if ( null !== $after_stock_quantity && (string) $before['stock_quantity'] !== (string) $after_stock_quantity ) {
+
+			// Normalize "never set" to 0 for both the message and the raw before/
+			// after data, so a details view diffing the JSON matches what the
+			// message says instead of seeing an empty string turn into a number.
+			$before_stock_quantity_normalized = '' !== $before['stock_quantity'] ? (int) $before['stock_quantity'] : 0;
+
 			$this->log_event(
 				Actions::PRODUCT_STOCK_QTY_CHANGE,
 				$post,
 				sprintf(
 					'Stock quantity of product "%s" changed from "%s" to "%s".',
 					$post->post_title,
-					'' !== $before['stock_quantity'] ? $before['stock_quantity'] : '0',
+					$before_stock_quantity_normalized,
 					$after_stock_quantity
 				),
 				Severity::INFO,
-				array( 'stock_quantity' => $before['stock_quantity'] ),
+				array( 'stock_quantity' => $before_stock_quantity_normalized ),
 				array( 'stock_quantity' => $after_stock_quantity )
 			);
 		}
@@ -491,6 +533,11 @@ class ProductActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		// Normalize "never set" to 0 for both the message and the raw before/after
+		// data, so a details view diffing the JSON matches what the message says
+		// instead of seeing an empty string turn into a number.
+		$before_quantity_normalized = '' !== $before_quantity ? (int) $before_quantity : 0;
+
 		$this->insert_event_log(
 			Events::WOOCOMMERCE,
 			Actions::PRODUCT_STOCK_AUTO_CHANGE,
@@ -501,12 +548,18 @@ class ProductActivityLogger extends AbstractLogger {
 				'message'     => sprintf(
 					'Stock quantity of product "%s" changed automatically from "%s" to "%s".',
 					$post->post_title,
-					'' !== $before_quantity ? $before_quantity : '0',
+					$before_quantity_normalized,
 					$after_quantity
 				),
-				'before_data' => wp_json_encode( array( 'stock_quantity' => $before_quantity ) ),
+				'before_data' => wp_json_encode( array( 'stock_quantity' => $before_quantity_normalized ) ),
 				'after_data'  => wp_json_encode( array( 'stock_quantity' => $after_quantity ) ),
-				'context'     => $this->get_common_context(),
+				'context'     => array_merge(
+					$this->get_common_context(),
+					array(
+						'post_type'   => $post->post_type,
+						'post_status' => $post->post_status,
+					)
+				),
 			)
 		);
 	}

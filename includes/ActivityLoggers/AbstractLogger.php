@@ -4,6 +4,7 @@ namespace LogTrail\ActivityLoggers;
 
 use LogTrail\EventSettings\EventSettings;
 use LogTrail\Utils\ExcludeHelper;
+use WP_User;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -216,17 +217,29 @@ abstract class AbstractLogger {
 	 *
 	 * Every log entry automatically receives these values.
 	 *
+	 * `ip_address` is deliberately NOT included here even though every
+	 * logger has it available: it's already stored on its own `ip_address`
+	 * column (see `insert_log()`), and the admin UI reads it from there, so
+	 * repeating it in `context` would just be noise in the details view.
+	 *
+	 * @param WP_User|null $actor The user who actually performed the action,
+	 *                            when it isn't (yet) reflected by
+	 *                            `wp_get_current_user()`. Some hooks
+	 *                            (`wp_login`, `wp_logout`) fire before/after
+	 *                            WordPress updates the "current user" global,
+	 *                            so relying on it there records the wrong
+	 *                            actor. Pass the `WP_User` the hook itself
+	 *                            handed you in that case.
 	 * @return array
 	 */
-	protected function get_common_context(): array {
+	protected function get_common_context( ?WP_User $actor = null ): array {
 
-		$current_user = wp_get_current_user();
+		$current_user = $actor instanceof WP_User ? $actor : wp_get_current_user();
 
 		return array(
-			'current_user_id'    => get_current_user_id(),
+			'current_user_id'    => $current_user->ID,
 			'current_user_roles' => (array) $current_user->roles,
 
-			'ip_address'         => $this->get_ip_address(),
 			'user_agent'         => $this->get_user_agent(),
 			'request_url'        => $this->get_request_url(),
 		);

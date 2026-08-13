@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { applyFilters } from '@wordpress/hooks';
+import { format } from 'date-fns';
+import { parseDateOnly } from '@framework/utils/dateOnly';
 
 import {
 	Content,
@@ -29,12 +31,17 @@ import SavedFilters from '../../components/SavedFilters';
 import useSavedFilters from '../../hooks/useSavedFilters';
 
 import { fetchGeneralSettings } from '../../services/generalSettingsApi';
+import { fetchLogFilterOptionsByValues } from '../../services/logsApi';
 import {
 	buildLogDetailsPath,
 	buildLogDetailsUrl,
 	LOG_DETAILS_VIEW_MODES,
 } from '../../utils/logDetails';
 import { LOGS_PAGE_VIEW_MODES } from '../../utils/logsPageView';
+import {
+	SEVERITY_LABELS,
+	DATE_RANGE_LABELS,
+} from '../../utils/logFilterOptions';
 
 import './index.css';
 
@@ -48,15 +55,14 @@ const FILTER_LABELS = {
 	date_to: 'To',
 };
 
-const DATE_RANGE_LABELS = {
-	all: 'All',
-	today: 'Today',
-	yesterday: 'Yesterday',
-	last_7_days: 'Last 7 Days',
-	last_week: 'Last Week',
-	last_month: 'Last Month',
-	last_30_days: 'Last 30 Days',
-	custom_range: 'Custom Range',
+// Filters whose applied value is a plain value (a user ID, an event key)
+// rather than something human-readable on its own. The label for these has
+// to be resolved from the server (users, events) or a static map (severity)
+// instead of just stringifying the raw value.
+const RESOLVABLE_FILTER_TYPES = {
+	user_ids: 'users',
+	event: 'events',
+	ids: 'ids',
 };
 
 const getFilterLabel = (key) => {
@@ -71,22 +77,53 @@ const getFilterLabel = (key) => {
 		.join(' ');
 };
 
-const formatFilterValue = (value) => {
+const formatDateForDisplay = (value) => {
+	const date = parseDateOnly(value);
+
+	return date ? format(date, 'MMM d, yyyy') : value;
+};
+
+const formatFilterValue = (key, value, resolvedLabels = {}) => {
+	if (key === 'severity' && Array.isArray(value)) {
+		return value
+			.map((item) => SEVERITY_LABELS[item] || item)
+			.join(', ');
+	}
+
+	if (RESOLVABLE_FILTER_TYPES[key] && Array.isArray(value)) {
+		const labelsForKey = resolvedLabels[key] || {};
+
+		return value
+			.map((item) => labelsForKey[item] || String(item))
+			.join(', ');
+	}
+
 	if (Array.isArray(value)) {
 		return value.join(', ');
 	}
 
-	if (typeof value === 'string' && DATE_RANGE_LABELS[value]) {
+	if (key === 'date_range' && DATE_RANGE_LABELS[value]) {
 		return DATE_RANGE_LABELS[value];
+	}
+
+	if (key === 'date_from' || key === 'date_to') {
+		return formatDateForDisplay(value);
 	}
 
 	return String(value);
 };
 
-const getAppliedFilters = (filters = {}) =>
-	Object.entries(filters)
+const getAppliedFilters = (filters = {}, resolvedLabels = {}) => {
+	const items = Object.entries(filters)
 		.filter(([key, value]) => {
 			if (value === undefined || value === null) {
+				return false;
+			}
+
+			// Folded into the "Date" badge below instead of shown on their
+			// own, since a bare "From"/"To" date only makes sense alongside
+			// the custom date range it belongs to.
+			if (key === 'date_from' || key === 'date_to') {
 				return false;
 			}
 
@@ -103,8 +140,30 @@ const getAppliedFilters = (filters = {}) =>
 		.map(([key, value]) => ({
 			key,
 			label: getFilterLabel(key),
-			value: formatFilterValue(value),
+			value: formatFilterValue(key, value, resolvedLabels),
 		}));
+
+	const dateItem = items.find((item) => item.key === 'date_range');
+
+	if (dateItem && filters.date_range === 'custom_range') {
+		const from = filters.date_from
+			? formatDateForDisplay(filters.date_from)
+			: null;
+		const to = filters.date_to
+			? formatDateForDisplay(filters.date_to)
+			: null;
+
+		if (from && to) {
+			dateItem.value = `${from} → ${to}`;
+		} else if (from) {
+			dateItem.value = `From ${from}`;
+		} else if (to) {
+			dateItem.value = `Until ${to}`;
+		}
+	}
+
+	return items;
+};
 
 const LogsPage = () => {
 	const navigate = useNavigate();
@@ -155,7 +214,77 @@ const LogsPage = () => {
 		LOGS_PAGE_VIEW_MODES.table
 	);
 
-	const appliedFilters = getAppliedFilters(filters);
+	// Applied filters for user_ids/event/ids are plain values (a user ID, an
+	// event key, a log ID). Resolve them to display labels so the "Applied
+	// Filters" summary shows e.g. a user's name instead of their raw ID.
+	const [resolvedFilterLabels, setResolvedFilterLabels] = useState({});
+
+	const appliedFilters = getAppliedFilters(filters, resolvedFilterLabels);
+
+	// The advanced filters form needs `{ value, label }` pairs for its
+	// user/event/ID pickers, not the plain values `filters` stores them as.
+	// Reuse the labels already resolved for the "Applied Filters" summary so
+	// re-opening the panel shows each selection's name/label immediately
+	// instead of a blank tag while a second lookup is in flight.
+	const hydratedFilters = {
+		...filters,
+
+		...Object.fromEntries(
+			Object.keys(RESOLVABLE_FILTER_TYPES)
+				.filter((key) => Array.isArray(filters[key]))
+				.map((key) => [
+					key,
+					filters[key].map((value) => ({
+						value,
+						label: resolvedFilterLabels[key]?.[value] ?? String(value),
+					})),
+				])
+		),
+	};
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const resolveLabelsFor = async (key, type) => {
+			const values = filters[key];
+
+			if (!Array.isArray(values) || values.length === 0) {
+				return [key, {}];
+			}
+
+			const options = await fetchLogFilterOptionsByValues({
+				type,
+				values,
+			});
+
+			return [
+				key,
+				options.reduce((acc, option) => {
+					acc[option.value] = option.label;
+					return acc;
+				}, {}),
+			];
+		};
+
+		Promise.all(
+			Object.entries(RESOLVABLE_FILTER_TYPES).map(([key, type]) =>
+				resolveLabelsFor(key, type)
+			)
+		).then((entries) => {
+			if (cancelled) {
+				return;
+			}
+
+			setResolvedFilterLabels(Object.fromEntries(entries));
+		});
+
+		return () => {
+			cancelled = true;
+		};
+		// Only re-resolve when the resolvable filter values themselves
+		// change, not on every `filters` reference change (e.g. severity).
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [filters.user_ids, filters.event, filters.ids]);
 
 	useEffect(() => {
 		if (!initialLogId) {
@@ -269,7 +398,7 @@ const LogsPage = () => {
 
 							{filtersOpen && (
 								<LogFilters
-									defaultValues={filters}
+									defaultValues={hydratedFilters}
 									onApply={(values) => {
 										setFilters(values);
 										setPage(1);

@@ -45,10 +45,42 @@ export const fetchLogs = async ({
 export const fetchLogFilterOptions = async ({
 	type = '',
 	search = '',
+	limit = null,
 } = {}) => {
 	const query = {
 		type,
 		search,
+	};
+
+	if (limit) {
+		query.limit = limit;
+	}
+
+	const path = addQueryArgs('/logtrail/v1/logs/filter-options', query);
+
+	const response = await apiFetch({
+		path,
+		method: 'GET',
+	});
+
+	return response?.data?.items || [];
+};
+
+// Resolves a specific set of already-selected values (e.g. user IDs, event
+// keys) to their display labels, regardless of the default result-set
+// limit. Used to re-hydrate the advanced filters form with proper labels
+// instead of showing blank tags for values loaded from a previous session.
+export const fetchLogFilterOptionsByValues = async ({
+	type = '',
+	values = [],
+} = {}) => {
+	if (!values || values.length === 0) {
+		return [];
+	}
+
+	const query = {
+		type,
+		values: values.join(','),
 	};
 
 	const path = addQueryArgs('/logtrail/v1/logs/filter-options', query);

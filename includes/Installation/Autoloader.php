@@ -56,6 +56,55 @@ class Autoloader {
 	}
 
 	/**
+	 * Handle plugin activation.
+	 *
+	 * Called from `register_activation_hook()`, so this runs synchronously
+	 * during activation itself rather than waiting on `init` like
+	 * `run()` above does. On a fresh install it runs first-time setup
+	 * (DB table + default settings) right away instead of deferring it to
+	 * the next request, then records the activation as the plugin's first
+	 * log entry.
+	 *
+	 * @return void
+	 */
+	public static function activate() {
+
+		self::get_current_version();
+
+		if ( 0 === self::$current_version ) {
+			self::initial_setup();
+		}
+
+		self::log_self_activated();
+	}
+
+	/**
+	 * Record the plugin's own activation as a log entry.
+	 *
+	 * Bypasses the normal ActivityLoggers\PluginActivityLogger path since
+	 * it isn't registered yet at this point in the request (see
+	 * LogTrail::activate()).
+	 *
+	 * @return void
+	 */
+	private static function log_self_activated() {
+
+		$logs_model = new \LogTrail\Models\LogTrail_Logs();
+
+		$logs_model->insert(
+			array(
+				'user_id'     => get_current_user_id(),
+				'event_type'  => \LogTrail\Constants\Events::PLUGIN,
+				'object_type' => 'plugin',
+				'action'      => \LogTrail\Constants\Actions::ACTIVATE,
+				'message'     => __( 'LogTrail plugin activated.', 'logtrail' ),
+				'context'     => wp_json_encode( array( 'plugin' => WPLT_PLUGIN_BASENAME ) ),
+				'severity'    => \LogTrail\Constants\Severity::INFO,
+			)
+		);
+	}
+
+	/**
 	 * Check version
 	 */
 	public static function get_current_version() {

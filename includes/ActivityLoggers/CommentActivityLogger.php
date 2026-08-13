@@ -64,7 +64,7 @@ class CommentActivityLogger extends AbstractLogger {
 
 		$comment = get_comment( $comment_id );
 
-		if ( ! $comment || $this->is_product_review( $comment ) ) {
+		if ( ! $comment || $this->is_handled_by_woocommerce_logger( $comment ) ) {
 			return;
 		}
 
@@ -140,7 +140,7 @@ class CommentActivityLogger extends AbstractLogger {
 
 		$comment = get_comment( $comment_id );
 
-		if ( ! $comment || $this->is_product_review( $comment ) ) {
+		if ( ! $comment || $this->is_handled_by_woocommerce_logger( $comment ) ) {
 			return;
 		}
 
@@ -198,7 +198,7 @@ class CommentActivityLogger extends AbstractLogger {
 	 */
 	public function log_comment_status_changed( string $new_status, string $old_status, WP_Comment $comment ): void {
 
-		if ( $new_status === $old_status || $this->is_product_review( $comment ) ) {
+		if ( $new_status === $old_status || $this->is_handled_by_woocommerce_logger( $comment ) ) {
 			return;
 		}
 
@@ -315,7 +315,7 @@ class CommentActivityLogger extends AbstractLogger {
 	 */
 	public function log_comment_deleted( int $comment_id, WP_Comment $comment ): void {
 
-		if ( $this->is_product_review( $comment ) ) {
+		if ( $this->is_handled_by_woocommerce_logger( $comment ) ) {
 			return;
 		}
 
@@ -346,14 +346,25 @@ class CommentActivityLogger extends AbstractLogger {
 	}
 
 	/**
-	 * Determine whether a comment is a WooCommerce product review.
+	 * Determine whether a comment is one this logger should stay out of
+	 * because a dedicated WooCommerce logger already handles it: a product
+	 * review (`ReviewActivityLogger`) or an order note (`OrderActivityLogger`).
 	 *
-	 * Reviews are handled by the dedicated WooCommerce review logger instead.
+	 * Without the `order_note` check, deleting an order note (a comment
+	 * under the hood, with `comment_type` `order_note`) also fired this
+	 * logger's generic `delete_comment` hook, producing a duplicate,
+	 * confusingly-worded "Comment ... permanently deleted" entry alongside
+	 * the correct `order_note_delete` one - since HPOS orders aren't real
+	 * posts, the post-title lookup for that entry also came up blank.
 	 *
 	 * @param WP_Comment $comment Comment object.
 	 * @return bool
 	 */
-	protected function is_product_review( WP_Comment $comment ): bool {
+	protected function is_handled_by_woocommerce_logger( WP_Comment $comment ): bool {
+
+		if ( 'order_note' === $comment->comment_type ) {
+			return true;
+		}
 
 		return 'product' === get_post_type( (int) $comment->comment_post_ID );
 	}

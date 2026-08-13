@@ -49,18 +49,27 @@
 	white-space: pre-wrap;
 }
 
-.wptl-log-json {
-	background: #f8fafc;
-	color: #111827;
-	border: 1px solid #d0d5dd;
+.wptl-log-table {
+	border: 1px solid #e4e7ec;
 	border-radius: 8px;
-	padding: 14px;
-	margin: 0;
-	overflow: auto;
-	max-height: 380px;
+	overflow: hidden;
+}
+
+.wptl-log-table-muted {
 	font-size: 12px;
-	line-height: 1.5;
-	font-family: Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+	color: #667085;
+}
+
+.wptl-log-diff-before {
+	color: #b42318;
+	text-decoration: line-through;
+	word-break: break-word;
+}
+
+.wptl-log-diff-after {
+	color: #027a48;
+	font-weight: 600;
+	word-break: break-word;
 }
 
 @media (max-width: 782px) {

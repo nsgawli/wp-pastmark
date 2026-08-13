@@ -95,6 +95,13 @@ class OrderActivityLogger extends AbstractLogger {
 	 */
 	public function log_status_changed( int $order_id, string $old_status, string $new_status, WC_Order $order ): void {
 
+		// A restore settles back to the order's pre-trash status via this same
+		// hook; that's already logged by `log_restored()`/`log_restored_legacy()`,
+		// so logging it again here would report the same restore twice.
+		if ( 'trash' === $old_status ) {
+			return;
+		}
+
 		$this->log_event(
 			Actions::ORDER_STATUS_CHANGE,
 			$order,
@@ -299,19 +306,21 @@ class OrderActivityLogger extends AbstractLogger {
 			return;
 		}
 
-		$before = $this->pending_order_snapshots[ $order_id ];
+		$before_snapshot = $this->pending_order_snapshots[ $order_id ];
 
 		unset( $this->pending_order_snapshots[ $order_id ] );
 
 		$data = $order->get_data();
 
-		$after = array(
+		$after_snapshot = array(
 			'billing'       => $data['billing'],
 			'shipping'      => $data['shipping'],
 			'customer_note' => $data['customer_note'],
 		);
 
-		if ( $before === $after ) {
+		list( $before, $after ) = $this->diff_order_fields( $before_snapshot, $after_snapshot );
+
+		if ( empty( $before ) && empty( $after ) ) {
 			return;
 		}
 
@@ -323,6 +332,58 @@ class OrderActivityLogger extends AbstractLogger {
 			$before,
 			$after
 		);
+	}
+
+	/**
+	 * Diff two order detail snapshots down to just the individual
+	 * billing/shipping address fields (and the customer note) that
+	 * actually changed.
+	 *
+	 * Flattens each address into `billing_<field>`/`shipping_<field>`
+	 * keys rather than diffing the two address arrays wholesale, so
+	 * e.g. a single changed phone number shows up as one row instead of
+	 * dumping the entire address twice for a one-field edit.
+	 *
+	 * @param array $before Snapshot captured before the save.
+	 * @param array $after Snapshot captured after the save.
+	 * @return array{0: array<string, mixed>, 1: array<string, mixed>} [ $before_out, $after_out ]
+	 */
+	protected function diff_order_fields( array $before, array $after ): array {
+
+		$before_out = array();
+		$after_out  = array();
+
+		foreach ( array( 'billing', 'shipping' ) as $group ) {
+
+			$before_group = (array) ( $before[ $group ] ?? array() );
+			$after_group  = (array) ( $after[ $group ] ?? array() );
+
+			$fields = array_unique( array_merge( array_keys( $before_group ), array_keys( $after_group ) ) );
+
+			foreach ( $fields as $field ) {
+
+				$old_value = $before_group[ $field ] ?? '';
+				$new_value = $after_group[ $field ] ?? '';
+
+				if ( $old_value === $new_value ) {
+					continue;
+				}
+
+				$key                = $group . '_' . $field;
+				$before_out[ $key ] = $old_value;
+				$after_out[ $key ]  = $new_value;
+			}
+		}
+
+		$old_note = $before['customer_note'] ?? '';
+		$new_note = $after['customer_note'] ?? '';
+
+		if ( $old_note !== $new_note ) {
+			$before_out['customer_note'] = $old_note;
+			$after_out['customer_note']  = $new_note;
+		}
+
+		return array( $before_out, $after_out );
 	}
 
 	/**

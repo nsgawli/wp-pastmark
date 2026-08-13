@@ -14,6 +14,41 @@ defined( 'ABSPATH' ) || exit;
 class UserActivityLogger extends AbstractLogger {
 
 	/**
+	 * Standard profile fields stored as core `wp_users` columns, mapped to
+	 * a human-readable label for the profile-update diff.
+	 *
+	 * Safe to read straight off the `$old_user_data` snapshot handed to
+	 * `profile_update` - unlike the usermeta-backed fields below, these
+	 * live on the row itself so the snapshot already holds the old value.
+	 *
+	 * @var array<string, string>
+	 */
+	protected const TRACKED_PROFILE_CORE_FIELDS = array(
+		'display_name' => 'Display Name',
+		'user_url'     => 'Website',
+	);
+
+	/**
+	 * Standard profile fields stored as usermeta, mapped to a
+	 * human-readable label for the profile-update diff.
+	 *
+	 * NOT safe to read off `$old_user_data`: WP_User resolves these
+	 * lazily via `get_user_meta()` on first access, and by the time
+	 * `profile_update` fires the meta has already been overwritten - so
+	 * the "old" snapshot would silently return the new value instead. The
+	 * old value is captured earlier instead, via
+	 * `capture_user_meta_before_update()`.
+	 *
+	 * @var array<string, string>
+	 */
+	protected const TRACKED_PROFILE_META_FIELDS = array(
+		'first_name'  => 'First Name',
+		'last_name'   => 'Last Name',
+		'nickname'    => 'Nickname',
+		'description' => 'Biographical Info',
+	);
+
+	/**
 	 * User meta values captured before an update, keyed by "{user_id}:{meta_key}".
 	 *
 	 * `updated_user_meta` fires after the row is already saved, so the
@@ -23,6 +58,33 @@ class UserActivityLogger extends AbstractLogger {
 	 * @var array<string, mixed>
 	 */
 	protected $pending_user_meta_values = array();
+
+	/**
+	 * Old values of `TRACKED_PROFILE_META_FIELDS`, captured before an
+	 * update, keyed by "{user_id}:{meta_key}". Same capture problem as
+	 * `$pending_user_meta_values` above, kept separate so tracking a
+	 * profile field for the diff doesn't also spam the generic "custom
+	 * field updated" log (see `is_reserved_user_meta_key()`).
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $pending_profile_field_values = array();
+
+	/**
+	 * User IDs created earlier in this same request, keyed by ID.
+	 *
+	 * Creating a user through wp-admin (with the "Send User Notification"
+	 * box checked) sends a "set your password" email in the very same
+	 * request, which under the hood reuses the password-reset-key
+	 * mechanism (`get_password_reset_key()`) - firing `retrieve_password_key`
+	 * exactly as a real admin-initiated password reset would. Tracking
+	 * "just created" here lets `log_admin_password_reset_sent()` recognize
+	 * that case and skip logging a redundant, misleadingly-worded
+	 * "Password reset link sent" entry right under the creation entry.
+	 *
+	 * @var array<int, bool>
+	 */
+	protected $newly_created_user_ids = array();
 
 	/**
 	 * Constructor.
@@ -112,7 +174,14 @@ class UserActivityLogger extends AbstractLogger {
 	 * @return void
 	 */
 	public function log_login( $user_login, $user ): void {
-
+		/*
+		 * `wp_login` fires right after `wp_set_auth_cookie()`, before
+		 * WordPress updates the "current user" global for this request -
+		 * `get_common_context()`'s default (`wp_get_current_user()`) would
+		 * therefore record the *pre*-login anonymous state (id 0, no
+		 * roles) instead of the user who just signed in. Pass `$user`
+		 * explicitly so the actor recorded is correct.
+		 */
 		$this->insert_event_log(
 			Events::AUTHENTICATION,
 			Actions::LOGIN,
@@ -125,12 +194,7 @@ class UserActivityLogger extends AbstractLogger {
 					'User "%s" logged in.',
 					$user_login
 				),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'roles' => $user->roles,
-					)
-				),
+				'context'     => $this->get_common_context( $user ),
 			)
 		);
 	}
@@ -154,6 +218,12 @@ class UserActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		/*
+		 * `wp_logout` fires AFTER `wp_set_current_user( 0 )`, so by this
+		 * point `get_common_context()`'s default would already record "no
+		 * user" instead of the user who just logged out. Pass `$user`
+		 * explicitly so the actor recorded is correct.
+		 */
 		$this->insert_event_log(
 			Events::AUTHENTICATION,
 			Actions::LOGOUT,
@@ -165,12 +235,7 @@ class UserActivityLogger extends AbstractLogger {
 					'User "%s" logged out.',
 					$user->user_login
 				),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'roles' => $user->roles,
-					)
-				),
+				'context'     => $this->get_common_context( $user ),
 			)
 		);
 	}
@@ -311,8 +376,11 @@ class UserActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		$this->newly_created_user_ids[ $user_id ] = true;
+
 		$creator_id           = get_current_user_id();
 		$is_self_registration = ( 0 === $creator_id );
+		$role_label           = $this->format_role_list( $user->roles );
 
 		$this->insert_event_log(
 			Events::USER,
@@ -322,14 +390,10 @@ class UserActivityLogger extends AbstractLogger {
 				'object_id'   => $user_id,
 				'user_id'     => $creator_id,
 				'message'     => $is_self_registration
-					? sprintf( 'Visitor "%s" registered as a new user.', $user->user_login )
-					: sprintf( 'New user "%s" created.', $user->user_login ),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'registered_user_roles' => $user->roles,
-					)
-				),
+					? sprintf( 'Visitor "%s" (%s) registered as a new user with role %s.', $user->user_login, $user->user_email, $role_label )
+					: sprintf( 'New user "%s" (%s) created with role %s.', $user->user_login, $user->user_email, $role_label ),
+				'after_data'  => wp_json_encode( $this->prepare_new_user_data( $user ) ),
+				'context'     => $this->get_common_context(),
 			)
 		);
 	}
@@ -351,7 +415,10 @@ class UserActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		$this->newly_created_user_ids[ $user_id ] = true;
+
 		$is_admin_created = is_network_admin();
+		$role_label       = $this->format_role_list( $user->roles );
 
 		$this->insert_event_log(
 			Events::USER,
@@ -361,15 +428,42 @@ class UserActivityLogger extends AbstractLogger {
 				'object_id'   => $user_id,
 				'user_id'     => get_current_user_id(),
 				'message'     => $is_admin_created
-					? sprintf( 'New network user "%s" created.', $user->user_login )
-					: sprintf( 'User "%s" signed up on the network.', $user->user_login ),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'registered_user_roles' => $user->roles,
-					)
-				),
+					? sprintf( 'New network user "%s" (%s) created with role %s.', $user->user_login, $user->user_email, $role_label )
+					: sprintf( 'User "%s" (%s) signed up on the network with role %s.', $user->user_login, $user->user_email, $role_label ),
+				'after_data'  => wp_json_encode( $this->prepare_new_user_data( $user ) ),
+				'context'     => $this->get_common_context(),
 			)
+		);
+	}
+
+	/**
+	 * Format a user's roles for a log message, e.g. "administrator" or
+	 * "editor, shop_manager" - or a fallback when a user somehow has none.
+	 *
+	 * @param string[] $roles Role slugs.
+	 * @return string
+	 */
+	protected function format_role_list( array $roles ): string {
+
+		return ! empty( $roles ) ? implode( ', ', $roles ) : __( 'no role', 'logtrail' );
+	}
+
+	/**
+	 * Prepare newly-created user data for storage - the fields worth
+	 * showing for "what was this account set up as", mirroring
+	 * `diff_profile_fields()`'s field set plus email/role.
+	 *
+	 * @param WP_User $user Newly-created user.
+	 * @return array
+	 */
+	protected function prepare_new_user_data( WP_User $user ): array {
+
+		return array(
+			'user_login' => $user->user_login,
+			'user_email' => $user->user_email,
+			'first_name' => $user->first_name,
+			'last_name'  => $user->last_name,
+			'role'       => $this->format_role_list( $user->roles ),
 		);
 	}
 
@@ -388,32 +482,135 @@ class UserActivityLogger extends AbstractLogger {
 			return;
 		}
 
-		$this->insert_event_log(
-			Events::USER,
-			Actions::UPDATE,
-			array(
-				'object_type' => 'user',
-				'object_id'   => $user_id,
-				'user_id'     => get_current_user_id(),
-				'message'     => sprintf(
-					'User profile updated for "%s".',
-					$user->user_login
-				),
-				'context'     => $this->get_common_context(),
-			)
-		);
-
 		if ( ! $old_user_data instanceof WP_User ) {
+			// No prior snapshot to diff against (a caller invoked
+			// `profile_update` directly, bypassing `wp_update_user()`) -
+			// there's no way to tell what changed, so fall back to a
+			// bare notice rather than silently dropping the event.
+			$this->insert_event_log(
+				Events::USER,
+				Actions::UPDATE,
+				array(
+					'object_type' => 'user',
+					'object_id'   => $user_id,
+					'user_id'     => get_current_user_id(),
+					'message'     => sprintf( 'Profile updated for "%s".', $user->user_login ),
+					'context'     => $this->get_common_context(),
+				)
+			);
 			return;
 		}
 
-		if ( $old_user_data->user_pass !== $user->user_pass ) {
+		$password_changed = ( $old_user_data->user_pass !== $user->user_pass );
+		$email_changed    = ( $old_user_data->user_email !== $user->user_email );
+
+		$changes = $this->diff_profile_fields( $user_id, $user, $old_user_data );
+
+		/*
+		 * `profile_update` also fires for changes that have nothing to do
+		 * with an actual profile edit - most notably WordPress saving the
+		 * password-reset activation key hash on the user row whenever a
+		 * "set your password"/reset email is generated (see
+		 * `get_password_reset_key()`). If none of the fields this logger
+		 * tracks (or email/password) actually changed, this firing is
+		 * WordPress's own internal bookkeeping, not a real edit - skip it
+		 * rather than logging a "profile updated" entry with nothing behind it.
+		 */
+		if ( empty( $changes['labels'] ) && ! $password_changed && ! $email_changed ) {
+			return;
+		}
+
+		if ( ! empty( $changes['labels'] ) ) {
+
+			$this->insert_event_log(
+				Events::USER,
+				Actions::UPDATE,
+				array(
+					'object_type' => 'user',
+					'object_id'   => $user_id,
+					'user_id'     => get_current_user_id(),
+					'message'     => sprintf(
+						'Profile updated for "%s". Changed: %s.',
+						$user->user_login,
+						implode( ', ', $changes['labels'] )
+					),
+					'before_data' => wp_json_encode( $changes['before'] ),
+					'after_data'  => wp_json_encode( $changes['after'] ),
+					'context'     => $this->get_common_context(),
+				)
+			);
+		}
+
+		if ( $password_changed ) {
 			$this->log_password_changed( $user );
 		}
 
-		if ( $old_user_data->user_email !== $user->user_email ) {
+		if ( $email_changed ) {
 			$this->log_email_changed( $user, $old_user_data->user_email );
 		}
+	}
+
+	/**
+	 * Diff the standard profile fields (name, nickname, bio, website)
+	 * between their pre-update and post-update values.
+	 *
+	 * Deliberately excludes email and password: those already get their
+	 * own dedicated, higher-severity log entry (`log_email_changed()`,
+	 * `log_password_changed()`) since they're security-sensitive rather
+	 * than cosmetic.
+	 *
+	 * @param int     $user_id User ID.
+	 * @param WP_User $user Freshly-loaded user, reflecting the update.
+	 * @param WP_User $old_user_data Pre-update snapshot handed to `profile_update`.
+	 * @return array{before: array<string, mixed>, after: array<string, mixed>, labels: string[]}
+	 */
+	protected function diff_profile_fields( int $user_id, WP_User $user, WP_User $old_user_data ): array {
+
+		$before = array();
+		$after  = array();
+		$labels = array();
+
+		foreach ( self::TRACKED_PROFILE_CORE_FIELDS as $field => $label ) {
+
+			$old_value = $old_user_data->$field ?? '';
+			$new_value = $user->$field ?? '';
+
+			if ( $old_value === $new_value ) {
+				continue;
+			}
+
+			$before[ $field ] = $old_value;
+			$after[ $field ]  = $new_value;
+			$labels[]         = $label;
+		}
+
+		foreach ( self::TRACKED_PROFILE_META_FIELDS as $field => $label ) {
+
+			$pending_key = $user_id . ':' . $field;
+
+			if ( ! array_key_exists( $pending_key, $this->pending_profile_field_values ) ) {
+				continue;
+			}
+
+			$old_value = $this->pending_profile_field_values[ $pending_key ];
+			unset( $this->pending_profile_field_values[ $pending_key ] );
+
+			$new_value = get_user_meta( $user_id, $field, true );
+
+			if ( $old_value === $new_value ) {
+				continue;
+			}
+
+			$before[ $field ] = $old_value;
+			$after[ $field ]  = $new_value;
+			$labels[]         = $label;
+		}
+
+		return array(
+			'before' => $before,
+			'after'  => $after,
+			'labels' => $labels,
+		);
 	}
 
 	/**
@@ -482,6 +679,18 @@ class UserActivityLogger extends AbstractLogger {
 	 * @return void
 	 */
 	public function log_role_changed( $user_id, $role, $old_roles ): void {
+		/*
+		 * `WP_User::set_role()` fires this same hook when a role is
+		 * assigned to a brand-new user during `wp_insert_user()` - in
+		 * that case `$old_roles` is always empty, since a just-inserted
+		 * user has no prior roles to change FROM. That's not a "role
+		 * change", it's the account being set up with its first role
+		 * (already shown in the creation entry) - only log an actual
+		 * change away from a previous role.
+		 */
+		if ( empty( $old_roles ) ) {
+			return;
+		}
 
 		$user = get_userdata( $user_id );
 
@@ -591,7 +800,14 @@ class UserActivityLogger extends AbstractLogger {
 	 * Log an admin sending a password reset link to another user.
 	 *
 	 * Skips the front-end "lost password" flow, which fires the same hook
-	 * when a visitor requests a reset for their own account.
+	 * when a visitor requests a reset for their own account - and skips a
+	 * user just created in this same request, since the "set your
+	 * password" email WordPress sends for a brand-new account (when
+	 * "Send User Notification" is checked) generates its activation link
+	 * through this exact same mechanism. That's part of creating the
+	 * account, not a separate reset of an existing password - already
+	 * implied by the creation entry, so logging it again here would just
+	 * be confusing, misleadingly-worded noise right under it.
 	 *
 	 * @param string $user_login Username the reset key was generated for.
 	 * @param string $key Reset key (not logged).
@@ -608,6 +824,10 @@ class UserActivityLogger extends AbstractLogger {
 		$target = get_user_by( 'login', $user_login );
 
 		if ( ! $target || (int) $target->ID === $actor_id ) {
+			return;
+		}
+
+		if ( isset( $this->newly_created_user_ids[ $target->ID ] ) ) {
 			return;
 		}
 
@@ -795,6 +1015,10 @@ class UserActivityLogger extends AbstractLogger {
 	 */
 	public function capture_user_meta_before_update( $check, $object_id, $meta_key, $meta_value, $prev_value ) {
 
+		if ( array_key_exists( $meta_key, self::TRACKED_PROFILE_META_FIELDS ) ) {
+			$this->pending_profile_field_values[ $object_id . ':' . $meta_key ] = get_user_meta( $object_id, $meta_key, true );
+		}
+
 		if ( $this->is_reserved_user_meta_key( $meta_key ) ) {
 			return $check;
 		}
@@ -945,6 +1169,12 @@ class UserActivityLogger extends AbstractLogger {
 	 * Check whether a user meta key is WordPress-internal noise that
 	 * shouldn't be logged as a "custom field" (session data, per-screen
 	 * admin UI preferences, etc.).
+	 *
+	 * Also covers `TRACKED_PROFILE_META_FIELDS` (first_name, last_name,
+	 * nickname, description) - those aren't noise, but they already get
+	 * surfaced as part of the profile-update diff in `log_profile_updated()`
+	 * via `diff_profile_fields()`, so logging them again here would just
+	 * duplicate that as a separate "custom field updated" entry.
 	 *
 	 * @param string $meta_key Meta key.
 	 * @return bool

@@ -48,17 +48,27 @@
 	word-break: break-word;
 }
 
-.wptl-drawer-log-json {
-	margin: 0;
-	padding: 14px;
-	background: #f8fafc;
-	color: #111827;
-	border: 1px solid #d0d5dd;
+.wptl-drawer-log-table {
+	border: 1px solid #e4e7ec;
 	border-radius: 8px;
+	overflow: hidden;
+}
+
+.wptl-drawer-log-table-muted {
 	font-size: 12px;
-	line-height: 1.5;
-	overflow: auto;
-	max-height: 320px;
+	color: #667085;
+}
+
+.wptl-drawer-diff-before {
+	color: #b42318;
+	text-decoration: line-through;
+	word-break: break-word;
+}
+
+.wptl-drawer-diff-after {
+	color: #027a48;
+	font-weight: 600;
+	word-break: break-word;
 }
 
 @media (max-width: 768px) {

@@ -69,7 +69,16 @@ class CouponActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		// `auto-draft` is the admin-UI creation flow (autosave, then a real status
+		// on publish/save); `new` is a coupon inserted directly with its real
+		// status already set (e.g. code, an importer, or the REST API) and never
+		// passing through an auto-draft stage. Both mean "just created".
 		if ( 'auto-draft' === $old_status || 'new' === $old_status ) {
+
+			if ( 'auto-draft' === $new_status ) {
+				// Still just the empty autosave staging row; nothing to report yet.
+				return;
+			}
 
 			if ( 'trash' !== $new_status ) {
 				$this->log_event(
@@ -174,11 +183,22 @@ class CouponActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		// Fired on `before_delete_post`, so the coupon row/meta are still
+		// intact - capture a snapshot now or a permanently-deleted coupon
+		// leaves nothing behind to show in the log's detail view.
+		$coupon = new WC_Coupon( $post_id );
+
 		$this->log_event(
 			Actions::COUPON_DELETE,
 			$post,
 			sprintf( 'Coupon "%s" permanently deleted.', $post->post_title ),
-			Severity::WARNING
+			Severity::WARNING,
+			array(
+				'post_title'    => $post->post_title,
+				'post_status'   => $post->post_status,
+				'coupon_amount' => $coupon->get_amount(),
+				'discount_type' => $coupon->get_discount_type(),
+			)
 		);
 	}
 

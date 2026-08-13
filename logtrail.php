@@ -38,6 +38,29 @@ final class LogTrail {
 	}
 
 	/**
+	 * Plugin activation callback.
+	 *
+	 * Fires immediately when the plugin is (re)activated -- in the same
+	 * request as activation itself, before `plugins_loaded` has ever run
+	 * for this plugin, so `includes()` hasn't executed yet and none of the
+	 * activity loggers (including PluginActivityLogger, which normally
+	 * records `activated_plugin`) are registered yet. Boots just enough
+	 * (constants + autoloader) to run first-time setup and record the
+	 * plugin's own activation, so the activity log isn't empty until some
+	 * other event happens to populate it later.
+	 *
+	 * @return void
+	 */
+	public static function activate() {
+
+		self::define_constants();
+
+		require_once WPLT_ABSPATH . 'vendor/autoload.php';
+
+		LogTrail\Installation\Autoloader::activate();
+	}
+
+	/**
 	 * Include the plugin files.
 	 */
 	public static function includes() {
@@ -111,5 +134,7 @@ final class LogTrail {
 		return array_merge( $links, $custom_links );
 	}
 }
+
+register_activation_hook( __FILE__, array( 'LogTrail', 'activate' ) );
 
 LogTrail::init();

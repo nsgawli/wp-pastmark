@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { applyFilters } from '@wordpress/hooks';
 
@@ -23,7 +23,32 @@ import { FiX } from 'react-icons/fi';
 
 import { fetchLogFilterOptions } from '../../services/logsApi';
 
+import {
+	SEVERITY_OPTIONS,
+	DATE_RANGE_OPTIONS,
+} from '../../utils/logFilterOptions';
+
 import './index.css';
+
+// Number of options to show for an autocomplete field before the user has
+// typed anything (e.g. the first click into the User/Event fields).
+const DEFAULT_OPTIONS_PREVIEW_COUNT = 5;
+
+// `user_ids`/`event`/`ids` are expected as already-labelled `{ value, label
+// }` pairs (the caller resolves labels — e.g. from applied filter state —
+// before opening this panel, so a re-opened field shows a name instead of a
+// blank tag). This normalizes any plain value that slips through anyway
+// (e.g. a fresh filter that was never labelled) so the field never renders a
+// tag with no text at all.
+const toSelectOption = (item) => (
+	item && typeof item === 'object' && item.value !== undefined
+		? item
+		: { value: item, label: String(item) }
+);
+
+const normalizeSelectDefaultValues = (values = []) => (
+	Array.isArray(values) ? values.map(toSelectOption) : []
+);
 
 const LogFilters = ({
 	defaultValues = {},
@@ -37,14 +62,14 @@ const LogFilters = ({
 		reset,
 	} = useForm({
 		defaultValues: {
-			user_ids: [],
-			event: [],
 			severity: [],
-			ids: [],
 			date_range: 'all',
 			date_from: '',
 			date_to: '',
 			...defaultValues,
+			user_ids: normalizeSelectDefaultValues(defaultValues.user_ids),
+			event: normalizeSelectDefaultValues(defaultValues.event),
+			ids: normalizeSelectDefaultValues(defaultValues.ids),
 		},
 	});
 
@@ -53,29 +78,15 @@ const LogFilters = ({
 		name: 'date_range',
 	});
 
-	const dateRangeOptions = useMemo(
-		() => [
-			{ label: 'All', value: 'all' },
-			{ label: 'Today', value: 'today' },
-			{ label: 'Yesterday', value: 'yesterday' },
-			{ label: 'Last 7 Days', value: 'last_7_days' },
-			{ label: 'Last Week', value: 'last_week' },
-			{ label: 'Last Month', value: 'last_month' },
-			{ label: 'Last 30 Days', value: 'last_30_days' },
-			{ label: 'Custom Range', value: 'custom_range' },
-		],
-		[]
-	);
+	const dateFrom = useWatch({
+		control,
+		name: 'date_from',
+	});
 
-	const severityOptions = useMemo(
-		() => [
-			{ label: 'Info', value: 'info' },
-			{ label: 'Success', value: 'success' },
-			{ label: 'Warning', value: 'warning' },
-			{ label: 'Error', value: 'error' },
-		],
-		[]
-	);
+	const dateTo = useWatch({
+		control,
+		name: 'date_to',
+	});
 
 	const normalizeSelectValues = (values = []) => (
 		(values || []).map((item) => (
@@ -85,19 +96,35 @@ const LogFilters = ({
 		))
 	);
 
-	const loadFilterOptions = async (type, keyword = '') => {
+	const loadFilterOptions = async (type, keyword = '', limit = null) => {
 		try {
 			return await fetchLogFilterOptions({
 				type,
 				search: keyword,
+				limit,
 			});
 		} catch (error) {
 			return [];
 		}
 	};
 
-	const loadUserOptions = (keyword) => loadFilterOptions('users', keyword);
-	const loadEventOptions = (keyword) => loadFilterOptions('events', keyword);
+	// Before the user types anything, show a short preview list (e.g. the
+	// first 5 users/events) instead of an empty "type to search" field. Once
+	// a keyword is entered, fall back to the full matching result set.
+	const loadUserOptions = (keyword) =>
+		loadFilterOptions(
+			'users',
+			keyword,
+			keyword ? null : DEFAULT_OPTIONS_PREVIEW_COUNT
+		);
+
+	const loadEventOptions = (keyword) =>
+		loadFilterOptions(
+			'events',
+			keyword,
+			keyword ? null : DEFAULT_OPTIONS_PREVIEW_COUNT
+		);
+
 	const loadIdOptions = (keyword) => loadFilterOptions('ids', keyword);
 
 	const handleReset = () => {
@@ -162,7 +189,7 @@ const LogFilters = ({
 							label="User"
 							placeholder="Search users..."
 							loadOptions={loadUserOptions}
-							defaultOptions={false}
+							defaultOptions
 							isMulti
 						/>
 
@@ -172,7 +199,7 @@ const LogFilters = ({
 							label="Event"
 							placeholder="Search events..."
 							loadOptions={loadEventOptions}
-							defaultOptions={false}
+							defaultOptions
 							isMulti
 						/>
 
@@ -181,7 +208,7 @@ const LogFilters = ({
 							control={control}
 							label="Severity"
 							placeholder="Select severities..."
-							options={severityOptions}
+							options={SEVERITY_OPTIONS}
 							isMulti
 						/>
 
@@ -199,7 +226,7 @@ const LogFilters = ({
 							name="date_range"
 							control={control}
 							label="Date"
-							options={dateRangeOptions}
+							options={DATE_RANGE_OPTIONS}
 						/>
 					</Flex>
 
@@ -209,12 +236,16 @@ const LogFilters = ({
 								name="date_from"
 								control={control}
 								label="From"
+								placeholderText="From date"
+								maxDate={dateTo || null}
 							/>
 
 							<InputDate
 								name="date_to"
 								control={control}
 								label="To"
+								placeholderText="To date"
+								minDate={dateFrom || null}
 							/>
 						</Flex>
 					)}

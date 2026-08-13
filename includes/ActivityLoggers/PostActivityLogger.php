@@ -15,11 +15,33 @@ defined( 'ABSPATH' ) || exit;
 class PostActivityLogger extends AbstractLogger {
 
 	/**
-	 * Post types handled by their own dedicated WooCommerce loggers instead.
+	 * Post types this logger shouldn't report on: WooCommerce types
+	 * handled by their own dedicated loggers instead, plus WordPress-
+	 * internal post types that aren't "content" a site owner edits -
+	 * nav menu items (their own dedicated `MenuActivityLogger` already
+	 * covers them) and the Customizer's draft/CSS storage types. Without
+	 * this, every menu edit or Customizer save would also produce a
+	 * confusingly-worded, duplicate generic "post updated" entry here.
+	 *
+	 * `shop_order_placehold` is HPOS's internal placeholder post type
+	 * (`DataSynchronizer::PLACEHOLDER_ORDER_POST_TYPE`): every order or
+	 * refund created on an HPOS-enabled store briefly creates one of
+	 * these behind the scenes, which without this exclusion produced a
+	 * blank, confusingly-worded "Shop_order_placehold "" created." entry
+	 * here for every single order.
 	 *
 	 * @var string[]
 	 */
-	protected const EXCLUDED_POST_TYPES = array( 'product', 'product_variation', 'shop_coupon', 'shop_order' );
+	protected const EXCLUDED_POST_TYPES = array(
+		'product',
+		'product_variation',
+		'shop_coupon',
+		'shop_order',
+		'shop_order_placehold',
+		'nav_menu_item',
+		'customize_changeset',
+		'custom_css',
+	);
 
 	/**
 	 * Page template values captured before a postmeta update, keyed by post ID.

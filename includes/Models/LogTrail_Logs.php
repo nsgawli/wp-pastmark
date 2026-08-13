@@ -453,6 +453,47 @@ class LogTrail_Logs {
 	}
 
 	/**
+	 * Get users matching a specific set of user IDs who have log entries.
+	 *
+	 * Used to resolve display labels for already-selected filter values
+	 * (e.g. re-hydrating the advanced filters form) regardless of whether
+	 * those users would appear within the default/search-limited result set.
+	 *
+	 * @param  array $user_ids User IDs to resolve.
+	 * @return array
+	 */
+	public function get_users_by_ids( array $user_ids ): array {
+
+		global $wpdb;
+
+		$user_ids = array_values(
+			array_unique(
+				array_filter(
+					array_map( 'absint', $user_ids )
+				)
+			)
+		);
+
+		if ( empty( $user_ids ) ) {
+			return array();
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $user_ids ), '%d' ) );
+
+		$in_clause = $wpdb->prepare( "l.user_id IN ({$placeholders})", ...$user_ids ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() length is dynamic; $placeholders holds exactly one %d per value in $user_ids above.
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT DISTINCT l.user_id, u.display_name, u.user_login FROM %i l LEFT JOIN %i u ON u.ID = l.user_id WHERE {$in_clause}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $in_clause is pre-escaped via $wpdb->prepare() above.
+				$this->table,
+				$wpdb->users
+			)
+		);
+
+		return is_array( $results ) ? $results : array();
+	}
+
+	/**
 	 * Get distinct event types, optionally filtered by search term.
 	 *
 	 * @param  string $search Search term.
@@ -497,6 +538,43 @@ class LogTrail_Logs {
 		}
 
 		$results = $wpdb->get_col( $wpdb->prepare( 'SELECT id FROM %i ' . $where . ' ORDER BY id DESC LIMIT %d', $this->table, $limit ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is pre-escaped via $wpdb->prepare() above.
+
+		return is_array( $results ) ? $results : array();
+	}
+
+	/**
+	 * Get log IDs matching a specific set of IDs, restricted to IDs that exist.
+	 *
+	 * Used to resolve already-selected filter values (e.g. re-hydrating the
+	 * advanced filters form) regardless of the default result-set limit.
+	 *
+	 * @param  array $ids Log IDs to resolve.
+	 * @return array
+	 */
+	public function get_ids_that_exist( array $ids ): array {
+
+		global $wpdb;
+
+		$ids = array_values(
+			array_unique(
+				array_filter(
+					array_map( 'absint', $ids )
+				)
+			)
+		);
+
+		if ( empty( $ids ) ) {
+			return array();
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $ids ), '%d' ) );
+
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				'SELECT id FROM %i WHERE id IN (' . $placeholders . ') ORDER BY id DESC', // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- placeholders are `%d` tokens consumed by $wpdb->prepare() below.
+				array_merge( array( $this->table ), $ids )
+			)
+		);
 
 		return is_array( $results ) ? $results : array();
 	}

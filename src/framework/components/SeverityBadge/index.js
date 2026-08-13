@@ -20,6 +20,14 @@ const SeverityBadge = ({ severity = 'info' }) => {
 			type: 'error',
 			label: 'Error',
 		},
+		critical: {
+			type: 'error',
+			label: 'Critical',
+		},
+		debug: {
+			type: 'info',
+			label: 'Debug',
+		},
 	};
 
 	const config = severityMap[severity] || severityMap.info;
