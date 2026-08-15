@@ -1,4 +1,4 @@
-=== Pastmark - Activity Logs for WordPress ===
+=== Pastmark - User Activity Logs ===
 Contributors: nsgawli
 Tags: activity log, audit log, user activity, security, woocommerce
 Requires at least: 6.2
@@ -12,7 +12,7 @@ Pastmark is a user activity log & audit log plugin that tracks logins, content c
 
 == Description ==
 
-**Pastmark - Activity Logs for WordPress** is an easy & powerful WordPress activity log plugin that keeps a complete audit trail of everything that happens on your site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, Pastmark records the user, timestamp, IP address, and contextual details behind every event — so you always know who did what, and when.
+**Pastmark - User Activity Logs** is an easy & powerful WordPress activity log plugin that keeps a complete audit trail of everything that happens on your site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, Pastmark records the user, timestamp, IP address, and contextual details behind every event — so you always know who did what, and when.
 
 Whether you're a site owner who wants peace of mind, an agency managing client sites, or a WooCommerce store tracking orders and product changes, Pastmark gives you a searchable, filterable activity log dashboard without slowing your site down.
 
@@ -72,7 +72,7 @@ If WooCommerce is active, Pastmark automatically extends its logging to your sto
 * Does not send any data to external servers — everything stays on your site.
 
 == Contribute ==
-Pastmark - Activity Logs for WordPress is an open-source project. You can view the full sources (unminified JS) and contribute to the project on GitHub: [Click here](https://github.com/nsgawli/wp-pastmark)
+Pastmark - User Activity Logs is an open-source project. You can view the full sources (unminified JS) and contribute to the project on GitHub: [Click here](https://github.com/nsgawli/wp-pastmark)
 
 == External Services ==
 This plugin does not connect to external services for its functionalities.
@@ -86,7 +86,7 @@ This plugin does not connect to external services for its functionalities.
 = Using The WordPress Dashboard =
 
 1. Navigate to the 'Add New' in the plugins dashboard
-2. Search for Pastmark - Activity Logs for WordPress
+2. Search for Pastmark - User Activity Logs
 3. Click 'Install Now'
 4. Activate the plugin in the plugin dashboard
 

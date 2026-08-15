@@ -101,6 +101,8 @@ class WPSettingsActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		$label = self::IMPORTANT_OPTIONS[ $option ];
+
 		$this->insert_event_log(
 			Events::SETTINGS,
 			Actions::UPDATE,
@@ -111,10 +113,16 @@ class WPSettingsActivityLogger extends AbstractLogger {
 				'severity'    => Severity::WARNING,
 				'message'     => sprintf(
 					'"%s" setting updated.',
-					self::IMPORTANT_OPTIONS[ $option ]
+					$label
 				),
-				'before_data' => wp_json_encode( $old_value ),
-				'after_data'  => wp_json_encode( $value ),
+				// Keyed by the setting's display label (not the raw option
+				// name) so the before/after values land in the diff table
+				// the admin UI renders - it expects an object keyed by
+				// field, not a bare scalar (see PostActivityLogger for the
+				// same pattern), and reusing the label here also gives the
+				// diff row a readable name for free.
+				'before_data' => wp_json_encode( array( $label => $old_value ) ),
+				'after_data'  => wp_json_encode( array( $label => $value ) ),
 				'context'     => $this->get_common_context(),
 			)
 		);

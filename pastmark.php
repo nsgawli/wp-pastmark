@@ -1,6 +1,6 @@
 <?php // phpcs:ignore
 /**
- * Plugin Name: Pastmark - Activity Logs for WordPress
+ * Plugin Name: Pastmark - User Activity Logs
  * Description: Easy & Powerful User Activity Log Plugin for WordPress. Track user activity, changes, and events in your WordPress site with ease.
  * Version: 1.0.0
  * Author: nsgawli

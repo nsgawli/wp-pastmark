@@ -77,7 +77,7 @@ const App = () => {
 		<>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="Pastmark - Activity Logs for WordPress"
+				title="Pastmark - User Activity Logs"
 			/>
 
 			<Content>

@@ -27,14 +27,17 @@ class MenuActivityLogger extends AbstractLogger {
 	);
 
 	/**
-	 * Menu name captured before an update, keyed by menu (term) ID.
+	 * Menu name + slug captured before an update, keyed by menu (term) ID.
 	 *
 	 * `wp_update_nav_menu` fires after the term row is already saved, so
-	 * the previous name has to be captured earlier - via the generic
+	 * the previous name/slug has to be captured earlier - via the generic
 	 * `edit_terms` action, which fires for every taxonomy - to allow a
-	 * before/after diff.
+	 * before/after diff. Both fields are captured (not just name) so
+	 * `before_data`/`after_data` always carry the same key set as
+	 * `prepare_menu_data()` - a before_data missing a key that after_data
+	 * has renders as a false "added" change in the admin UI's diff table.
 	 *
-	 * @var array<int, string>
+	 * @var array<int, array{name: string, slug: string}>
 	 */
 	protected $pending_menu_names = array();
 
@@ -180,7 +183,7 @@ class MenuActivityLogger extends AbstractLogger {
 		$menu = wp_get_nav_menu_object( $term_id );
 
 		if ( $menu ) {
-			$this->pending_menu_names[ $term_id ] = $menu->name;
+			$this->pending_menu_names[ $term_id ] = $this->prepare_menu_data( $menu );
 		}
 	}
 
@@ -202,7 +205,9 @@ class MenuActivityLogger extends AbstractLogger {
 			return;
 		}
 
-		$old_name = $this->pending_menu_names[ $menu_id ] ?? $menu->name;
+		$after_data = $this->prepare_menu_data( $menu );
+
+		$before_data = $this->pending_menu_names[ $menu_id ] ?? $after_data;
 
 		unset( $this->pending_menu_names[ $menu_id ] );
 
@@ -217,8 +222,11 @@ class MenuActivityLogger extends AbstractLogger {
 					'Menu "%s" updated.',
 					$menu->name
 				),
-				'before_data' => $old_name !== $menu->name ? wp_json_encode( array( 'name' => $old_name ) ) : '',
-				'after_data'  => wp_json_encode( $this->prepare_menu_data( $menu ) ),
+				// Always the same field set (name + slug) on both sides -
+				// the admin UI's diff table already drops rows where
+				// before/after match, so there's no need to pre-filter here.
+				'before_data' => wp_json_encode( $before_data ),
+				'after_data'  => wp_json_encode( $after_data ),
 				'context'     => array_merge(
 					$this->get_common_context(),
 					array(
@@ -365,17 +373,16 @@ class MenuActivityLogger extends AbstractLogger {
 
 		$after_data = $this->prepare_menu_item_data( $menu_item );
 
-		$before_data = array();
+		$changed = false;
 
 		foreach ( $before_snapshot as $field => $old_value ) {
 
 			$new_value = $after_data[ $field ] ?? null;
 
-			if ( (string) $old_value === (string) $new_value ) {
-				continue;
+			if ( (string) $old_value !== (string) $new_value ) {
+				$changed = true;
+				break;
 			}
-
-			$before_data[ $field ] = $old_value;
 		}
 
 		// Nothing captured (e.g. called directly by another plugin,
@@ -383,7 +390,7 @@ class MenuActivityLogger extends AbstractLogger {
 		// state" rather than "nothing changed" - still log it, just
 		// without a diff. Otherwise, no tracked field actually changed,
 		// so skip logging this item entirely.
-		if ( ! empty( $before_snapshot ) && empty( $before_data ) ) {
+		if ( ! empty( $before_snapshot ) && ! $changed ) {
 			return;
 		}
 
@@ -398,7 +405,17 @@ class MenuActivityLogger extends AbstractLogger {
 					'Menu item "%s" updated.',
 					$menu_item->title
 				),
-				'before_data' => ! empty( $before_data ) ? wp_json_encode( $before_data ) : '',
+				// Send the full field set on both sides (falling back to
+				// the after value for anything not captured), keyed the
+				// same as $after_data - pre-filtering before_data down to
+				// only the changed fields left it missing keys that
+				// after_data still had, which rendered every untouched
+				// field as a false "changed" row in the admin UI's diff
+				// table (e.g. moving one item falsely showed title/url/
+				// object as changed too). The diff table already drops
+				// rows where before/after match, so no pre-filtering is
+				// needed here.
+				'before_data' => ! empty( $before_snapshot ) ? wp_json_encode( array_merge( $after_data, $before_snapshot ) ) : '',
 				'after_data'  => wp_json_encode( $after_data ),
 				'context'     => array_merge(
 					$this->get_common_context(),

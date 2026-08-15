@@ -709,6 +709,8 @@ class UserActivityLogger extends AbstractLogger {
 					'Role updated for "%s".',
 					$user->user_login
 				),
+				'before_data' => wp_json_encode( array( 'role' => $this->format_role_list( $old_roles ) ) ),
+				'after_data'  => wp_json_encode( array( 'role' => $role ) ),
 				'context'     => array_merge(
 					$this->get_common_context(),
 					array(
@@ -947,6 +949,10 @@ class UserActivityLogger extends AbstractLogger {
 					$site ? $site->blogname : $blog_id,
 					$role
 				),
+				// No `before_data`: the user wasn't a member of this site
+				// before, so there's no prior role to diff against - mirrors
+				// the "creation" pattern used for new user registration.
+				'after_data'  => wp_json_encode( array( 'role' => $role ) ),
 				'context'     => array_merge(
 					$this->get_common_context(),
 					array(
@@ -989,6 +995,11 @@ class UserActivityLogger extends AbstractLogger {
 					$user->user_login,
 					$site ? $site->blogname : $blog_id
 				),
+				// `remove_user_from_blog` fires before `$user->remove_all_caps()`,
+				// so `$user->roles` here still reflects the role(s) held on
+				// this site prior to removal - same reasoning as
+				// `log_user_deleted()` capturing `roles` into `before_data`.
+				'before_data' => wp_json_encode( array( 'role' => $this->format_role_list( $user->roles ) ) ),
 				'context'     => array_merge(
 					$this->get_common_context(),
 					array(
