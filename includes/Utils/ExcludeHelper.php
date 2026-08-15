@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\Utils;
+namespace Pastmark\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -196,7 +196,7 @@ class ExcludeHelper {
 		}
 
 		$settings = wp_parse_args(
-			get_option( 'logtrail_exclude_settings', array() ),
+			get_option( 'pastmark_exclude_settings', array() ),
 			array(
 				'excludedUsers'       => array(),
 				'excludedRoles'       => array(),

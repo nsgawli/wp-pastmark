@@ -8,7 +8,7 @@ const SearchInput = ({
 	placeholder = 'Search...',
 }) => {
 	return (
-		<div className="wptl-search-input">
+		<div className="wppm-search-input">
 			<IoSearchOutline />
 
 			<input

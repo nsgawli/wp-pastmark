@@ -38,13 +38,13 @@ const toRecipientsArray = (value) => {
 };
 
 const weeklyDayOptions = [
-	{ label: __('Monday', 'logtrail'), value: 'monday' },
-	{ label: __('Tuesday', 'logtrail'), value: 'tuesday' },
-	{ label: __('Wednesday', 'logtrail'), value: 'wednesday' },
-	{ label: __('Thursday', 'logtrail'), value: 'thursday' },
-	{ label: __('Friday', 'logtrail'), value: 'friday' },
-	{ label: __('Saturday', 'logtrail'), value: 'saturday' },
-	{ label: __('Sunday', 'logtrail'), value: 'sunday' },
+	{ label: __('Monday', 'pastmark'), value: 'monday' },
+	{ label: __('Tuesday', 'pastmark'), value: 'tuesday' },
+	{ label: __('Wednesday', 'pastmark'), value: 'wednesday' },
+	{ label: __('Thursday', 'pastmark'), value: 'thursday' },
+	{ label: __('Friday', 'pastmark'), value: 'friday' },
+	{ label: __('Saturday', 'pastmark'), value: 'saturday' },
+	{ label: __('Sunday', 'pastmark'), value: 'sunday' },
 ];
 
 const EmailReports = () => {
@@ -88,10 +88,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to load email report settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			} finally {
@@ -118,10 +118,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Email report settings saved successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -129,10 +129,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to save email report settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			});
@@ -162,10 +162,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Email report settings reset successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -173,10 +173,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to reset email report settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -197,10 +197,10 @@ const EmailReports = () => {
 			addAlert({
 				id: Date.now(),
 				type: 'error',
-				title: __('Error', 'logtrail'),
+				title: __('Error', 'pastmark'),
 				description: __(
 					'Please enter at least one recipient email address.',
-					'logtrail'
+					'pastmark'
 				),
 			});
 			return;
@@ -215,10 +215,10 @@ const EmailReports = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Test email sent successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -227,12 +227,12 @@ const EmailReports = () => {
 					error?.message ||
 					__(
 						'Unable to send test email. Please verify recipients and mail configuration.',
-						'logtrail'
+						'pastmark'
 					);
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: message,
 				});
 			})
@@ -253,12 +253,12 @@ const EmailReports = () => {
 					<Flex vertical gap={10}>
 						<Flex vertical gap={5}>
 							<Title level={3}>
-								{__('Email Reports', 'logtrail')}
+								{__('Email Reports', 'pastmark')}
 							</Title>
 							<span className="psm-setting-info">
 								{__(
 									'Configure daily and weekly activity log report emails for your team.',
-									'logtrail'
+									'pastmark'
 								)}
 							</span>
 						</Flex>
@@ -269,34 +269,34 @@ const EmailReports = () => {
 									<Title level={4}>
 										{__(
 											'Daily Activity Log Report',
-											'logtrail'
+											'pastmark'
 										)}
 									</Title>
 									<Switch
 										name="enableDailyReport"
 										label={__(
 											'Enable Daily Report',
-											'logtrail'
+											'pastmark'
 										)}
 										control={control}
 									/>
 									<Time
 										name="dailySendTime"
-										label={__('Daily Send Time', 'logtrail')}
+										label={__('Daily Send Time', 'pastmark')}
 										control={control}
 										timeIntervals={15}
 										extaInfo={__(
 											'Choose when the daily report cron should run (site timezone).',
-											'logtrail'
+											'pastmark'
 										)}
 									/>
 									<Textarea
 										name="dailyRecipients"
-										label={__('Recipients', 'logtrail')}
+										label={__('Recipients', 'pastmark')}
 										control={control}
 										extaInfo={__(
 											'Enter one email address per line.',
-											'logtrail'
+											'pastmark'
 										)}
 									/>
 									<Button
@@ -308,7 +308,7 @@ const EmailReports = () => {
 											isResetting
 										}
 									>
-										{__('Send Test Email', 'logtrail')}
+										{__('Send Test Email', 'pastmark')}
 									</Button>
 								</Flex>
 								<Divider />
@@ -316,45 +316,45 @@ const EmailReports = () => {
 									<Title level={4}>
 										{__(
 											'Weekly Activity Log Report',
-											'logtrail'
+											'pastmark'
 										)}
 									</Title>
 									<Switch
 										name="enableWeeklyReport"
 										label={__(
 											'Enable Weekly Report',
-											'logtrail'
+											'pastmark'
 										)}
 										control={control}
 									/>
 									<InputSelect
 										name="weeklySendDay"
-										label={__('Weekly Send Day', 'logtrail')}
+										label={__('Weekly Send Day', 'pastmark')}
 										control={control}
 										options={weeklyDayOptions}
 										isClearable={false}
 										extaInfo={__(
 											'Choose the weekday for weekly report delivery (site timezone).',
-											'logtrail'
+											'pastmark'
 										)}
 									/>
 									<Time
 										name="weeklySendTime"
-										label={__('Weekly Send Time', 'logtrail')}
+										label={__('Weekly Send Time', 'pastmark')}
 										control={control}
 										timeIntervals={15}
 										extaInfo={__(
 											'Choose the time for weekly report delivery (site timezone).',
-											'logtrail'
+											'pastmark'
 										)}
 									/>
 									<Textarea
 										name="weeklyRecipients"
-										label={__('Recipients', 'logtrail')}
+										label={__('Recipients', 'pastmark')}
 										control={control}
 										extaInfo={__(
 											'Enter one email address per line.',
-											'logtrail'
+											'pastmark'
 										)}
 									/>
 									<Button
@@ -368,7 +368,7 @@ const EmailReports = () => {
 											isResetting
 										}
 									>
-										{__('Send Test Email', 'logtrail')}
+										{__('Send Test Email', 'pastmark')}
 									</Button>
 								</Flex>
 								<Divider />
@@ -383,7 +383,7 @@ const EmailReports = () => {
 											weeklyTestLoading
 										}
 									>
-										{__('Submit', 'logtrail')}
+										{__('Submit', 'pastmark')}
 									</Button>
 									<Button
 										loading={isResetting}
@@ -395,7 +395,7 @@ const EmailReports = () => {
 										}
 										onClick={onReset}
 									>
-										{__('Reset', 'logtrail')}
+										{__('Reset', 'pastmark')}
 									</Button>
 								</Flex>
 							</Flex>

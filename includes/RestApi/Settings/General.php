@@ -1,8 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\RestApi\Settings;
+namespace Pastmark\RestApi\Settings;
 
-use LogTrail\Installation\Settings\General as InstallationGeneral;
-use LogTrail\RestApi\BaseController;
+use Pastmark\Installation\Settings\General as InstallationGeneral;
+use Pastmark\RestApi\BaseController;
 use WP_REST_Request;
 
 // Exit if accessed directly.
@@ -73,7 +73,7 @@ class General extends BaseController {
 	public function get_settings() {
 
 		$settings = wp_parse_args(
-			get_option( 'logtrail_general_settings', array() ),
+			get_option( 'pastmark_general_settings', array() ),
 			InstallationGeneral::get_default_settings()
 		);
 
@@ -117,7 +117,7 @@ class General extends BaseController {
 			'autoDeleteUnit'       => sanitize_text_field( $request->get_param( 'autoDeleteUnit' ) ),
 		);
 
-		update_option( 'logtrail_general_settings', $settings );
+		update_option( 'pastmark_general_settings', $settings );
 
 		return $this->success_response( $settings );
 	}

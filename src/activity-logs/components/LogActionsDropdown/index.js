@@ -136,13 +136,13 @@ const LogActionsDropdown = ({ log, onView }) => {
 	];
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject additional
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject additional
 	 * per-row actions (e.g. "Create Similar Log") by filtering this list,
 	 * evaluated at render time. Items with their own `onClick` are
 	 * dispatched generically in `handleAction` below.
 	 */
 	const filteredItems = applyFilters(
-		'logtrail.activityLogs.rowActions',
+		'pastmark.activityLogs.rowActions',
 		items,
 		{ log }
 	);
@@ -208,13 +208,13 @@ const LogActionsDropdown = ({ log, onView }) => {
 	return (
 		<div
 			ref={containerRef}
-			className="wptl-log-actions-dropdown"
+			className="wppm-log-actions-dropdown"
 			onMouseEnter={openMenuWithDelay}
 			onMouseLeave={closeMenuWithDelay}
 		>
 			<button
 				type="button"
-				className="wptl-log-actions-trigger"
+				className="wppm-log-actions-trigger"
 				aria-label="Show actions"
 				onClick={() => {
 					if (openTimerRef.current) {
@@ -234,7 +234,7 @@ const LogActionsDropdown = ({ log, onView }) => {
 			</button>
 
 			<div
-				className={`wptl-log-actions-menu${isOpen ? ' is-open' : ''}`}
+				className={`wppm-log-actions-menu${isOpen ? ' is-open' : ''}`}
 				role="menu"
 				aria-hidden={!isOpen}
 			>
@@ -242,12 +242,12 @@ const LogActionsDropdown = ({ log, onView }) => {
 					<button
 						key={item.key}
 						type="button"
-						className="wptl-log-actions-item"
+						className="wppm-log-actions-item"
 						onClick={() => {
 							handleAction(item.key);
 						}}
 					>
-						<span className="wptl-log-actions-item-icon">
+						<span className="wppm-log-actions-item-icon">
 							{item.icon}
 						</span>
 						<span>{item.label}</span>

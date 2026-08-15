@@ -1,4 +1,4 @@
-.wptl-search-input {
+.wppm-search-input {
 	display: flex;
 	align-items: center;
 	gap: 10px;
@@ -11,12 +11,12 @@
 	box-sizing: border-box;
 }
 
-.wptl-search-input svg {
+.wppm-search-input svg {
 	font-size: 18px;
 	color: #646970;
 }
 
-.wptl-search-input input {
+.wppm-search-input input {
 	flex: 1;
 	border: none !important;
 	outline: none !important;

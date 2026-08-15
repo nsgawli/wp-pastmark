@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Installation\Upgrades;
+namespace Pastmark\Installation\Upgrades;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

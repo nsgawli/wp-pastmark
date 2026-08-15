@@ -25,15 +25,15 @@ const options = [
 
 const DashboardToolbar = ({ range, onRangeChange, onRefresh }) => {
 	return (
-		<div className="wptl-dashboard-toolbar">
+		<div className="wppm-dashboard-toolbar">
 			<Flex
-				className="wptl-dashboard-toolbar-inner"
+				className="wppm-dashboard-toolbar-inner"
 				justify="space-between"
 				align="center"
 				wrap
 				gap={12}
 			>
-				<div className="wptl-dashboard-range-select">
+				<div className="wppm-dashboard-range-select">
 					<Select
 						options={options}
 						value={options.find((item) => item.value === range)}
@@ -47,7 +47,7 @@ const DashboardToolbar = ({ range, onRangeChange, onRefresh }) => {
 				</div>
 
 				<Button
-					className="wptl-dashboard-refresh-button"
+					className="wppm-dashboard-refresh-button"
 					variant="secondary"
 					onClick={onRefresh}
 				>

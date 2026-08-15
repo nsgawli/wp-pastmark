@@ -2,12 +2,12 @@
 /**
  * Dashboard Service.
  *
- * @package LogTrail
+ * @package Pastmark
  */
 
-namespace LogTrail\Dashboard;
+namespace Pastmark\Dashboard;
 
-use LogTrail\Models\LogTrail_Logs;
+use Pastmark\Models\Pastmark_Logs;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,16 +21,16 @@ class DashboardService {
 	/**
 	 * Logs model.
 	 *
-	 * @var LogTrail_Logs
+	 * @var Pastmark_Logs
 	 */
-	private LogTrail_Logs $logs_model;
+	private Pastmark_Logs $logs_model;
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
 
-		$this->logs_model = new LogTrail_Logs();
+		$this->logs_model = new Pastmark_Logs();
 	}
 
 	/**

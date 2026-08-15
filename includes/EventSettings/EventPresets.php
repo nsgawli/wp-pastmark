@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\EventSettings;
+namespace Pastmark\EventSettings;
 
-use LogTrail\Constants\Actions;
-use LogTrail\Constants\Events;
+use Pastmark\Constants\Actions;
+use Pastmark\Constants\Events;
 
 defined( 'ABSPATH' ) || exit;
 

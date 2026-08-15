@@ -1,11 +1,11 @@
 {
-	"name": "logtrail/logtrail",
+	"name": "pastmark/pastmark",
 	"description": "Easy & Powerful User Activity Log Plugin for WordPress. Track user activity, changes, and events in your WordPress site with ease.",
 	"type": "wordpress-plugin",
 	"license": "GPL-3.0-or-later",
 	"autoload": {
 		"psr-4": {
-			"LogTrail\\": "includes/"
+			"Pastmark\\": "includes/"
 		}
 	},
 	"minimum-stability": "stable",

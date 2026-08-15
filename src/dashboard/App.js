@@ -15,7 +15,7 @@ const App = () => {
 		<>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="LogTrail - User Activity Logger"
+				title="Pastmark - Activity Logs for WordPress"
 			/>
 
 			<DashboardLayout

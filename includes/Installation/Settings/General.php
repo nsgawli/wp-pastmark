@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Installation\Settings;
+namespace Pastmark\Installation\Settings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ class General {
 	 */
 	public static function install() {
 
-		update_option( 'logtrail_general_settings', self::get_default_settings() );
+		update_option( 'pastmark_general_settings', self::get_default_settings() );
 	}
 
 	/**

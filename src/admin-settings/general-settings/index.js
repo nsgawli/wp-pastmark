@@ -60,10 +60,10 @@ const GeneralSettings = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'General settings saved successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -72,10 +72,10 @@ const GeneralSettings = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to save general settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			});
@@ -91,10 +91,10 @@ const GeneralSettings = () => {
 			addAlert({
 				id: Date.now(),
 				type: 'success',
-				title: __('Success', 'logtrail'),
+				title: __('Success', 'pastmark'),
 				description: __(
 					'General settings reset successfully.',
-					'logtrail'
+					'pastmark'
 				),
 			});
 		})
@@ -103,10 +103,10 @@ const GeneralSettings = () => {
 			addAlert({
 				id: Date.now(),
 				type: 'error',
-				title: __('Error', 'logtrail'),
+				title: __('Error', 'pastmark'),
 				description: __(
 					'Unable to reset general settings.',
-					'logtrail'
+					'pastmark'
 				),
 			});
 		})
@@ -127,12 +127,12 @@ const GeneralSettings = () => {
 					<Flex vertical gap={10}>
 						<Flex vertical gap={5}>
 							<Title level={3}>
-								{__('General Settings', 'logtrail')}
+								{__('General Settings', 'pastmark')}
 							</Title>
 							<span className="psm-setting-info">
 								{__(
 									'This section allows you to configure plugin-related settings to customize its behavior and improve your experience.',
-									'logtrail'
+									'pastmark'
 								)}
 							</span>
 						</Flex>
@@ -141,50 +141,50 @@ const GeneralSettings = () => {
 							<Flex vertical gap={20}>
 								<Switch
 									name="dashboardWidget"
-									label={__('Dashboard Widget', 'logtrail')}
+									label={__('Dashboard Widget', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'Show a widget on the WordPress dashboard with the latest logs.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								<RadioButton
 									name="eventTimestamp"
-									label={__('Event Timestamp', 'logtrail')}
+									label={__('Event Timestamp', 'pastmark')}
 									control={control}
 									options={eventTimestampOptions}
 									extaInfo={__(
 										'Choose how event timestamps are displayed in logs.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								<RadioButton
 									name="logsPageViewMode"
-									label={__('Logs Page View', 'logtrail')}
+									label={__('Logs Page View', 'pastmark')}
 									control={control}
 									options={logsPageViewModeOptions}
 									extaInfo={__(
 										'Choose whether the logs page displays activity logs as a table or a timeline.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								<RadioButton
 									name="logDetailsViewMode"
-									label={__('Log Details View', 'logtrail')}
+									label={__('Log Details View', 'pastmark')}
 									control={control}
 									options={logDetailsViewModeOptions}
 									extaInfo={__(
 										'Choose whether log details open in a drawer or on a dedicated page.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								<Switch
 									name="enableAutoDeleteLogs"
-									label={__('Auto Delete Logs', 'logtrail')}
+									label={__('Auto Delete Logs', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'Automatically deleting logs after a certain period.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								{watch('enableAutoDeleteLogs') && (
@@ -192,7 +192,7 @@ const GeneralSettings = () => {
 										<Label
 											text={__(
 												'Auto Delete Logs',
-												'logtrail'
+												'pastmark'
 											)}
 										/>
 										<Flex gap={5} wrap>
@@ -219,7 +219,7 @@ const GeneralSettings = () => {
 											<small>
 												{__(
 													'Logs older than the specified time will be automatically deleted.',
-													'logtrail'
+													'pastmark'
 												)}
 											</small>
 										</div>
@@ -233,7 +233,7 @@ const GeneralSettings = () => {
 										loading={formState.isSubmitting}
 										disabled={isResetting}
 									>
-										{__('Submit', 'logtrail')}
+										{__('Submit', 'pastmark')}
 									</Button>
 									<Button
 										loading={isResetting}
@@ -243,7 +243,7 @@ const GeneralSettings = () => {
 										}
 										onClick={onReset}
 									>
-										{__('Reset', 'logtrail')}
+										{__('Reset', 'pastmark')}
 									</Button>
 								</Flex>
 							</Flex>

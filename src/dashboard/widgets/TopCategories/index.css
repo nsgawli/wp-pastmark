@@ -1,4 +1,4 @@
-.wptl-dashboard-bar-card {
+.wppm-dashboard-bar-card {
 	display: flex;
 
 	flex-direction: column;
@@ -6,7 +6,7 @@
 	height: 100%;
 }
 
-.wptl-dashboard-bar-chart {
+.wppm-dashboard-bar-chart {
 	width: 100%;
 
 	flex: 1 1 auto;
@@ -15,7 +15,7 @@
 }
 
 @media (max-width: 640px) {
-	.wptl-dashboard-bar-chart {
+	.wppm-dashboard-bar-chart {
 		min-height: 260px;
 	}
 }
@@ -27,7 +27,7 @@
  * Suppress that for mouse/click focus only — :focus-visible still gets
  * an outline so keyboard navigation isn't affected.
  */
-.wptl-dashboard-bar-chart .recharts-bar-rectangle:focus:not(:focus-visible),
-.wptl-dashboard-bar-chart .recharts-surface:focus:not(:focus-visible) {
+.wppm-dashboard-bar-chart .recharts-bar-rectangle:focus:not(:focus-visible),
+.wppm-dashboard-bar-chart .recharts-surface:focus:not(:focus-visible) {
 	outline: none;
 }

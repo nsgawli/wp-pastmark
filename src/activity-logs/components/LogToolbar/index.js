@@ -16,7 +16,7 @@ const LogToolbar = ({
 }) => {
 	return (
 		<Flex
-			className="wptl-log-toolbar"
+			className="wppm-log-toolbar"
 			justify="space-between"
 			align="center"
 			wrap
@@ -28,7 +28,7 @@ const LogToolbar = ({
 				placeholder="Search logs..."
 			/>
 
-			<Flex className="wptl-log-toolbar-actions" gap={10} wrap>
+			<Flex className="wppm-log-toolbar-actions" gap={10} wrap>
 				<Button
 					size="small"
 					icon={<FiFilter />}

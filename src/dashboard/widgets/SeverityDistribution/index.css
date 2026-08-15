@@ -1,4 +1,4 @@
-.wptl-dashboard-donut-card {
+.wppm-dashboard-donut-card {
 	display: flex;
 
 	flex-direction: column;
@@ -6,7 +6,7 @@
 	height: 100%;
 }
 
-.wptl-dashboard-donut-chart {
+.wppm-dashboard-donut-chart {
 	width: 100%;
 
 	flex: 1 1 auto;
@@ -15,7 +15,7 @@
 }
 
 @media (max-width: 640px) {
-	.wptl-dashboard-donut-chart {
+	.wppm-dashboard-donut-chart {
 		min-height: 260px;
 	}
 }
@@ -27,7 +27,7 @@
  * Suppress that for mouse/click focus only — :focus-visible still gets
  * an outline so keyboard navigation isn't affected.
  */
-.wptl-dashboard-donut-chart .recharts-pie-sector:focus:not(:focus-visible),
-.wptl-dashboard-donut-chart .recharts-surface:focus:not(:focus-visible) {
+.wppm-dashboard-donut-chart .recharts-pie-sector:focus:not(:focus-visible),
+.wppm-dashboard-donut-chart .recharts-surface:focus:not(:focus-visible) {
 	outline: none;
 }

@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Installation\Settings;
+namespace Pastmark\Installation\Settings;
 
-use LogTrail\EventSettings\EventPresets;
-use LogTrail\EventSettings\EventRegistry;
-use LogTrail\EventSettings\EventSettings;
+use Pastmark\EventSettings\EventPresets;
+use Pastmark\EventSettings\EventRegistry;
+use Pastmark\EventSettings\EventSettings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

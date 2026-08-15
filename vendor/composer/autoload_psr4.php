@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'LogTrail\\' => array($baseDir . '/includes'),
+    'Pastmark\\' => array($baseDir . '/includes'),
 );

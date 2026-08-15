@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\RestApi;
+namespace Pastmark\RestApi;
 
 use WP_Error;
 
@@ -18,7 +18,7 @@ class BaseController {
 	 *
 	 * @var string
 	 */
-	protected $namespace = 'logtrail/v1';
+	protected $namespace = 'pastmark/v1';
 
 	/**
 	 * Permission callback.

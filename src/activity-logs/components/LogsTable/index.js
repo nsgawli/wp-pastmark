@@ -43,7 +43,7 @@ const LogsTable = ({
 			sortable: true,
 			sortKey: 'id',
 			width: 90,
-			className: 'wptl-col-id wptl-col-numeric',
+			className: 'wppm-col-id wppm-col-numeric',
 		},
 		{
 			key: 'date',
@@ -52,7 +52,7 @@ const LogsTable = ({
 			sortable: true,
 			sortKey: 'timestamp',
 			width: 180,
-			className: 'wptl-col-date wptl-col-numeric',
+			className: 'wppm-col-date wppm-col-numeric',
 			render: (value) => formatLogDate(value),
 		},
 		{
@@ -60,7 +60,7 @@ const LogsTable = ({
 			title: 'User',
 			dataIndex: 'user',
 			width: 140,
-			className: 'wptl-col-user',
+			className: 'wppm-col-user',
 		},
 		{
 			key: 'event',
@@ -68,7 +68,7 @@ const LogsTable = ({
 			dataIndex: 'event',
 			sortable: true,
 			sortKey: 'event_type',
-			className: 'wptl-col-event',
+			className: 'wppm-col-event',
 			render: (value) => {
 				return <EventBadge event={value} />;
 			},
@@ -78,17 +78,17 @@ const LogsTable = ({
 			title: 'Action',
 			dataIndex: 'action',
 			width: 150,
-			className: 'wptl-col-action',
+			className: 'wppm-col-action',
 			render: (_, row) => row?.action_label || '-',
 		},
 		{
 			key: 'message',
 			title: 'Message',
 			dataIndex: 'message',
-			className: 'wptl-col-message',
+			className: 'wppm-col-message',
 			render: (value) => {
 				return (
-					<span className="wptl-log-message" title={value || ''}>
+					<span className="wppm-log-message" title={value || ''}>
 						{value || '-'}
 					</span>
 				);
@@ -101,7 +101,7 @@ const LogsTable = ({
 			sortable: true,
 			sortKey: 'severity',
 			width: 140,
-			className: 'wptl-col-severity',
+			className: 'wppm-col-severity',
 			render: (value) => {
 				return <SeverityBadge severity={value} />;
 			},
@@ -112,7 +112,7 @@ const LogsTable = ({
 			width: 110,
 			align: 'right',
 			disableRowClick: true,
-			className: 'wptl-col-actions',
+			className: 'wppm-col-actions',
 			render: (_, row) => {
 				return (
 					<LogActionsDropdown
@@ -129,18 +129,18 @@ const LogsTable = ({
 	];
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject, reorder, or
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject, reorder, or
 	 * remove log-list columns by filtering this array.
 	 */
 	const filteredColumns = applyFilters(
-		'logtrail.activityLogs.columns',
+		'pastmark.activityLogs.columns',
 		columns
 	);
 
 	return (
-		<div className="wptl-logs-table">
+		<div className="wppm-logs-table">
 			<Table
-				className={`wptl-logs-table-density-${density}`}
+				className={`wppm-logs-table-density-${density}`}
 				columns={filteredColumns}
 				data={data}
 				rowKey="id"
@@ -154,7 +154,7 @@ const LogsTable = ({
 				onRowClick={onRowClick}
 			/>
 
-			<div className="wptl-logs-table-scroll-hint" aria-hidden="true">
+			<div className="wppm-logs-table-scroll-hint" aria-hidden="true">
 				Swipe horizontally to view more columns
 			</div>
 		</div>

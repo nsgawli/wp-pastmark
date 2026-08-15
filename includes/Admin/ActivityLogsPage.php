@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Admin;
+namespace Pastmark\Admin;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,7 +13,7 @@ class ActivityLogsPage {
 	 *
 	 * @var string
 	 */
-	const FILTERS_COOKIE_NAME = 'logtrail_activity_log_filters';
+	const FILTERS_COOKIE_NAME = 'pastmark_activity_log_filters';
 
 	/**
 	 * Initialize the class.
@@ -40,10 +40,10 @@ class ActivityLogsPage {
 	public static function register_menu( $submenus ) {
 
 		add_menu_page(
-			esc_attr__( 'User Activity', 'logtrail' ),
-			esc_attr__( 'User Activity', 'logtrail' ),
+			esc_attr__( 'User Activity', 'pastmark' ),
+			esc_attr__( 'User Activity', 'pastmark' ),
 			'manage_options',
-			'logtrail',
+			'pastmark',
 			array( __CLASS__, 'render_logs_page' ),
 			self::get_menu_icon(),
 			40
@@ -51,15 +51,15 @@ class ActivityLogsPage {
 
 		$submenus = array(
 			array(
-				'page_title' => esc_attr__( 'Activity Logs', 'logtrail' ),
-				'menu_title' => esc_attr__( 'Activity Logs', 'logtrail' ),
+				'page_title' => esc_attr__( 'Activity Logs', 'pastmark' ),
+				'menu_title' => esc_attr__( 'Activity Logs', 'pastmark' ),
 				'capability' => 'manage_options',
-				'menu_slug'  => 'logtrail',
+				'menu_slug'  => 'pastmark',
 				'callback'   => array( __CLASS__, 'render_logs_page' ),
 				'position'   => 2,
 			),
 		);
-		$submenus = apply_filters( 'logtrails_admin_submenus', $submenus );
+		$submenus = apply_filters( 'pastmark_admin_submenus', $submenus );
 
 		usort(
 			$submenus,
@@ -71,7 +71,7 @@ class ActivityLogsPage {
 		// add submenus.
 		foreach ( $submenus as $submenu ) {
 			add_submenu_page(
-				'logtrail',
+				'pastmark',
 				$submenu['page_title'],
 				$submenu['menu_title'],
 				$submenu['capability'],
@@ -87,13 +87,13 @@ class ActivityLogsPage {
 	 * @return void
 	 */
 	public static function remove_menu() {
-		remove_submenu_page( 'logtrail', 'logtrail' );
+		remove_submenu_page( 'pastmark', 'pastmark' );
 	}
 
 	/**
 	 * Build the admin menu icon.
 	 *
-	 * An "LT" (LogTrail) lettermark SVG as a base64 data URI, per the WP
+	 * A "PM" (Pastmark) lettermark SVG as a base64 data URI, per the WP
 	 * convention for custom menu icons. WP renders this as a plain
 	 * background-image with no opacity/color adjustment of its own
 	 * (that treatment only applies to dashicon font glyphs), so the
@@ -108,7 +108,7 @@ class ActivityLogsPage {
 
 		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
 			. '<text x="10" y="15.5" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" '
-			. 'font-size="13.5" font-weight="700" letter-spacing="-0.6" fill="#a7aaad">LT</text>'
+			. 'font-size="13.5" font-weight="700" letter-spacing="-0.6" fill="#a7aaad">PM</text>'
 			. '</svg>';
 
 		return 'data:image/svg+xml;base64,' . base64_encode( $svg ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
@@ -123,7 +123,7 @@ class ActivityLogsPage {
 	 * @return void
 	 */
 	public static function render_logs_page() {
-		echo '<div id="logtrail-activity-logs"></div>';
+		echo '<div id="pastmark-activity-logs"></div>';
 	}
 
 	/**
@@ -137,7 +137,7 @@ class ActivityLogsPage {
 	 */
 	public static function enqueue_scripts( $hook ) {
 
-		if ( ! preg_match( '/^toplevel_page_logtrail/', $hook ) ) {
+		if ( ! preg_match( '/^toplevel_page_pastmark/', $hook ) ) {
 			return;
 		}
 
@@ -145,26 +145,26 @@ class ActivityLogsPage {
 		add_filter(
 			'admin_body_class',
 			function ( $classes ) {
-				$classes .= ' toplevel-logtrail-page';
+				$classes .= ' toplevel-pastmark-page';
 				return $classes;
 			}
 		);
 
 		// Load asset file.
-		$assets = require WPLT_ABSPATH . 'build/activity-logs/index.asset.php';
+		$assets = require PASTMARK_ABSPATH . 'build/activity-logs/index.asset.php';
 
 		// Enqueue page styles.
 		wp_enqueue_style(
-			'logtrail-activity-logs',
-			WPLT_PLUGIN_URL . 'build/activity-logs/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
+			'pastmark-activity-logs',
+			PASTMARK_PLUGIN_URL . 'build/activity-logs/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
 			array(),
 			$assets['version']
 		);
 
 		// Enqueue page script.
 		wp_enqueue_script(
-			'logtrail-activity-logs',
-			WPLT_PLUGIN_URL . 'build/activity-logs/index.js',
+			'pastmark-activity-logs',
+			PASTMARK_PLUGIN_URL . 'build/activity-logs/index.js',
 			$assets['dependencies'],
 			$assets['version'],
 			true
@@ -175,13 +175,13 @@ class ActivityLogsPage {
 		);
 
 		wp_add_inline_script(
-			'logtrail-activity-logs',
-			'window.logtrailActivityLogsConfig = ' . wp_json_encode( $script_data ) . ';',
+			'pastmark-activity-logs',
+			'window.pastmarkActivityLogsConfig = ' . wp_json_encode( $script_data ) . ';',
 			'before'
 		);
 
 		// script translations.
-		wp_set_script_translations( 'logtrail-activity-logs', 'logtrail' );
+		wp_set_script_translations( 'pastmark-activity-logs', 'pastmark' );
 	}
 
 	/**

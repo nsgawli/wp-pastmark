@@ -1,11 +1,11 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers\WooCommerce;
+namespace Pastmark\ActivityLoggers\WooCommerce;
 
-use LogTrail\ActivityLoggers\AbstractLogger;
-use LogTrail\Constants\Severity;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\ActivityLoggers\AbstractLogger;
+use Pastmark\Constants\Severity;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 use WC_Product;
 use WP_Post;
 
@@ -286,8 +286,8 @@ class ProductActivityLogger extends AbstractLogger {
 			sprintf(
 				'Category of product "%s" changed from "%s" to "%s".',
 				$post->post_title,
-				$old_names ? implode( ', ', $old_names ) : __( 'None', 'logtrail' ),
-				$new_names ? implode( ', ', $new_names ) : __( 'None', 'logtrail' )
+				$old_names ? implode( ', ', $old_names ) : __( 'None', 'pastmark' ),
+				$new_names ? implode( ', ', $new_names ) : __( 'None', 'pastmark' )
 			),
 			Severity::INFO,
 			array( 'product_cat' => $old_names ),
@@ -371,8 +371,8 @@ class ProductActivityLogger extends AbstractLogger {
 				sprintf(
 					'SKU of product "%s" changed from "%s" to "%s".',
 					$post->post_title,
-					$before['sku'] ? $before['sku'] : __( 'None', 'logtrail' ),
-					$product->get_sku() ? $product->get_sku() : __( 'None', 'logtrail' )
+					$before['sku'] ? $before['sku'] : __( 'None', 'pastmark' ),
+					$product->get_sku() ? $product->get_sku() : __( 'None', 'pastmark' )
 				),
 				Severity::INFO,
 				array( 'sku' => $before['sku'] ),

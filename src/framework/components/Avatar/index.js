@@ -55,16 +55,16 @@ const Avatar = ({ src = '', name = '', size = 28, className = '' }) => {
 	}
 
 	return (
-		<span className={`wptl-avatar ${className}`} style={style}>
+		<span className={`wppm-avatar ${className}`} style={style}>
 			{showImage ? (
 				<img
-					className="wptl-avatar-image"
+					className="wppm-avatar-image"
 					src={src}
 					alt=""
 					onError={() => setImageFailed(true)}
 				/>
 			) : (
-				<span className="wptl-avatar-initials">
+				<span className="wppm-avatar-initials">
 					{getInitials(name)}
 				</span>
 			)}

@@ -74,11 +74,11 @@ const LogDetailsPage = () => {
 	};
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject additional log
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject additional log
 	 * actions (e.g. an "Export" button) via this filter, evaluated at render
 	 * time so it doesn't matter that free's script loads before pro's.
 	 */
-	const logActions = applyFilters('logtrail.activityLogs.logActions', [], {
+	const logActions = applyFilters('pastmark.activityLogs.logActions', [], {
 		log,
 	});
 
@@ -92,7 +92,7 @@ const LogDetailsPage = () => {
 			title: 'Before',
 			dataIndex: 'before',
 			render: (value) => (
-				<span className="wptl-log-diff-before">{value}</span>
+				<span className="wppm-log-diff-before">{value}</span>
 			),
 		},
 		{
@@ -100,7 +100,7 @@ const LogDetailsPage = () => {
 			title: 'After',
 			dataIndex: 'after',
 			render: (value) => (
-				<span className="wptl-log-diff-after">{value}</span>
+				<span className="wppm-log-diff-after">{value}</span>
 			),
 		},
 	];
@@ -181,7 +181,7 @@ const LogDetailsPage = () => {
 		<>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="LogTrail - User Activity Logger"
+				title="Pastmark - Activity Logs for WordPress"
 			/>
 
 			<Content>
@@ -221,7 +221,7 @@ const LogDetailsPage = () => {
 								>
 									<div>
 										<Title level={3}>Log #{log.id}</Title>
-										<div className="wptl-log-subtitle">
+										<div className="wppm-log-subtitle">
 											<EventBadge
 												event={log.event_label}
 											/>
@@ -231,9 +231,9 @@ const LogDetailsPage = () => {
 									<Flex
 										gap={8}
 										wrap
-										className="wptl-log-details-actions"
+										className="wppm-log-details-actions"
 									>
-										<div className="wptl-log-details-copy-actions">
+										<div className="wppm-log-details-copy-actions">
 											<Dropdown
 												label="Copy"
 												icon={<FiCopy />}
@@ -253,7 +253,7 @@ const LogDetailsPage = () => {
 										{logActions.map((action) => (
 											<Button
 												key={action.key}
-												className="wptl-log-details-action-primary"
+												className="wppm-log-details-action-primary"
 												size="small"
 												type={action.type || 'default'}
 												icon={action.icon}
@@ -271,22 +271,22 @@ const LogDetailsPage = () => {
 								<Flex vertical gap={15}>
 									<Title level={5}>Overview</Title>
 
-									<div className="wptl-log-details-grid">
-										<div className="wptl-log-details-item">
-											<span className="wptl-log-details-label">
+									<div className="wppm-log-details-grid">
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
 												User
 											</span>
-											<span className="wptl-log-details-value">
+											<span className="wppm-log-details-value">
 												{log.user || '-'}
 											</span>
 										</div>
 
 										{log.object_label && (
-											<div className="wptl-log-details-item">
-												<span className="wptl-log-details-label">
+											<div className="wppm-log-details-item">
+												<span className="wppm-log-details-label">
 													Target
 												</span>
-												<span className="wptl-log-details-value">
+												<span className="wppm-log-details-value">
 													{log.object_url ? (
 														<a
 															href={
@@ -304,8 +304,8 @@ const LogDetailsPage = () => {
 											</div>
 										)}
 
-										<div className="wptl-log-details-item">
-											<span className="wptl-log-details-label">
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
 												Severity
 											</span>
 											<SeverityBadge
@@ -313,29 +313,29 @@ const LogDetailsPage = () => {
 											/>
 										</div>
 
-										<div className="wptl-log-details-item">
-											<span className="wptl-log-details-label">
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
 												Action
 											</span>
-											<span className="wptl-log-details-value">
+											<span className="wppm-log-details-value">
 												{log.action_label || '-'}
 											</span>
 										</div>
 
-										<div className="wptl-log-details-item">
-											<span className="wptl-log-details-label">
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
 												Date
 											</span>
-											<span className="wptl-log-details-value">
+											<span className="wppm-log-details-value">
 												{log.date}
 											</span>
 										</div>
 
-										<div className="wptl-log-details-item">
-											<span className="wptl-log-details-label">
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
 												IP Address
 											</span>
-											<span className="wptl-log-details-value">
+											<span className="wppm-log-details-value">
 												{log.ip}
 											</span>
 										</div>
@@ -347,7 +347,7 @@ const LogDetailsPage = () => {
 								<Flex vertical gap={10}>
 									<Title level={5}>Message</Title>
 
-									<div className="wptl-log-section-content">
+									<div className="wppm-log-section-content">
 										{log.message || '-'}
 									</div>
 								</Flex>
@@ -359,7 +359,7 @@ const LogDetailsPage = () => {
 										<Title level={5}>Changes</Title>
 
 										<Table
-											className="wptl-log-table"
+											className="wppm-log-table"
 											columns={diffColumns}
 											data={diffRows}
 											rowKey="key"
@@ -374,7 +374,7 @@ const LogDetailsPage = () => {
 										<Title level={5}>Details</Title>
 
 										<Table
-											className="wptl-log-table"
+											className="wppm-log-table"
 											columns={detailColumns}
 											data={detailRows}
 											rowKey="key"
@@ -391,7 +391,7 @@ const LogDetailsPage = () => {
 										</Title>
 
 										<Table
-											className="wptl-log-table wptl-log-table-muted"
+											className="wppm-log-table wppm-log-table-muted"
 											columns={detailColumns}
 											data={technicalRows}
 											rowKey="key"

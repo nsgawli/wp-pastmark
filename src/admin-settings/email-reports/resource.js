@@ -3,16 +3,16 @@ import apiCache from '@framework/middlewares/apiCatche';
 
 export const getEmailReportsSettings = () => {
 	return apiFetch({
-		path: '/logtrail/v1/settings/email-reports',
+		path: '/pastmark/v1/settings/email-reports',
 		method: 'GET',
 		useApiCache: true,
 	});
 };
 
 export const updateEmailReportsSettings = (data) => {
-	apiCache.clear('/logtrail/v1/settings/email-reports');
+	apiCache.clear('/pastmark/v1/settings/email-reports');
 	return apiFetch({
-		path: '/logtrail/v1/settings/email-reports',
+		path: '/pastmark/v1/settings/email-reports',
 		method: 'PUT',
 		data,
 	});
@@ -20,7 +20,7 @@ export const updateEmailReportsSettings = (data) => {
 
 export const resetEmailReportsSettings = () => {
 	return apiFetch({
-		path: '/logtrail/v1/settings/email-reports/defaults',
+		path: '/pastmark/v1/settings/email-reports/defaults',
 		method: 'GET',
 		useApiCache: true,
 	});
@@ -28,7 +28,7 @@ export const resetEmailReportsSettings = () => {
 
 export const sendEmailReportTest = (reportType, recipients) => {
 	return apiFetch({
-		path: '/logtrail/v1/settings/email-reports/send-test',
+		path: '/pastmark/v1/settings/email-reports/send-test',
 		method: 'POST',
 		data: {
 			reportType,

@@ -1,5 +1,5 @@
 {
-	"name": "logtrail",
+	"name": "pastmark",
 	"version": "1.0.0",
 	"description": "User activity log for WordPress",
 	"scripts": {

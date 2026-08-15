@@ -1,4 +1,4 @@
-.wptl-badge {
+.wppm-badge {
 	display: inline-flex;
 	align-items: center;
 	padding: 4px 10px;
@@ -9,27 +9,27 @@
 	width: fit-content;
 }
 
-.wptl-badge-default {
+.wppm-badge-default {
 	background: #f0f0f1;
 	color: #50575e;
 }
 
-.wptl-badge-success {
+.wppm-badge-success {
 	background: #edfaef;
 	color: #137333;
 }
 
-.wptl-badge-warning {
+.wppm-badge-warning {
 	background: #fff8e1;
 	color: #b26a00;
 }
 
-.wptl-badge-error {
+.wppm-badge-error {
 	background: #fdecec;
 	color: #c62828;
 }
 
-.wptl-badge-info {
+.wppm-badge-info {
 	background: var(--psmfr-info-soft-color, #eff6ff);
 	color: var(--psmfr-info-color, #2563eb);
 }

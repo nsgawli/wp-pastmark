@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers;
+namespace Pastmark\ActivityLoggers;
 
-use LogTrail\EventSettings\EventSettings;
-use LogTrail\Utils\ExcludeHelper;
+use Pastmark\EventSettings\EventSettings;
+use Pastmark\Utils\ExcludeHelper;
 use WP_User;
 
 defined( 'ABSPATH' ) || exit;
@@ -16,7 +16,7 @@ abstract class AbstractLogger {
 	/**
 	 * Logs model instance.
 	 *
-	 * @var \LogTrail\Models\LogTrail_Logs
+	 * @var \Pastmark\Models\Pastmark_Logs
 	 */
 	protected $logs_model;
 
@@ -24,7 +24,7 @@ abstract class AbstractLogger {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->logs_model = new \LogTrail\Models\LogTrail_Logs();
+		$this->logs_model = new \Pastmark\Models\Pastmark_Logs();
 	}
 
 	/**
@@ -75,7 +75,7 @@ abstract class AbstractLogger {
 
 		error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 			sprintf(
-				'[LogTrail] %s caught in %s on hook "%s": %s in %s:%d',
+				'[Pastmark] %s caught in %s on hook "%s": %s in %s:%d',
 				get_class( $e ),
 				static::class,
 				$hook ? $hook : 'unknown',

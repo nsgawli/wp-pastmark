@@ -41,27 +41,27 @@ const formatAlertTime = (timestamp) => {
 const RecentAlerts = ({ data = [] }) => {
 	return (
 		<Card>
-			<h3 className="wptl-dashboard-widget-title">
+			<h3 className="wppm-dashboard-widget-title">
 				Recent High-Severity Events
 			</h3>
 
-			<div className="wptl-dashboard-alert-table-wrap">
-				<table className="wptl-dashboard-alert-table">
+			<div className="wppm-dashboard-alert-table-wrap">
+				<table className="wppm-dashboard-alert-table">
 					<thead>
 						<tr>
-							<th className="wptl-dashboard-col-event">Event</th>
+							<th className="wppm-dashboard-col-event">Event</th>
 
-							<th className="wptl-dashboard-col-severity">
+							<th className="wppm-dashboard-col-severity">
 								Severity
 							</th>
 
-							<th className="wptl-dashboard-col-user">User</th>
+							<th className="wppm-dashboard-col-user">User</th>
 
-							<th className="wptl-dashboard-col-message">
+							<th className="wppm-dashboard-col-message">
 								Message
 							</th>
 
-							<th className="wptl-dashboard-col-time">Time</th>
+							<th className="wppm-dashboard-col-time">Time</th>
 						</tr>
 					</thead>
 
@@ -69,7 +69,7 @@ const RecentAlerts = ({ data = [] }) => {
 						{!data.length && (
 							<tr>
 								<td
-									className="wptl-dashboard-empty-row"
+									className="wppm-dashboard-empty-row"
 									colSpan={5}
 								>
 									<EmptyState title="0 records found" />
@@ -79,16 +79,16 @@ const RecentAlerts = ({ data = [] }) => {
 
 						{data.map((item) => (
 							<tr key={item.id}>
-								<td className="wptl-dashboard-col-event">
+								<td className="wppm-dashboard-col-event">
 									<EventBadge event={item.event_label} />
 								</td>
 
-								<td className="wptl-dashboard-col-severity">
+								<td className="wppm-dashboard-col-severity">
 									<SeverityBadge severity={item.severity} />
 								</td>
 
-								<td className="wptl-dashboard-col-user">
-									<div className="wptl-dashboard-user-cell">
+								<td className="wppm-dashboard-col-user">
+									<div className="wppm-dashboard-user-cell">
 										<Avatar
 											src={item.avatar_url}
 											name={item.user_name || 'System'}
@@ -102,13 +102,13 @@ const RecentAlerts = ({ data = [] }) => {
 								</td>
 
 								<td
-									className="wptl-dashboard-col-message"
+									className="wppm-dashboard-col-message"
 									title={item.message || ''}
 								>
 									{item.message || '-'}
 								</td>
 
-								<td className="wptl-dashboard-col-time">
+								<td className="wppm-dashboard-col-time">
 									{formatAlertTime(item.timestamp)}
 								</td>
 							</tr>

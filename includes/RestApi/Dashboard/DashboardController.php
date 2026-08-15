@@ -1,13 +1,13 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\RestApi\Dashboard;
+namespace Pastmark\RestApi\Dashboard;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LogTrail\Dashboard\DashboardService;
-use LogTrail\RestApi\BaseController;
+use Pastmark\Dashboard\DashboardService;
+use Pastmark\RestApi\BaseController;
 use WP_REST_Request;
 
 /**

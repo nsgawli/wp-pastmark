@@ -31,12 +31,12 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 	const filterContext = { dashboard, loading, range };
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject, reorder, or
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject, reorder, or
 	 * remove full-width dashboard widgets (summary/timeline row) by
 	 * filtering this array.
 	 */
 	const topWidgets = applyFilters(
-		'logtrail.dashboard.topWidgets',
+		'pastmark.dashboard.topWidgets',
 		[
 			{
 				key: 'summary-cards',
@@ -63,12 +63,12 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 	);
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject, reorder, or
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject, reorder, or
 	 * remove half-width chart widgets by filtering this array. Widgets are
 	 * rendered two per row, in array order.
 	 */
 	const chartWidgets = applyFilters(
-		'logtrail.dashboard.chartWidgets',
+		'pastmark.dashboard.chartWidgets',
 		[
 			{
 				key: 'severity-distribution',
@@ -96,7 +96,7 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 
 	return (
 		<Content>
-			<Flex className="wptl-dashboard-page" vertical gap={20}>
+			<Flex className="wppm-dashboard-page" vertical gap={20}>
 				<DashboardToolbar
 					range={range}
 					onRangeChange={loadDashboard}
@@ -112,7 +112,7 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 				{chunkPairs(chartWidgets).map((pair, index) => (
 					<Flex key={index} gap={20} wrap align="stretch">
 						{pair.map(({ key, component }) => (
-							<div key={key} className="wptl-dashboard-chart-half">
+							<div key={key} className="wppm-dashboard-chart-half">
 								{component}
 							</div>
 						))}

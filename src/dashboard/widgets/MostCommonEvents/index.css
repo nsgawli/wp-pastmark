@@ -1,8 +1,8 @@
-.wptl-dashboard-category-item {
+.wppm-dashboard-category-item {
 	margin-bottom: 18px;
 }
 
-.wptl-dashboard-category-header {
+.wppm-dashboard-category-header {
 	display: flex;
 
 	justify-content: space-between;
@@ -12,7 +12,7 @@
 	font-size: 14px;
 }
 
-.wptl-dashboard-category-track {
+.wppm-dashboard-category-track {
 	height: 8px;
 
 	background: #eef2f6;
@@ -22,7 +22,7 @@
 	overflow: hidden;
 }
 
-.wptl-dashboard-category-fill {
+.wppm-dashboard-category-fill {
 	height: 8px;
 
 	background: var(--psmfr-primary-color);
@@ -33,11 +33,11 @@
 }
 
 @media (max-width: 768px) {
-	.wptl-dashboard-category-item {
+	.wppm-dashboard-category-item {
 		margin-bottom: 14px;
 	}
 
-	.wptl-dashboard-category-header {
+	.wppm-dashboard-category-header {
 		font-size: 13px;
 	}
 }

@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Admin;
+namespace Pastmark\Admin;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -35,32 +35,32 @@ class Admin {
 		add_filter(
 			'admin_body_class',
 			function ( $classes ) {
-				$classes .= ' toplevel-logtrail-page';
+				$classes .= ' toplevel-pastmark-page';
 				return $classes;
 			}
 		);
 
 		// Load asset file.
-		$assets = require WPLT_ABSPATH . 'build/common/index.asset.php';
+		$assets = require PASTMARK_ABSPATH . 'build/common/index.asset.php';
 
 		// Enqueue page styles.
 		wp_enqueue_style(
-			'logtrail-common-scripts',
-			WPLT_PLUGIN_URL . 'build/common/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
+			'pastmark-common-scripts',
+			PASTMARK_PLUGIN_URL . 'build/common/index' . ( is_rtl() ? '-rtl.css' : '.css' ),
 			array(),
 			$assets['version']
 		);
 
 		// Enqueue page script.
 		wp_enqueue_script(
-			'logtrail-common-scripts',
-			WPLT_PLUGIN_URL . 'build/common/index.js',
+			'pastmark-common-scripts',
+			PASTMARK_PLUGIN_URL . 'build/common/index.js',
 			$assets['dependencies'],
 			$assets['version'],
 			true
 		);
 
 		// script translations.
-		wp_set_script_translations( 'logtrail-common-scripts', 'logtrail' );
+		wp_set_script_translations( 'pastmark-common-scripts', 'pastmark' );
 	}
 }

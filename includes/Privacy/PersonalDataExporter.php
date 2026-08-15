@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Privacy;
+namespace Pastmark\Privacy;
 
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
-use LogTrail\Models\LogTrail_Logs;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
+use Pastmark\Models\Pastmark_Logs;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers LogTrail activity logs with the WordPress "Export Personal Data" tool.
+ * Registers Pastmark activity logs with the WordPress "Export Personal Data" tool.
  */
 class PersonalDataExporter {
 
@@ -38,8 +38,8 @@ class PersonalDataExporter {
 	 */
 	public static function register_exporter( $exporters ) {
 
-		$exporters['logtrail'] = array(
-			'exporter_friendly_name' => __( 'LogTrail User Activity Logs', 'logtrail' ),
+		$exporters['pastmark'] = array(
+			'exporter_friendly_name' => __( 'Pastmark User Activity Logs', 'pastmark' ),
 			'callback'               => array( __CLASS__, 'export' ),
 		);
 
@@ -69,7 +69,7 @@ class PersonalDataExporter {
 		$page = (int) $page;
 		$page = $page < 1 ? 1 : $page;
 
-		$logs_model = new LogTrail_Logs();
+		$logs_model = new Pastmark_Logs();
 
 		$logs = $logs_model->get_logs(
 			array(
@@ -84,29 +84,29 @@ class PersonalDataExporter {
 		foreach ( $logs as $log ) {
 
 			$export_items[] = array(
-				'group_id'          => 'logtrail-activity-logs',
-				'group_label'       => __( 'LogTrail Activity Logs', 'logtrail' ),
-				'group_description' => __( 'Activity recorded against your account by the LogTrail plugin.', 'logtrail' ),
-				'item_id'           => 'logtrail-activity-log-' . $log->id,
+				'group_id'          => 'pastmark-activity-logs',
+				'group_label'       => __( 'Pastmark Activity Logs', 'pastmark' ),
+				'group_description' => __( 'Activity recorded against your account by the Pastmark plugin.', 'pastmark' ),
+				'item_id'           => 'pastmark-activity-log-' . $log->id,
 				'data'              => array(
 					array(
-						'name'  => __( 'Date', 'logtrail' ),
+						'name'  => __( 'Date', 'pastmark' ),
 						'value' => $log->timestamp,
 					),
 					array(
-						'name'  => __( 'Event', 'logtrail' ),
+						'name'  => __( 'Event', 'pastmark' ),
 						'value' => Events::resolve_label( (string) $log->event_type ),
 					),
 					array(
-						'name'  => __( 'Action', 'logtrail' ),
+						'name'  => __( 'Action', 'pastmark' ),
 						'value' => Actions::resolve_label( (string) $log->action ),
 					),
 					array(
-						'name'  => __( 'Message', 'logtrail' ),
+						'name'  => __( 'Message', 'pastmark' ),
 						'value' => $log->message,
 					),
 					array(
-						'name'  => __( 'IP Address', 'logtrail' ),
+						'name'  => __( 'IP Address', 'pastmark' ),
 						'value' => $log->ip_address,
 					),
 				),

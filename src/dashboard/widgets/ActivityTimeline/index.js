@@ -25,9 +25,9 @@ const TimelineTooltip = ({ active, payload, label }) => {
 	const total = Number(payload[0]?.value || 0).toLocaleString();
 
 	return (
-		<div className="wptl-dashboard-chart-tooltip">
-			<div className="wptl-dashboard-chart-tooltip-label">{label}</div>
-			<div className="wptl-dashboard-chart-tooltip-value">
+		<div className="wppm-dashboard-chart-tooltip">
+			<div className="wppm-dashboard-chart-tooltip-label">{label}</div>
+			<div className="wppm-dashboard-chart-tooltip-value">
 				{total} events
 			</div>
 		</div>
@@ -57,15 +57,15 @@ const ActivityTimeline = ({ data = [], loading = false, range = '' }) => {
 
 	return (
 		<Card>
-			<div className="wptl-dashboard-widget-header">
-				<div className="wptl-dashboard-widget-title">
+			<div className="wppm-dashboard-widget-header">
+				<div className="wppm-dashboard-widget-title">
 					Activity Timeline
 				</div>
 			</div>
 
 			{loading && (
 				<div
-					className="wptl-dashboard-chart-loading"
+					className="wppm-dashboard-chart-loading"
 					style={{ height: chartHeight }}
 				>
 					Loading...
@@ -81,7 +81,7 @@ const ActivityTimeline = ({ data = [], loading = false, range = '' }) => {
 
 			{!loading && data.length > 0 && (
 				<div
-					className="wptl-dashboard-chart-container"
+					className="wppm-dashboard-chart-container"
 					style={{ height: chartHeight }}
 				>
 					<ResponsiveContainer width="100%" height="100%">

@@ -86,18 +86,18 @@ const Pagination = ({
 
 	return (
 		<Flex
-			className="wptl-pagination"
+			className="wppm-pagination"
 			justify="space-between"
 			align="center"
 			gap={10}
 			wrap
 		>
-			<div className="wptl-pagination-info">
+			<div className="wppm-pagination-info">
 				{startItem} - {endItem} of {totalItems} {label}
 			</div>
 
 			<Flex
-				className="wptl-pagination-controls"
+				className="wppm-pagination-controls"
 				align="center"
 				gap={4}
 				wrap
@@ -121,7 +121,7 @@ const Pagination = ({
 						return (
 							<span
 								key={page}
-								className="wptl-pagination-ellipsis"
+								className="wppm-pagination-ellipsis"
 							>
 								&hellip;
 							</span>
@@ -133,7 +133,7 @@ const Pagination = ({
 							key={page}
 							size="small"
 							type={page === current ? 'primary' : 'default'}
-							className="wptl-pagination-page"
+							className="wppm-pagination-page"
 							onClick={() => goToPage(page)}
 						>
 							{page}
@@ -157,13 +157,13 @@ const Pagination = ({
 			</Flex>
 
 			{total > 1 && (
-				<Flex className="wptl-pagination-jump" align="center" gap={6}>
-					<label htmlFor="wptl-pagination-jump-input">
+				<Flex className="wppm-pagination-jump" align="center" gap={6}>
+					<label htmlFor="wppm-pagination-jump-input">
 						Go to page
 					</label>
 
 					<input
-						id="wptl-pagination-jump-input"
+						id="wppm-pagination-jump-input"
 						type="number"
 						min={1}
 						max={total}

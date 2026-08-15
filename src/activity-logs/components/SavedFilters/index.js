@@ -19,7 +19,7 @@ const SavedFilters = ({
 
 	return (
 		<Flex
-			className="wptl-saved-filters"
+			className="wppm-saved-filters"
 			gap={10}
 			wrap
 		>

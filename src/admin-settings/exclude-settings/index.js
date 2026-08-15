@@ -131,10 +131,10 @@ const ExcludeSettings = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Exclude settings saved successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -142,10 +142,10 @@ const ExcludeSettings = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to save exclude settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			});
@@ -173,10 +173,10 @@ const ExcludeSettings = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Exclude settings reset successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -202,13 +202,13 @@ const ExcludeSettings = () => {
 					<Flex vertical gap={10}>
 						<Flex vertical gap={5}>
 							<Title level={3}>
-								{__('Exclude Settings', 'logtrail')}
+								{__('Exclude Settings', 'pastmark')}
 							</Title>
 
 							<span className="psm-setting-info">
 								{__(
 									'Exclude specific objects from activity logging.',
-									'logtrail'
+									'pastmark'
 								)}
 							</span>
 						</Flex>
@@ -219,19 +219,19 @@ const ExcludeSettings = () => {
 							<Flex vertical gap={20}>
 								<InputSelectAsync
 									name="excludedUsers"
-									label={__('Users', 'logtrail')}
+									label={__('Users', 'pastmark')}
 									control={control}
 									loadOptions={loadUsers}
 									isMulti
 									extaInfo={__(
 										'Exclude specific users from activity logging.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<InputSelect
 									name="excludedRoles"
-									label={__('Roles', 'logtrail')}
+									label={__('Roles', 'pastmark')}
 									control={control}
 									options={options.roles}
 									isMulti
@@ -239,7 +239,7 @@ const ExcludeSettings = () => {
 
 								<InputSelect
 									name="excludedPostTypes"
-									label={__('Post Types', 'logtrail')}
+									label={__('Post Types', 'pastmark')}
 									control={control}
 									options={options.postTypes}
 									isMulti
@@ -247,7 +247,7 @@ const ExcludeSettings = () => {
 
 								<InputSelect
 									name="excludedStatuses"
-									label={__('Post Statuses', 'logtrail')}
+									label={__('Post Statuses', 'pastmark')}
 									control={control}
 									options={options.statuses}
 									isMulti
@@ -255,65 +255,65 @@ const ExcludeSettings = () => {
 
 								<Textarea
 									name="excludedIPs"
-									label={__('IP Addresses', 'logtrail')}
+									label={__('IP Addresses', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'One IP per line.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<Textarea
 									name="excludedPostMeta"
-									label={__('Post Meta Keys', 'logtrail')}
+									label={__('Post Meta Keys', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'One meta key per line.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<Textarea
 									name="excludedUserMeta"
-									label={__('User Meta Keys', 'logtrail')}
+									label={__('User Meta Keys', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'One meta key per line.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<InputSelectAsync
 									name="excludedPlugins"
-									label={__('Plugins', 'logtrail')}
+									label={__('Plugins', 'pastmark')}
 									control={control}
 									loadOptions={loadPlugins}
 									isMulti
 									extaInfo={__(
 										'Exclude selected plugins from activity logging.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<InputSelectAsync
 									name="excludedThemes"
-									label={__('Themes', 'logtrail')}
+									label={__('Themes', 'pastmark')}
 									control={control}
 									loadOptions={loadThemes}
 									isMulti
 									extaInfo={__(
 										'Exclude selected themes from activity logging.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
 								<Switch
 									name="excludeCronRequests"
-									label={__('Exclude Cron Requests', 'logtrail')}
+									label={__('Exclude Cron Requests', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'Skip logs created during wp-cron/background tasks (for example, /wp-cron.php requests).',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 
@@ -326,7 +326,7 @@ const ExcludeSettings = () => {
 										loading={formState.isSubmitting}
 										disabled={isResetting}
 									>
-										{__('Submit', 'logtrail')}
+										{__('Submit', 'pastmark')}
 									</Button>
 
 									<Button
@@ -337,7 +337,7 @@ const ExcludeSettings = () => {
 										}
 										onClick={onReset}
 									>
-										{__('Reset', 'logtrail')}
+										{__('Reset', 'pastmark')}
 									</Button>
 								</Flex>
 							</Flex>

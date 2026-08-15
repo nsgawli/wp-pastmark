@@ -1,10 +1,10 @@
-.wptl-log-actions-dropdown {
+.wppm-log-actions-dropdown {
 	position: relative;
 	display: inline-flex;
 	justify-content: flex-end;
 }
 
-.wptl-log-actions-trigger {
+.wppm-log-actions-trigger {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -18,8 +18,8 @@
 	transition: all 0.18s ease;
 }
 
-.wptl-log-actions-trigger:hover,
-.wptl-log-actions-trigger:focus-visible {
+.wppm-log-actions-trigger:hover,
+.wppm-log-actions-trigger:focus-visible {
 	border-color: #98a2b3;
 	background: #f8fafc;
 	color: #111827;
@@ -27,7 +27,7 @@
 	box-shadow: 0 0 0 3px rgba(46, 144, 250, 0.18);
 }
 
-.wptl-log-actions-menu {
+.wppm-log-actions-menu {
 	position: absolute;
 	top: calc(100% + 8px);
 	right: 0;
@@ -46,14 +46,14 @@
 	transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
 }
 
-.wptl-log-actions-menu.is-open {
+.wppm-log-actions-menu.is-open {
 	opacity: 1;
 	transform: translateY(0) scale(1);
 	pointer-events: auto;
 	visibility: visible;
 }
 
-.wptl-log-actions-item {
+.wppm-log-actions-item {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -68,13 +68,13 @@
 	cursor: pointer;
 }
 
-.wptl-log-actions-item:hover,
-.wptl-log-actions-item:focus-visible {
+.wppm-log-actions-item:hover,
+.wppm-log-actions-item:focus-visible {
 	background: #f2f4f7;
 	outline: none;
 }
 
-.wptl-log-actions-item-icon {
+.wppm-log-actions-item-icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;

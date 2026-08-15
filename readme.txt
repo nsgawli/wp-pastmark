@@ -1,4 +1,4 @@
-=== LogTrail - User Activity Logs ===
+=== Pastmark - Activity Logs for WordPress ===
 Contributors: nsgawli
 Tags: activity log, audit log, user activity, security, woocommerce
 Requires at least: 6.2
@@ -8,17 +8,17 @@ Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-LogTrail is a user activity log & audit log plugin that tracks logins, content changes, WooCommerce, and site settings in real time.
+Pastmark is a user activity log & audit log plugin that tracks logins, content changes, WooCommerce, and site settings in real time.
 
 == Description ==
 
-**LogTrail - User Activity Logs** is an easy & powerful WordPress activity log plugin that keeps a complete audit trail of everything that happens on your site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, LogTrail records the user, timestamp, IP address, and contextual details behind every event — so you always know who did what, and when.
+**Pastmark - Activity Logs for WordPress** is an easy & powerful WordPress activity log plugin that keeps a complete audit trail of everything that happens on your site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, Pastmark records the user, timestamp, IP address, and contextual details behind every event — so you always know who did what, and when.
 
-Whether you're a site owner who wants peace of mind, an agency managing client sites, or a WooCommerce store tracking orders and product changes, LogTrail gives you a searchable, filterable activity log dashboard without slowing your site down.
+Whether you're a site owner who wants peace of mind, an agency managing client sites, or a WooCommerce store tracking orders and product changes, Pastmark gives you a searchable, filterable activity log dashboard without slowing your site down.
 
 = Why use an activity log plugin? =
 
-Without a user activity log, it's nearly impossible to answer basic questions after something goes wrong: Who deleted that page? Who changed the site's permalink structure? Was that a failed login attempt or a real intrusion? LogTrail answers those questions automatically by logging activity as it happens, in a dedicated database table, so nothing is missed.
+Without a user activity log, it's nearly impossible to answer basic questions after something goes wrong: Who deleted that page? Who changed the site's permalink structure? Was that a failed login attempt or a real intrusion? Pastmark answers those questions automatically by logging activity as it happens, in a dedicated database table, so nothing is missed.
 
 = Track user & security activity =
 
@@ -43,7 +43,7 @@ Without a user activity log, it's nearly impossible to answer basic questions af
 
 = WooCommerce activity log =
 
-If WooCommerce is active, LogTrail automatically extends its logging to your store:
+If WooCommerce is active, Pastmark automatically extends its logging to your store:
 
 * Log new WooCommerce orders, order status changes, edits, refunds, and deletions.
 * Track product creation, updates, stock/status changes, and deletions.
@@ -68,49 +68,49 @@ If WooCommerce is active, LogTrail automatically extends its logging to your sto
 = Privacy & security by design =
 
 * Activity logs are only accessible to administrators (`manage_options` capability).
-* Integrates with WordPress's built-in Personal Data Export and Erase Personal Data tools, so LogTrail-collected data is included in GDPR data requests.
+* Integrates with WordPress's built-in Personal Data Export and Erase Personal Data tools, so Pastmark-collected data is included in GDPR data requests.
 * Does not send any data to external servers — everything stays on your site.
 
 == Contribute ==
-LogTrail User Activity Logs is an open-source project. You can view the full sources (unminified JS) and contribute to the project on GitHub: [Click here](https://github.com/nsgawli/wp-logtrail)
+Pastmark - Activity Logs for WordPress is an open-source project. You can view the full sources (unminified JS) and contribute to the project on GitHub: [Click here](https://github.com/nsgawli/wp-pastmark)
 
 == External Services ==
 This plugin does not connect to external services for its functionalities.
 
 == Installation ==
 
-1. Upload the `logtrail` folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the `pastmark` folder to the `/wp-content/plugins/` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the "Plugins" screen in WordPress.
-3. Visit the "LogTrail" menu in wp-admin to view and configure activity logs.
+3. Visit the "Pastmark" menu in wp-admin to view and configure activity logs.
 
 = Using The WordPress Dashboard =
 
 1. Navigate to the 'Add New' in the plugins dashboard
-2. Search for LogTrail User Activity Logs
+2. Search for Pastmark - Activity Logs for WordPress
 3. Click 'Install Now'
 4. Activate the plugin in the plugin dashboard
 
 = Uploading in WordPress Dashboard =
 
-1. Download `logtrail.zip` from this page
+1. Download `pastmark.zip` from this page
 2. Navigate to the 'Add New' in the plugins dashboard
 3. Navigate to the 'Upload' area
-4. Select `logtrail.zip` from your computer
+4. Select `pastmark.zip` from your computer
 5. Click 'Install Now'
 6. Activate the plugin in the plugin dashboard
 
 = Using FTP =
 
-1. Download `logtrail.zip` from this page
-2. Extract the `logtrail` directory to your computer
-3. Upload the `logtrail` directory to the `/wp-content/plugins/` directory
+1. Download `pastmark.zip` from this page
+2. Extract the `pastmark` directory to your computer
+3. Upload the `pastmark` directory to the `/wp-content/plugins/` directory
 4. Activate the plugin in the plugin dashboard
 
 == Frequently Asked Questions ==
 
-= What does LogTrail actually log? =
+= What does Pastmark actually log? =
 
-By default LogTrail logs authentication events (logins, logouts, failed logins), content changes (posts, pages, custom post types, comments, media), user account changes, menu and widget changes, plugin and theme activity, and core WordPress settings changes. You can choose an Essential, Recommended, or Complete preset, or select individual events to log from the Events screen.
+By default Pastmark logs authentication events (logins, logouts, failed logins), content changes (posts, pages, custom post types, comments, media), user account changes, menu and widget changes, plugin and theme activity, and core WordPress settings changes. You can choose an Essential, Recommended, or Complete preset, or select individual events to log from the Events screen.
 
 = Where are the logs stored? =
 
@@ -120,13 +120,13 @@ Logs are stored in a dedicated database table created by the plugin, separate fr
 
 Logging runs on standard WordPress action and filter hooks and writes to a dedicated table, so the impact on page load times is minimal.
 
-= Does LogTrail work with WooCommerce? =
+= Does Pastmark work with WooCommerce? =
 
-Yes. When WooCommerce is active, LogTrail automatically starts logging WooCommerce orders, products, product categories, coupons, and reviews — no extra setup required.
+Yes. When WooCommerce is active, Pastmark automatically starts logging WooCommerce orders, products, product categories, coupons, and reviews — no extra setup required.
 
 = Can I control how long logs are kept? =
 
-Yes. LogTrail can automatically delete log entries older than a period you choose (in days, months, or years) so your database doesn't grow indefinitely. Automatic cleanup can also be turned off if you want to keep logs indefinitely.
+Yes. Pastmark can automatically delete log entries older than a period you choose (in days, months, or years) so your database doesn't grow indefinitely. Automatic cleanup can also be turned off if you want to keep logs indefinitely.
 
 = Can I exclude certain users, roles, or IP addresses from being logged? =
 
@@ -138,15 +138,15 @@ Yes. Logs can be exported to CSV directly from the activity log dashboard, which
 
 = Can I get email reports of site activity? =
 
-Yes. LogTrail can send daily and/or weekly email summaries of site activity to the recipients you configure, so you don't have to log in to check the dashboard.
+Yes. Pastmark can send daily and/or weekly email summaries of site activity to the recipients you configure, so you don't have to log in to check the dashboard.
 
 = Who can view the activity logs? =
 
-Only users with the `manage_options` capability (administrators, by default) can access the LogTrail dashboard, settings, and event logs.
+Only users with the `manage_options` capability (administrators, by default) can access the Pastmark dashboard, settings, and event logs.
 
-= Is LogTrail GDPR-friendly? =
+= Is Pastmark GDPR-friendly? =
 
-LogTrail does not send any data to external services — all logs stay in your site's own database. LogTrail also hooks into WordPress's built-in "Export Personal Data" and "Erase Personal Data" privacy tools, so any LogTrail data tied to a user is included when you handle a data request.
+Pastmark does not send any data to external services — all logs stay in your site's own database. Pastmark also hooks into WordPress's built-in "Export Personal Data" and "Erase Personal Data" privacy tools, so any Pastmark data tied to a user is included when you handle a data request.
 
 = What happens to the logs if I deactivate the plugin? =
 

@@ -20,7 +20,7 @@ export const fetchLogs = async ({
 		sortOrder,
 	});
 
-	const path = addQueryArgs('/logtrail/v1/logs', query);
+	const path = addQueryArgs('/pastmark/v1/logs', query);
 
 	const response = await apiFetch({
 		path,
@@ -56,7 +56,7 @@ export const fetchLogFilterOptions = async ({
 		query.limit = limit;
 	}
 
-	const path = addQueryArgs('/logtrail/v1/logs/filter-options', query);
+	const path = addQueryArgs('/pastmark/v1/logs/filter-options', query);
 
 	const response = await apiFetch({
 		path,
@@ -83,7 +83,7 @@ export const fetchLogFilterOptionsByValues = async ({
 		values: values.join(','),
 	};
 
-	const path = addQueryArgs('/logtrail/v1/logs/filter-options', query);
+	const path = addQueryArgs('/pastmark/v1/logs/filter-options', query);
 
 	const response = await apiFetch({
 		path,

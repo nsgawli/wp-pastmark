@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\Utils;
+namespace Pastmark\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,7 +63,7 @@ class Helpers {
 	 */
 	private static function is_local_timestamp_mode(): bool {
 
-		$settings = get_option( 'logtrail_general_settings', array() );
+		$settings = get_option( 'pastmark_general_settings', array() );
 
 		if ( ! is_array( $settings ) ) {
 			return false;

@@ -8,7 +8,7 @@ const MostActiveUsers = ({ data = [] }) => {
 	if (!data.length) {
 		return (
 			<Card>
-				<h3 className="wptl-dashboard-widget-title">Most Active Users</h3>
+				<h3 className="wppm-dashboard-widget-title">Most Active Users</h3>
 
 				<EmptyState title="No users found." />
 			</Card>
@@ -17,11 +17,11 @@ const MostActiveUsers = ({ data = [] }) => {
 
 	return (
 		<Card>
-			<h3 className="wptl-dashboard-widget-title">Most Active Users</h3>
+			<h3 className="wppm-dashboard-widget-title">Most Active Users</h3>
 
 			{data.map((item) => (
-				<div key={item.user_id} className="wptl-dashboard-user-row">
-					<div className="wptl-dashboard-user-cell">
+				<div key={item.user_id} className="wppm-dashboard-user-row">
+					<div className="wppm-dashboard-user-cell">
 						<Avatar
 							src={item.avatar_url}
 							name={item.name}

@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Privacy;
+namespace Pastmark\Privacy;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

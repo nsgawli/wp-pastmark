@@ -1,32 +1,32 @@
-.wptl-log-details-actions {
+.wppm-log-details-actions {
 	justify-content: flex-end;
 }
 
-.wptl-log-details-action-primary {
+.wppm-log-details-action-primary {
 	font-weight: 600;
 }
 
-.wptl-log-details-copy-actions {
+.wppm-log-details-copy-actions {
 	display: inline-flex;
 }
 
-.wptl-log-subtitle {
+.wppm-log-subtitle {
 	margin-top: 8px;
 }
 
-.wptl-log-details-grid {
+.wppm-log-details-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	gap: 16px;
 }
 
-.wptl-log-details-item {
+.wppm-log-details-item {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
 }
 
-.wptl-log-details-label {
+.wppm-log-details-label {
 	font-weight: 600;
 	color: #667085;
 	font-size: 12px;
@@ -34,12 +34,12 @@
 	letter-spacing: 0.4px;
 }
 
-.wptl-log-details-value {
+.wppm-log-details-value {
 	color: #111827;
 	font-weight: 500;
 }
 
-.wptl-log-section-content {
+.wppm-log-section-content {
 	padding: 12px;
 	background: #f8fafc;
 	border: 1px solid #e4e7ec;
@@ -49,31 +49,31 @@
 	white-space: pre-wrap;
 }
 
-.wptl-log-table {
+.wppm-log-table {
 	border: 1px solid #e4e7ec;
 	border-radius: 8px;
 	overflow: hidden;
 }
 
-.wptl-log-table-muted {
+.wppm-log-table-muted {
 	font-size: 12px;
 	color: #667085;
 }
 
-.wptl-log-diff-before {
+.wppm-log-diff-before {
 	color: #b42318;
 	text-decoration: line-through;
 	word-break: break-word;
 }
 
-.wptl-log-diff-after {
+.wppm-log-diff-after {
 	color: #027a48;
 	font-weight: 600;
 	word-break: break-word;
 }
 
 @media (max-width: 782px) {
-	.wptl-log-details-actions {
+	.wppm-log-details-actions {
 		justify-content: flex-start;
 	}
 }

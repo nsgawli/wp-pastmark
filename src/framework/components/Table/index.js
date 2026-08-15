@@ -46,9 +46,9 @@ const Table = ({
 	}, [loading, hasRows]);
 
 	const tableClassName = `
-		wptl-table-wrapper
-		${stickyHeader ? 'wptl-table-sticky-header' : ''}
-		${animateRows ? 'wptl-table-rows-animate' : ''}
+		wppm-table-wrapper
+		${stickyHeader ? 'wppm-table-sticky-header' : ''}
+		${animateRows ? 'wppm-table-rows-animate' : ''}
 		${className}
 	`;
 
@@ -95,26 +95,26 @@ const Table = ({
 	return (
 		<div className={tableClassName}>
 			{loading && hasRows && (
-				<div className="wptl-table-loading-overlay">
+				<div className="wppm-table-loading-overlay">
 					<Spinner />
 				</div>
 			)}
 
-			<table className="wptl-table">
+			<table className="wppm-table">
 				<thead>
 					<tr>
 						{selectable && (
-							<th className="wptl-table-checkbox-column"></th>
+							<th className="wppm-table-checkbox-column"></th>
 						)}
 
 						{columns.map((column) => (
 							<th
 								key={column.key}
 								className={`
-									wptl-table-header-cell
+									wppm-table-header-cell
 									${column.headerClassName || column.className || ''}
-									${column.sortable ? 'wptl-table-header-sortable' : ''}
-									${isColumnSorted(column) ? 'wptl-table-header-sorted' : ''}
+									${column.sortable ? 'wppm-table-header-sortable' : ''}
+									${isColumnSorted(column) ? 'wppm-table-header-sorted' : ''}
 								`}
 								style={{
 									width: column.width || 'auto',
@@ -125,20 +125,20 @@ const Table = ({
 									<button
 										type="button"
 										className={`
-											wptl-table-sort-button
-											wptl-table-sort-align-${column.align || 'left'}
+											wppm-table-sort-button
+											wppm-table-sort-align-${column.align || 'left'}
 										`}
 										onClick={() => {
 											handleSort(column);
 										}}
 									>
 										<span>{column.title}</span>
-										<span className="wptl-table-sort-icon">
+										<span className="wppm-table-sort-icon">
 											{getSortIcon(column)}
 										</span>
 									</button>
 								) : (
-									<span className="wptl-table-header-title">
+									<span className="wppm-table-header-title">
 										{column.title}
 									</span>
 								)}
@@ -158,7 +158,7 @@ const Table = ({
 								}
 							>
 								<Flex
-									className="wptl-table-loader"
+									className="wppm-table-loader"
 									justify="center"
 									align="center"
 								>
@@ -177,7 +177,7 @@ const Table = ({
 										: columns.length
 								}
 							>
-								<div className="wptl-table-empty">
+								<div className="wppm-table-empty">
 									{emptyText}
 								</div>
 							</td>
@@ -193,8 +193,8 @@ const Table = ({
 									key={rowId}
 									data-row-id={rowId}
 									className={`
-										${onRowClick ? 'wptl-table-clickable-row' : ''}
-										${activeRowId === rowId ? 'wptl-table-row-active' : ''}
+										${onRowClick ? 'wppm-table-clickable-row' : ''}
+										${activeRowId === rowId ? 'wppm-table-row-active' : ''}
 									`}
 									onClick={(event) => {
 										if (onRowClick) {

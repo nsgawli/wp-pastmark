@@ -1,15 +1,14 @@
 <?php // phpcs:ignore
 /**
- * Plugin Name: LogTrail - User Activity Logs
+ * Plugin Name: Pastmark - Activity Logs for WordPress
  * Description: Easy & Powerful User Activity Log Plugin for WordPress. Track user activity, changes, and events in your WordPress site with ease.
  * Version: 1.0.0
  * Author: nsgawli
- * Author URI: https://wordpress.org/plugins/debug-log-tool/
  * License: GPL v3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: logtrail
+ * Text Domain: pastmark
  *
- * @package logtrail
+ * @package pastmark
  */
 
 // Exit if accessed directly.
@@ -17,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class LogTrail {
+final class Pastmark {
 
 	/**
 	 * Plugin version
@@ -29,7 +28,7 @@ final class LogTrail {
 	/**
 	 * The single instance of the class.
 	 *
-	 * @var LogTrail
+	 * @var Pastmark
 	 */
 	public static function init() {
 
@@ -55,9 +54,9 @@ final class LogTrail {
 
 		self::define_constants();
 
-		require_once WPLT_ABSPATH . 'vendor/autoload.php';
+		require_once PASTMARK_ABSPATH . 'vendor/autoload.php';
 
-		LogTrail\Installation\Autoloader::activate();
+		Pastmark\Installation\Autoloader::activate();
 	}
 
 	/**
@@ -69,9 +68,9 @@ final class LogTrail {
 		self::define_constants();
 
 		// load plugin files.
-		require_once WPLT_ABSPATH . 'vendor/autoload.php';
+		require_once PASTMARK_ABSPATH . 'vendor/autoload.php';
 
-		LogTrail\Init::run();
+		Pastmark\Init::run();
 	}
 
 	/**
@@ -81,30 +80,30 @@ final class LogTrail {
 	 */
 	public static function define_constants() {
 
-		self::define( 'WPLT_PLUGIN_FILE', __FILE__ );
-		self::define( 'WPLT_ABSPATH', __DIR__ . '/' );
-		self::define( 'WPLT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-		self::define( 'WPLT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-		self::define( 'WPLT_VERSION', self::$version );
+		self::define( 'PASTMARK_PLUGIN_FILE', __FILE__ );
+		self::define( 'PASTMARK_ABSPATH', __DIR__ . '/' );
+		self::define( 'PASTMARK_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+		self::define( 'PASTMARK_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+		self::define( 'PASTMARK_VERSION', self::$version );
 
 		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$is_rest_request = ( false !== strpos( $request_uri, '/' . rest_get_url_prefix() . '/' ) )
 			|| isset( $_GET['rest_route'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		self::define( 'WPLT_REST_REQUEST', $is_rest_request );
+		self::define( 'PASTMARK_REST_REQUEST', $is_rest_request );
 
 		// load admin user interface.
-		if ( is_admin() && ! ( wp_doing_ajax() || WPLT_REST_REQUEST ) ) {
-			self::define( 'WPLT_ADMIN_INTERFACE', true );
+		if ( is_admin() && ! ( wp_doing_ajax() || PASTMARK_REST_REQUEST ) ) {
+			self::define( 'PASTMARK_ADMIN_INTERFACE', true );
 		} else {
-			self::define( 'WPLT_ADMIN_INTERFACE', false );
+			self::define( 'PASTMARK_ADMIN_INTERFACE', false );
 		}
 
 		// load frontend user interface.
-		if ( ! ( is_admin() || defined( 'DOING_CRON' ) || WPLT_REST_REQUEST ) ) {
-			self::define( 'WPLT_FRONTEND_INTERFACE', true );
+		if ( ! ( is_admin() || defined( 'DOING_CRON' ) || PASTMARK_REST_REQUEST ) ) {
+			self::define( 'PASTMARK_FRONTEND_INTERFACE', true );
 		} else {
-			self::define( 'WPLT_FRONTEND_INTERFACE', false );
+			self::define( 'PASTMARK_FRONTEND_INTERFACE', false );
 		}
 	}
 
@@ -129,12 +128,12 @@ final class LogTrail {
 	 */
 	public static function add_plugin_links( $links ) {
 		$custom_links = array(
-			'<a href="' . admin_url( 'admin.php?page=logtrail' ) . '">' . __( 'Settings', 'logtrail' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=pastmark' ) . '">' . __( 'Settings', 'pastmark' ) . '</a>',
 		);
 		return array_merge( $links, $custom_links );
 	}
 }
 
-register_activation_hook( __FILE__, array( 'LogTrail', 'activate' ) );
+register_activation_hook( __FILE__, array( 'Pastmark', 'activate' ) );
 
-LogTrail::init();
+Pastmark::init();

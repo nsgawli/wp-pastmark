@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\Constants;
+namespace Pastmark\Constants;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -71,11 +71,11 @@ class Severity {
 		}
 
 		$labels = array(
-			self::INFO     => __( 'Info', 'logtrail' ),
-			self::WARNING  => __( 'Warning', 'logtrail' ),
-			self::ERROR    => __( 'Error', 'logtrail' ),
-			self::CRITICAL => __( 'Critical', 'logtrail' ),
-			self::DEBUG    => __( 'Debug', 'logtrail' ),
+			self::INFO     => __( 'Info', 'pastmark' ),
+			self::WARNING  => __( 'Warning', 'pastmark' ),
+			self::ERROR    => __( 'Error', 'pastmark' ),
+			self::CRITICAL => __( 'Critical', 'pastmark' ),
+			self::DEBUG    => __( 'Debug', 'pastmark' ),
 		);
 
 		return $labels;

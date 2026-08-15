@@ -89,25 +89,25 @@ const LogLevelSelector = ({
 							onChange(option.key);
 						}}
 						className={
-							value === option.key ? 'wptl-log-level-active' : ''
+							value === option.key ? 'wppm-log-level-active' : ''
 						}
 						style={{
 							flex: 1,
 						}}
 					>
-						<div className="wptl-log-level-card-content">
-							<strong className="wptl-log-level-title">
+						<div className="wppm-log-level-card-content">
+							<strong className="wppm-log-level-title">
 								{option.label}
 							</strong>
 
-							<div className="wptl-log-level-description">
+							<div className="wppm-log-level-description">
 								{option.description}
 							</div>
 
 							{value === option.key && (
 								<Badge
 									type="success"
-									className="wptl-log-level-active-badge"
+									className="wppm-log-level-active-badge"
 								>
 									Active
 								</Badge>
@@ -117,7 +117,7 @@ const LogLevelSelector = ({
 				))}
 			</Flex>
 
-			<div className="wptl-log-level-counters" aria-live="polite">
+			<div className="wppm-log-level-counters" aria-live="polite">
 				<Badge type="info">Total Registered: {counts.total}</Badge>
 				<Badge type="success">Active: {counts.active}</Badge>
 				<Badge type="warning">Inactive: {counts.inactive}</Badge>

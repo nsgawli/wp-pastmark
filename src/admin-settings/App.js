@@ -32,28 +32,28 @@ const defaultTabs = [
 		key: 'general-settings',
 		path: '/general-settings',
 		icon: <FiSettings />,
-		label: __('General Settings', 'logtrail'),
+		label: __('General Settings', 'pastmark'),
 		element: <GeneralSettings />,
 	},
 	{
 		key: 'email-reports',
 		path: '/email-reports',
 		icon: <FiMail />,
-		label: __('Email Reports', 'logtrail'),
+		label: __('Email Reports', 'pastmark'),
 		element: <EmailReports />,
 	},
 	{
 		key: 'exclude-settings',
 		path: '/exclude-settings',
 		icon: <FiMinusCircle />,
-		label: __('Exclude Settings', 'logtrail'),
+		label: __('Exclude Settings', 'pastmark'),
 		element: <ExcludeSettings />,
 	},
 	{
 		key: 'data-management',
 		path: '/data-management',
 		icon: <FiTool />,
-		label: __('Data Management', 'logtrail'),
+		label: __('Data Management', 'pastmark'),
 		element: <DataManagement />,
 	},
 ];
@@ -64,12 +64,12 @@ function App() {
 	const [current, setCurrent] = useState('general-settings');
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject additional
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject additional
 	 * settings tabs by filtering this list, each item shaped like
 	 * defaultTabs. Evaluated at render time (not module load) so it picks
 	 * up filters regardless of script load order.
 	 */
-	const menuItems = applyFilters('logtrail.settingsTabs', defaultTabs);
+	const menuItems = applyFilters('pastmark.settingsTabs', defaultTabs);
 
 	useEffect(() => {
 		if (location.pathname === '/') {
@@ -94,14 +94,14 @@ function App() {
 		<Flex vertical>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="LogTrail - User Activity Logger"
+				title="Pastmark - Activity Logs for WordPress"
 			/>
 			<Flex style={{ padding: '1.5rem' }} gap={25}>
 				<SideMenu
 					items={menuItems}
 					current={current}
 					onClick={onClickMenuItem}
-					collapseKey="logtrailToggleMenuCollapse"
+					collapseKey="pastmarkToggleMenuCollapse"
 				/>
 				<Routes>
 					<Route path="/" element={<span />} />

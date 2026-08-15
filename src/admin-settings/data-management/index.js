@@ -42,10 +42,10 @@ const DataManagement = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to load data management settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			} finally {
@@ -64,10 +64,10 @@ const DataManagement = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: __(
 						'Data management settings saved successfully.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -75,10 +75,10 @@ const DataManagement = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to save data management settings.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			});
@@ -88,7 +88,7 @@ const DataManagement = () => {
 		const confirmed = window.confirm(
 			__(
 				'Are you sure you want to delete all activity logs instantly? This action cannot be undone.',
-				'logtrail'
+				'pastmark'
 			)
 		);
 
@@ -106,12 +106,12 @@ const DataManagement = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'success',
-					title: __('Success', 'logtrail'),
+					title: __('Success', 'pastmark'),
 					description: sprintf(
 						/* translators: %d: number of deleted log entries. */
 						__(
 							'Deleted %d activity log entries successfully.',
-							'logtrail'
+							'pastmark'
 						),
 						deleted
 					),
@@ -121,10 +121,10 @@ const DataManagement = () => {
 				addAlert({
 					id: Date.now(),
 					type: 'error',
-					title: __('Error', 'logtrail'),
+					title: __('Error', 'pastmark'),
 					description: __(
 						'Unable to delete old data instantly.',
-						'logtrail'
+						'pastmark'
 					),
 				});
 			})
@@ -145,12 +145,12 @@ const DataManagement = () => {
 					<Flex vertical gap={10}>
 						<Flex vertical gap={5}>
 							<Title level={3}>
-								{__('Data Management', 'logtrail')}
+								{__('Data Management', 'pastmark')}
 							</Title>
 							<span className="psm-setting-info">
 								{__(
 									'Manage data cleanup behavior and maintenance actions for activity logs.',
-									'logtrail'
+									'pastmark'
 								)}
 							</span>
 						</Flex>
@@ -159,21 +159,21 @@ const DataManagement = () => {
 							<Flex vertical gap={20}>
 								<Switch
 									name="removeDataOnUninstall"
-									label={__('Remove Data On Uninstall', 'logtrail')}
+									label={__('Remove Data On Uninstall', 'pastmark')}
 									control={control}
 									extaInfo={__(
 										'When enabled, plugin logs and settings are permanently deleted when you uninstall the plugin.',
-										'logtrail'
+										'pastmark'
 									)}
 								/>
 								<Flex vertical gap={8}>
 									<Title level={4}>
-										{__('Delete Old Data Instantly', 'logtrail')}
+										{__('Delete Old Data Instantly', 'pastmark')}
 									</Title>
 									<span className="psm-setting-info">
 										{__(
 											'Use this action to immediately delete all stored activity logs.',
-											'logtrail'
+											'pastmark'
 										)}
 									</span>
 									<Button
@@ -186,7 +186,7 @@ const DataManagement = () => {
 											borderColor: 'var(--psmfr-danger-color)',
 										}}
 									>
-										{__('Delete Data Instantly', 'logtrail')}
+										{__('Delete Data Instantly', 'pastmark')}
 									</Button>
 								</Flex>
 								<Divider />
@@ -197,7 +197,7 @@ const DataManagement = () => {
 										loading={formState.isSubmitting}
 										disabled={isDeleting}
 									>
-										{__('Submit', 'logtrail')}
+										{__('Submit', 'pastmark')}
 									</Button>
 								</Flex>
 							</Flex>

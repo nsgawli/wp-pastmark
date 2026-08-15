@@ -1,25 +1,25 @@
-.wptl-event-browser {
+.wppm-event-browser {
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
 }
 
-.wptl-events-card.wptl-card-padding {
+.wppm-events-card.wppm-card-padding {
 	padding: 14px 16px;
 }
 
-.wptl-event-group-header {
+.wppm-event-group-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 10px;
 }
 
-.wptl-event-group-meta {
+.wppm-event-group-meta {
 	min-width: 0;
 }
 
-.wptl-event-group-toggle {
+.wppm-event-group-toggle {
 	background: none;
 	border: none;
 	padding: 0;
@@ -35,33 +35,33 @@
 	text-align: left;
 }
 
-.wptl-event-group-toggle span:last-child {
+.wppm-event-group-toggle span:last-child {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.wptl-event-group-chevron {
+.wppm-event-group-chevron {
 	font-size: 12px;
 	line-height: 1;
 }
 
-.wptl-event-group-controls {
+.wppm-event-group-controls {
 	flex-wrap: nowrap;
 }
 
-.wptl-event-group-button {
+.wppm-event-group-button {
 	white-space: nowrap;
 }
 
-.wptl-event-actions {
+.wppm-event-actions {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
 	margin-top: 20px;
 }
 
-.wptl-event-row {
+.wppm-event-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -70,17 +70,17 @@
 	border-top: 1px solid #eee;
 }
 
-.wptl-event-row:first-child {
+.wppm-event-row:first-child {
 	border-top: none;
 	padding-top: 0;
 }
 
-.wptl-event-info {
+.wppm-event-info {
 	flex: 1;
 	min-width: 0;
 }
 
-.wptl-event-main {
+.wppm-event-main {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -88,19 +88,19 @@
 	flex: 1;
 }
 
-.wptl-event-title {
+.wppm-event-title {
 	font-weight: 600;
 	margin-bottom: 4px;
 }
 
-.wptl-event-main .wptl-event-title {
+.wppm-event-main .wppm-event-title {
 	margin-bottom: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.wptl-event-description {
+.wppm-event-description {
 	font-size: 13px;
 	color: #666;
 	margin: 2px 0 6px;
@@ -109,27 +109,27 @@
 	text-overflow: ellipsis;
 }
 
-.wptl-event-meta {
+.wppm-event-meta {
 	display: flex;
 	gap: 8px;
 	flex: 0 0 auto;
 }
 
 @media (max-width: 782px) {
-	.wptl-events-card.wptl-card-padding {
+	.wppm-events-card.wppm-card-padding {
 		padding: 12px 14px;
 	}
 
-	.wptl-event-group-header {
+	.wppm-event-group-header {
 		flex-wrap: wrap;
 	}
 
-	.wptl-event-group-controls {
+	.wppm-event-group-controls {
 		width: 100%;
 		justify-content: flex-end;
 	}
 
-	.wptl-event-row {
+	.wppm-event-row {
 		gap: 10px;
 		padding: 9px 0;
 	}

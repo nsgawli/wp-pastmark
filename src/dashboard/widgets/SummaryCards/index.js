@@ -11,7 +11,7 @@ const SummaryCards = ({ data = {}, loading = false }) => {
 	}
 
 	return (
-		<div className="wptl-dashboard-summary-grid">
+		<div className="wppm-dashboard-summary-grid">
 			<DashboardCard
 				title="Events Today"
 				value={data.events_today || 0}

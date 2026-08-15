@@ -144,7 +144,7 @@ const LogFilters = ({
 	};
 
 	return (
-		<Card className="wptl-log-filters">
+		<Card className="wppm-log-filters">
 			<form
 				onSubmit={handleSubmit((values) => {
 					const payload = {
@@ -165,15 +165,15 @@ const LogFilters = ({
 				})}
 			>
 				<Flex vertical gap={20}>
-					<div className="wptl-log-filters-header">
-						<div className="wptl-log-filters-title">
+					<div className="wppm-log-filters-header">
+						<div className="wppm-log-filters-title">
 							Advanced Filters
 						</div>
 
 						{onClose && (
 							<button
 								type="button"
-								className="wptl-log-filters-close"
+								className="wppm-log-filters-close"
 								onClick={onClose}
 								aria-label="Close advanced filters"
 							>
@@ -182,7 +182,7 @@ const LogFilters = ({
 						)}
 					</div>
 
-					<Flex className="wptl-log-filters-grid" gap={15} wrap>
+					<Flex className="wppm-log-filters-grid" gap={15} wrap>
 						<InputSelectAsync
 							name="user_ids"
 							control={control}
@@ -231,7 +231,7 @@ const LogFilters = ({
 					</Flex>
 
 					{dateRange === 'custom_range' && (
-						<Flex className="wptl-log-filters-grid" gap={15} wrap>
+						<Flex className="wppm-log-filters-grid" gap={15} wrap>
 							<InputDate
 								name="date_from"
 								control={control}
@@ -251,13 +251,13 @@ const LogFilters = ({
 					)}
 
 					{/*
-					 * Extension point: add-ons (e.g. logtrail-pro) can inject
+					 * Extension point: add-ons (e.g. pastmark-pro) can inject
 					 * additional filter fields (bound to the same react-hook-form
 					 * `control`) by filtering this array.
 					 */}
-					<Flex className="wptl-log-filters-grid" gap={15} wrap>
+					<Flex className="wppm-log-filters-grid" gap={15} wrap>
 						{applyFilters(
-							'logtrail.activityLogs.filters.extraFields',
+							'pastmark.activityLogs.filters.extraFields',
 							[],
 							{ control }
 						)}

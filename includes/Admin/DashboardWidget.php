@@ -1,8 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Admin;
+namespace Pastmark\Admin;
 
-use LogTrail\Models\LogTrail_Logs;
-use LogTrail\Utils\Helpers;
+use Pastmark\Models\Pastmark_Logs;
+use Pastmark\Utils\Helpers;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -40,8 +40,8 @@ class DashboardWidget {
 		}
 
 		wp_add_dashboard_widget(
-			'logtrail_latest_logs_widget',
-			esc_html__( 'Latest Activity Logs', 'logtrail' ),
+			'pastmark_latest_logs_widget',
+			esc_html__( 'Latest Activity Logs', 'pastmark' ),
 			array( __CLASS__, 'render_widget' )
 		);
 	}
@@ -53,7 +53,7 @@ class DashboardWidget {
 	 */
 	public static function render_widget() {
 
-		$model = new LogTrail_Logs();
+		$model = new Pastmark_Logs();
 
 		$logs = $model->get_logs(
 			array(
@@ -64,22 +64,22 @@ class DashboardWidget {
 		);
 
 		if ( empty( $logs ) ) {
-			echo '<p>' . esc_html__( 'No activity logs found.', 'logtrail' ) . '</p>';
+			echo '<p>' . esc_html__( 'No activity logs found.', 'pastmark' ) . '</p>';
 
 			return;
 		}
 
 		echo '<table class="widefat striped">';
 		echo '<thead><tr>';
-		echo '<th>' . esc_html__( 'Time', 'logtrail' ) . '</th>';
-		echo '<th>' . esc_html__( 'User', 'logtrail' ) . '</th>';
-		echo '<th>' . esc_html__( 'Event', 'logtrail' ) . '</th>';
-		echo '<th>' . esc_html__( 'Message', 'logtrail' ) . '</th>';
+		echo '<th>' . esc_html__( 'Time', 'pastmark' ) . '</th>';
+		echo '<th>' . esc_html__( 'User', 'pastmark' ) . '</th>';
+		echo '<th>' . esc_html__( 'Event', 'pastmark' ) . '</th>';
+		echo '<th>' . esc_html__( 'Message', 'pastmark' ) . '</th>';
 		echo '</tr></thead>';
 		echo '<tbody>';
 
 		foreach ( $logs as $log ) {
-			$user_label = esc_html__( 'System', 'logtrail' );
+			$user_label = esc_html__( 'System', 'pastmark' );
 
 			if ( ! empty( $log->user_id ) ) {
 				$user = get_userdata( (int) $log->user_id );
@@ -103,8 +103,8 @@ class DashboardWidget {
 		echo '</table>';
 
 		echo '<p style="margin-top:10px;">';
-		echo '<a href="' . esc_url( admin_url( 'admin.php?page=logtrail' ) ) . '">';
-		echo esc_html__( 'View all activity logs', 'logtrail' );
+		echo '<a href="' . esc_url( admin_url( 'admin.php?page=pastmark' ) ) . '">';
+		echo esc_html__( 'View all activity logs', 'pastmark' );
 		echo '</a>';
 		echo '</p>';
 	}
@@ -116,7 +116,7 @@ class DashboardWidget {
 	 */
 	private static function is_enabled(): bool {
 
-		$settings = get_option( 'logtrail_general_settings', array() );
+		$settings = get_option( 'pastmark_general_settings', array() );
 
 		if ( ! is_array( $settings ) ) {
 			return true;

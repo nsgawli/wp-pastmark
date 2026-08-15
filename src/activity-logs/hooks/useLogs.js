@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { fetchLogs } from '../services/logsApi';
 
 const PAGE_URL_PARAM = 'log_page';
-const FILTER_COOKIE_NAME = 'logtrail_activity_log_filters';
+const FILTER_COOKIE_NAME = 'pastmark_activity_log_filters';
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const FILTER_SCHEMA = {
 	user_ids: 'array-int',
@@ -21,7 +21,7 @@ const getInitialFiltersFromServer = () => {
 	}
 
 	const serverFilters =
-		window.logtrailActivityLogsConfig?.initialAdvancedFilters;
+		window.pastmarkActivityLogsConfig?.initialAdvancedFilters;
 
 	if (!serverFilters || typeof serverFilters !== 'object') {
 		return {};

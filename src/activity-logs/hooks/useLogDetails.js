@@ -12,7 +12,7 @@ const useLogDetails = () => {
 
 		try {
 			const response = await apiFetch({
-				path: `/logtrail/v1/logs/${logId}`,
+				path: `/pastmark/v1/logs/${logId}`,
 			});
 
 			setLog(response?.data || null);

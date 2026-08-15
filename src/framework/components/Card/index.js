@@ -12,9 +12,9 @@ const Card = ({
 	return (
 		<div
 			className={`
-				wptl-card
-				${padding ? 'wptl-card-padding' : ''}
-				${clickable ? 'wptl-card-clickable' : ''}
+				wppm-card
+				${padding ? 'wppm-card-padding' : ''}
+				${clickable ? 'wppm-card-clickable' : ''}
 				${className}
 			`}
 			style={style}

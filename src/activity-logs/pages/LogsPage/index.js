@@ -363,7 +363,7 @@ const LogsPage = () => {
 		<>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="LogTrail - User Activity Logger"
+				title="Pastmark - Activity Logs for WordPress"
 			/>
 
 			<Content>
@@ -374,7 +374,7 @@ const LogsPage = () => {
 								search={search}
 								isRefreshing={isRefreshing}
 								actions={applyFilters(
-									'logtrail.activityLogs.toolbarActions',
+									'pastmark.activityLogs.toolbarActions',
 									[],
 									{ search, filters }
 								)}
@@ -417,12 +417,12 @@ const LogsPage = () => {
 							<Flex vertical gap={20}>
 								{appliedFilters.length > 0 && (
 									<Flex
-										className="wptl-applied-filters-summary"
+										className="wppm-applied-filters-summary"
 										align="center"
 										gap={10}
 										wrap
 									>
-										<span className="wptl-applied-filters-summary-label">
+										<span className="wppm-applied-filters-summary-label">
 											Applied Filters:
 										</span>
 

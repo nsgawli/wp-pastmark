@@ -1,18 +1,18 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\RestApi;
+namespace Pastmark\RestApi;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LogTrail\RestApi\Settings\General;
-use LogTrail\RestApi\Logs\Logs;
-use LogTrail\RestApi\Settings\Events;
-use LogTrail\RestApi\Settings\Exclude;
-use LogTrail\RestApi\Settings\DataManagement;
-use LogTrail\RestApi\Settings\EmailReports;
-use LogTrail\RestApi\Dashboard\DashboardController;
+use Pastmark\RestApi\Settings\General;
+use Pastmark\RestApi\Logs\Logs;
+use Pastmark\RestApi\Settings\Events;
+use Pastmark\RestApi\Settings\Exclude;
+use Pastmark\RestApi\Settings\DataManagement;
+use Pastmark\RestApi\Settings\EmailReports;
+use Pastmark\RestApi\Dashboard\DashboardController;
 
 /**
  * REST API Loader.

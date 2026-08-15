@@ -96,50 +96,50 @@ const LogsTimeline = ({
 	const groups = groupLogsByDay(data);
 
 	return (
-		<div className="wptl-logs-timeline">
+		<div className="wppm-logs-timeline">
 			{loading && hasRows && (
-				<div className="wptl-timeline-loading-overlay">
+				<div className="wppm-timeline-loading-overlay">
 					<Spinner />
 				</div>
 			)}
 
 			{loading && !hasRows && (
-				<div className="wptl-timeline-loader">
+				<div className="wppm-timeline-loader">
 					<Spinner />
 				</div>
 			)}
 
 			{!loading && !hasRows && (
-				<div className="wptl-timeline-empty">{emptyText}</div>
+				<div className="wppm-timeline-empty">{emptyText}</div>
 			)}
 
 			{hasRows &&
 				groups.map((group) => (
-					<div className="wptl-timeline-group" key={group.key}>
-						<div className="wptl-timeline-day-header">
-							<span className="wptl-timeline-day-label">
+					<div className="wppm-timeline-group" key={group.key}>
+						<div className="wppm-timeline-day-header">
+							<span className="wppm-timeline-day-label">
 								{group.label}
 							</span>
-							<span className="wptl-timeline-day-count">
+							<span className="wppm-timeline-day-count">
 								{group.items.length}{' '}
 								{group.items.length === 1 ? 'event' : 'events'}
 							</span>
 						</div>
 
-						<div className="wptl-timeline-list">
+						<div className="wppm-timeline-list">
 							{group.items.map((log) => {
 								const timeAgo = getTimeAgo(log.timestamp);
 
 								return (
 									<div
 										key={log.id}
-										className={`wptl-timeline-item${
+										className={`wppm-timeline-item${
 											activeRowId === log.id
-												? ' wptl-timeline-item-active'
+												? ' wppm-timeline-item-active'
 												: ''
 										}${
 											onRowClick
-												? ' wptl-timeline-item-clickable'
+												? ' wppm-timeline-item-clickable'
 												: ''
 										}`}
 										onClick={(event) => {
@@ -149,21 +149,21 @@ const LogsTimeline = ({
 										}}
 									>
 										<span
-											className={`wptl-timeline-marker wptl-timeline-marker-${log.severity || 'info'}`}
+											className={`wppm-timeline-marker wppm-timeline-marker-${log.severity || 'info'}`}
 										/>
 
-										<div className="wptl-timeline-content">
-											<div className="wptl-timeline-item-header">
-												<span className="wptl-timeline-user">
+										<div className="wppm-timeline-content">
+											<div className="wppm-timeline-item-header">
+												<span className="wppm-timeline-user">
 													{log.user || '-'}
 												</span>
 
-												<span className="wptl-timeline-time">
+												<span className="wppm-timeline-time">
 													{log.date || '-'}
 												</span>
 
 												{timeAgo && (
-													<span className="wptl-timeline-time-ago">
+													<span className="wppm-timeline-time-ago">
 														({timeAgo})
 													</span>
 												)}
@@ -175,7 +175,7 @@ const LogsTimeline = ({
 												)}
 
 												<span
-													className="wptl-timeline-actions"
+													className="wppm-timeline-actions"
 													onClick={(event) => {
 														event.stopPropagation();
 													}}
@@ -193,26 +193,26 @@ const LogsTimeline = ({
 												</span>
 											</div>
 
-											<div className="wptl-timeline-item-body">
-												<span className="wptl-timeline-message">
+											<div className="wppm-timeline-item-body">
+												<span className="wppm-timeline-message">
 													{log.message || '-'}
 												</span>
 											</div>
 
-											<div className="wptl-timeline-item-footer">
+											<div className="wppm-timeline-item-footer">
 												{log.action_label && (
-													<span className="wptl-timeline-action">
+													<span className="wppm-timeline-action">
 														{log.action_label}
 													</span>
 												)}
 
 												{log.action_label && (
-													<span className="wptl-timeline-footer-sep">
+													<span className="wppm-timeline-footer-sep">
 														&bull;
 													</span>
 												)}
 
-												<span className="wptl-timeline-id">
+												<span className="wppm-timeline-id">
 													#{log.id}
 												</span>
 											</div>

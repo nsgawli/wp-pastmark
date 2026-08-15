@@ -7,7 +7,7 @@ const Badge = ({
 	className = '',
 }) => {
 	return (
-		<span className={`wptl-badge wptl-badge-${type} ${className}`}>
+		<span className={`wppm-badge wppm-badge-${type} ${className}`}>
 			{children}
 		</span>
 	);

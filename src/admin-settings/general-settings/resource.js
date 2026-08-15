@@ -3,38 +3,38 @@ import apiCache from '@framework/middlewares/apiCatche';
 import { __ } from '@wordpress/i18n';
 
 export const eventTimestampOptions = [
-	{ label: __('UTC', 'logtrail'), value: 'utc' },
-	{ label: __('WordPress Local', 'logtrail'), value: 'local' },
+	{ label: __('UTC', 'pastmark'), value: 'utc' },
+	{ label: __('WordPress Local', 'pastmark'), value: 'local' },
 ]
 
 export const logDetailsViewModeOptions = [
-	{ label: __('Drawer', 'logtrail'), value: 'drawer' },
-	{ label: __('Dedicated details page', 'logtrail'), value: 'single_page' },
+	{ label: __('Drawer', 'pastmark'), value: 'drawer' },
+	{ label: __('Dedicated details page', 'pastmark'), value: 'single_page' },
 ];
 
 export const logsPageViewModeOptions = [
-	{ label: __('Table', 'logtrail'), value: 'table' },
-	{ label: __('Timeline', 'logtrail'), value: 'timeline' },
+	{ label: __('Table', 'pastmark'), value: 'table' },
+	{ label: __('Timeline', 'pastmark'), value: 'timeline' },
 ];
 
 export const autoDeleteLogsUnitOptions = [
-	{ label: __('Day(s)', 'logtrail'), value: 'day' },
-	{ label: __('Month(s)', 'logtrail'), value: 'month' },
-	{ label: __('Year(s)', 'logtrail'), value: 'year' },
+	{ label: __('Day(s)', 'pastmark'), value: 'day' },
+	{ label: __('Month(s)', 'pastmark'), value: 'month' },
+	{ label: __('Year(s)', 'pastmark'), value: 'year' },
 ];
 
 export const getGeneralSettings = () => {
 	return apiFetch({
-		path: '/logtrail/v1/settings/general-settings',
+		path: '/pastmark/v1/settings/general-settings',
 		method: 'GET',
 		useApiCache: true,
 	});
 }
 
 export const updateGeneralSettings = (data) => {
-	apiCache.clear('/logtrail/v1/settings/general-settings');
+	apiCache.clear('/pastmark/v1/settings/general-settings');
 	return apiFetch({
-		path: '/logtrail/v1/settings/general-settings',
+		path: '/pastmark/v1/settings/general-settings',
 		method: 'PUT',
 		data,
 	});
@@ -42,7 +42,7 @@ export const updateGeneralSettings = (data) => {
 
 export const resetGeneralSettings = () => {
 	return apiFetch({
-		path: '/logtrail/v1/settings/general-settings/defaults',
+		path: '/pastmark/v1/settings/general-settings/defaults',
 		method: 'GET',
 		useApiCache: true,
 	});

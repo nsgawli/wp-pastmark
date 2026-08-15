@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\ActivityLoggers;
+namespace Pastmark\ActivityLoggers;
 
-use LogTrail\Constants\Severity;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\Constants\Severity;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 use WP_User;
 
 defined( 'ABSPATH' ) || exit;
@@ -445,7 +445,7 @@ class UserActivityLogger extends AbstractLogger {
 	 */
 	protected function format_role_list( array $roles ): string {
 
-		return ! empty( $roles ) ? implode( ', ', $roles ) : __( 'no role', 'logtrail' );
+		return ! empty( $roles ) ? implode( ', ', $roles ) : __( 'no role', 'pastmark' );
 	}
 
 	/**

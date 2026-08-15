@@ -1,6 +1,6 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\Constants;
+namespace Pastmark\Constants;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -101,17 +101,17 @@ class Events {
 		}
 
 		$labels = array(
-			self::USER           => __( 'Users', 'logtrail' ),
-			self::AUTHENTICATION => __( 'Authentication', 'logtrail' ),
-			self::CONTENT        => __( 'Content', 'logtrail' ),
-			self::COMMENT        => __( 'Comments', 'logtrail' ),
-			self::MEDIA          => __( 'Media', 'logtrail' ),
-			self::PLUGIN         => __( 'Plugins', 'logtrail' ),
-			self::THEME          => __( 'Themes', 'logtrail' ),
-			self::SETTINGS       => __( 'Settings', 'logtrail' ),
-			self::WIDGET         => __( 'Widgets', 'logtrail' ),
-			self::MENU           => __( 'Menus', 'logtrail' ),
-			self::WOOCOMMERCE    => __( 'WooCommerce', 'logtrail' ),
+			self::USER           => __( 'Users', 'pastmark' ),
+			self::AUTHENTICATION => __( 'Authentication', 'pastmark' ),
+			self::CONTENT        => __( 'Content', 'pastmark' ),
+			self::COMMENT        => __( 'Comments', 'pastmark' ),
+			self::MEDIA          => __( 'Media', 'pastmark' ),
+			self::PLUGIN         => __( 'Plugins', 'pastmark' ),
+			self::THEME          => __( 'Themes', 'pastmark' ),
+			self::SETTINGS       => __( 'Settings', 'pastmark' ),
+			self::WIDGET         => __( 'Widgets', 'pastmark' ),
+			self::MENU           => __( 'Menus', 'pastmark' ),
+			self::WOOCOMMERCE    => __( 'WooCommerce', 'pastmark' ),
 		);
 
 		return $labels;

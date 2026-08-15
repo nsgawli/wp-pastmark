@@ -10,23 +10,23 @@ const EmptyState = ({
 }) => {
 	return (
 		<Flex
-			className="wptl-empty-state"
+			className="wppm-empty-state"
 			vertical
 			align="center"
 			gap={15}
 		>
 			{icon && (
-				<div className="wptl-empty-state-icon">
+				<div className="wppm-empty-state-icon">
 					{icon}
 				</div>
 			)}
 
-			<div className="wptl-empty-state-title">
+			<div className="wppm-empty-state-title">
 				{title}
 			</div>
 
 			{description && (
-				<div className="wptl-empty-state-description">
+				<div className="wppm-empty-state-description">
 					{description}
 				</div>
 			)}

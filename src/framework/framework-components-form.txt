@@ -22,7 +22,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React, { useState } from 'react';
@@ -213,7 +213,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -311,7 +311,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -407,7 +407,7 @@ Props:
 * multiple
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -505,7 +505,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -601,7 +601,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -694,7 +694,7 @@ Props:
 * isDisabled
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React, { useEffect } from 'react';
@@ -801,7 +801,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -890,7 +890,7 @@ Props:
 * required
 * info
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -946,7 +946,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1060,7 +1060,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1211,7 +1211,7 @@ Props:
 * placeholder
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1304,7 +1304,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1426,7 +1426,7 @@ Props:
 * className
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1511,7 +1511,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1632,7 +1632,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1741,7 +1741,7 @@ Props:
 * extaInfo
 * style
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -1853,7 +1853,7 @@ Used In:
 Props:
 * None
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import Input from './Input';
@@ -1971,7 +1971,7 @@ Props:
 * styles
 * formatOptionLabel
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';
@@ -2109,7 +2109,7 @@ Props:
 * styles
 * formatOptionLabel
 Notes:
-* Uses wptl prefixed CSS classes when defined in component styles.
+* Uses wppm prefixed CSS classes when defined in component styles.
 * JS and CSS sections are copied from index.js and index.css.
 === JS ===
 import React from 'react';

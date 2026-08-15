@@ -1,14 +1,14 @@
-.wptl-dashboard-widget-header {
+.wppm-dashboard-widget-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 }
 
-.wptl-dashboard-chart-container {
+.wppm-dashboard-chart-container {
 	width: 100%;
 }
 
-.wptl-dashboard-chart-loading {
+.wppm-dashboard-chart-loading {
 	display: flex;
 
 	align-items: center;

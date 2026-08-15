@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\RestApi\Settings;
+namespace Pastmark\RestApi\Settings;
 
-use LogTrail\Installation\Settings\DataManagement as InstallationDataManagement;
-use LogTrail\Models\LogTrail_Logs;
-use LogTrail\RestApi\BaseController;
+use Pastmark\Installation\Settings\DataManagement as InstallationDataManagement;
+use Pastmark\Models\Pastmark_Logs;
+use Pastmark\RestApi\BaseController;
 use WP_REST_Request;
 
 // Exit if accessed directly.
@@ -74,7 +74,7 @@ class DataManagement extends BaseController {
 	public function get_settings() {
 
 		$settings = get_option(
-			'logtrail_data_management_settings',
+			'pastmark_data_management_settings',
 			InstallationDataManagement::get_default_settings()
 		);
 
@@ -99,7 +99,7 @@ class DataManagement extends BaseController {
 			'removeDataOnUninstall' => (bool) $request->get_param( 'removeDataOnUninstall' ),
 		);
 
-		update_option( 'logtrail_data_management_settings', $settings );
+		update_option( 'pastmark_data_management_settings', $settings );
 
 		return $this->success_response( $settings );
 	}
@@ -111,7 +111,7 @@ class DataManagement extends BaseController {
 	 */
 	public function delete_old_data() {
 
-		$logs_model = new LogTrail_Logs();
+		$logs_model = new Pastmark_Logs();
 		$deleted    = $logs_model->delete_all_logs();
 
 		return $this->success_response(

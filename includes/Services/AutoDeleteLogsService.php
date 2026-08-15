@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Services;
+namespace Pastmark\Services;
 
-use LogTrail\Models\LogTrail_Logs;
+use Pastmark\Models\Pastmark_Logs;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ class AutoDeleteLogsService {
 	/**
 	 * Cron hook name.
 	 */
-	private const CRON_HOOK = 'logtrail_auto_delete_logs_cron';
+	private const CRON_HOOK = 'pastmark_auto_delete_logs_cron';
 
 	/**
 	 * Initialize hooks.
@@ -30,7 +30,7 @@ class AutoDeleteLogsService {
 		add_action( self::CRON_HOOK, array( __CLASS__, 'run_cleanup' ) );
 
 		add_action(
-			'update_option_logtrail_general_settings',
+			'update_option_pastmark_general_settings',
 			array( __CLASS__, 'on_settings_updated' ),
 			10,
 			2
@@ -86,7 +86,7 @@ class AutoDeleteLogsService {
 			return;
 		}
 
-		$model = new LogTrail_Logs();
+		$model = new Pastmark_Logs();
 		$model->delete_logs_older_than( $cutoff );
 	}
 
@@ -97,7 +97,7 @@ class AutoDeleteLogsService {
 	 */
 	private static function is_enabled(): bool {
 
-		$settings = get_option( 'logtrail_general_settings', array() );
+		$settings = get_option( 'pastmark_general_settings', array() );
 
 		if ( ! is_array( $settings ) ) {
 			return true;
@@ -117,7 +117,7 @@ class AutoDeleteLogsService {
 	 */
 	private static function get_cutoff_datetime_utc(): string {
 
-		$settings = get_option( 'logtrail_general_settings', array() );
+		$settings = get_option( 'pastmark_general_settings', array() );
 
 		$amount = 3;
 		if ( is_array( $settings ) && isset( $settings['autoDeleteTime'] ) ) {

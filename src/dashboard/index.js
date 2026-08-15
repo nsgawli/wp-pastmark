@@ -8,7 +8,7 @@ import { HashRouter as Router } from 'react-router-dom';
 import './index.css';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const element = document.getElementById('logtrail-dashboard');
+	const element = document.getElementById('pastmark-dashboard');
 	ReactDOM.createRoot(element).render(
 		<Router>
 			<ScreenSizeProvider element={element}>

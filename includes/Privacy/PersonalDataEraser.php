@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Privacy;
+namespace Pastmark\Privacy;
 
-use LogTrail\Models\LogTrail_Logs;
+use Pastmark\Models\Pastmark_Logs;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers LogTrail activity logs with the WordPress "Erase Personal Data" tool.
+ * Registers Pastmark activity logs with the WordPress "Erase Personal Data" tool.
  *
  * Activity log entries are kept for security/audit purposes; erasure
  * anonymizes the IP address recorded on the requester's log entries
@@ -35,8 +35,8 @@ class PersonalDataEraser {
 	 */
 	public static function register_eraser( $erasers ) {
 
-		$erasers['logtrail'] = array(
-			'eraser_friendly_name' => __( 'LogTrail User Activity Logs', 'logtrail' ),
+		$erasers['pastmark'] = array(
+			'eraser_friendly_name' => __( 'Pastmark User Activity Logs', 'pastmark' ),
 			'callback'             => array( __CLASS__, 'erase' ),
 		);
 
@@ -71,13 +71,13 @@ class PersonalDataEraser {
 			return $response;
 		}
 
-		$logs_model = new LogTrail_Logs();
+		$logs_model = new Pastmark_Logs();
 
 		$anonymized = $logs_model->anonymize_logs_for_user( $user->ID );
 
 		if ( $anonymized > 0 ) {
 			$response['items_removed'] = true;
-			$response['messages'][]    = __( 'LogTrail anonymized the IP addresses recorded on your account activity log entries. The activity entries themselves were retained for security and audit purposes.', 'logtrail' );
+			$response['messages'][]    = __( 'Pastmark anonymized the IP addresses recorded on your account activity log entries. The activity entries themselves were retained for security and audit purposes.', 'pastmark' );
 		}
 
 		return $response;

@@ -1,10 +1,10 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\RestApi\Settings;
+namespace Pastmark\RestApi\Settings;
 
-use LogTrail\Installation\Settings\EmailReports as InstallationEmailReports;
-use LogTrail\RestApi\BaseController;
-use LogTrail\Services\EmailReportsService;
+use Pastmark\Installation\Settings\EmailReports as InstallationEmailReports;
+use Pastmark\RestApi\BaseController;
+use Pastmark\Services\EmailReportsService;
 use WP_REST_Request;
 
 defined( 'ABSPATH' ) || exit;
@@ -81,7 +81,7 @@ class EmailReports extends BaseController {
 	 */
 	public function get_settings() {
 
-		$settings = get_option( 'logtrail_email_reports_settings', array() );
+		$settings = get_option( 'pastmark_email_reports_settings', array() );
 
 		if ( empty( $settings ) || ! is_array( $settings ) ) {
 			$settings = InstallationEmailReports::get_default_settings();
@@ -118,7 +118,7 @@ class EmailReports extends BaseController {
 			),
 		);
 
-		update_option( 'logtrail_email_reports_settings', $settings );
+		update_option( 'pastmark_email_reports_settings', $settings );
 
 		return $this->success_response( $settings );
 	}
@@ -138,14 +138,14 @@ class EmailReports extends BaseController {
 		if ( ! in_array( $report_type, array( 'daily', 'weekly' ), true ) ) {
 			return $this->error_response(
 				'invalid_report_type',
-				__( 'Invalid report type.', 'logtrail' )
+				__( 'Invalid report type.', 'pastmark' )
 			);
 		}
 
 		if ( empty( $recipients ) ) {
 			return $this->error_response(
 				'missing_recipients',
-				__( 'Please add at least one recipient email.', 'logtrail' )
+				__( 'Please add at least one recipient email.', 'pastmark' )
 			);
 		}
 
@@ -154,7 +154,7 @@ class EmailReports extends BaseController {
 		if ( ! $sent ) {
 			return $this->error_response(
 				'email_send_failed',
-				__( 'Unable to send test email. Please verify your mail configuration.', 'logtrail' )
+				__( 'Unable to send test email. Please verify your mail configuration.', 'pastmark' )
 			);
 		}
 

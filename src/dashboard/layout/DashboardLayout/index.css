@@ -1,26 +1,26 @@
-.wptl-dashboard-grid {
+.wppm-dashboard-grid {
 	width: 100%;
 }
 
-.wptl-dashboard-chart-half {
+.wppm-dashboard-chart-half {
 	flex: 1 1 calc(50% - 10px);
 	min-width: 320px;
 	display: flex;
 }
 
-.wptl-dashboard-chart-half > .wptl-card {
+.wppm-dashboard-chart-half > .wppm-card {
 	width: 100%;
 	height: 100%;
 }
 
 @media (max-width: 960px) {
-	.wptl-dashboard-chart-half {
+	.wppm-dashboard-chart-half {
 		flex-basis: 100%;
 	}
 }
 
 @media (max-width: 640px) {
-	.wptl-dashboard-chart-half {
+	.wppm-dashboard-chart-half {
 		min-width: 100%;
 	}
 }

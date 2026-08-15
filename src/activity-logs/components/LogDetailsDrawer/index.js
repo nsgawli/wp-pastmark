@@ -35,11 +35,11 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 	}
 
 	/**
-	 * Extension point: add-ons (e.g. logtrail-pro) can inject additional log
+	 * Extension point: add-ons (e.g. pastmark-pro) can inject additional log
 	 * actions (e.g. an "Export" button) via this filter, evaluated at render
 	 * time so it doesn't matter that free's script loads before pro's.
 	 */
-	const logActions = applyFilters('logtrail.activityLogs.logActions', [], {
+	const logActions = applyFilters('pastmark.activityLogs.logActions', [], {
 		log,
 	});
 
@@ -125,7 +125,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 			title: 'Before',
 			dataIndex: 'before',
 			render: (value) => (
-				<span className="wptl-drawer-diff-before">{value}</span>
+				<span className="wppm-drawer-diff-before">{value}</span>
 			),
 		},
 		{
@@ -133,7 +133,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 			title: 'After',
 			dataIndex: 'after',
 			render: (value) => (
-				<span className="wptl-drawer-diff-after">{value}</span>
+				<span className="wppm-drawer-diff-after">{value}</span>
 			),
 		},
 	];
@@ -145,9 +145,9 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 
 	return (
 		<Drawer isOpen={isOpen} onClose={onClose}>
-			<Flex className="wptl-drawer-log-details" vertical gap={20}>
+			<Flex className="wppm-drawer-log-details" vertical gap={20}>
 				<Flex
-					className="wptl-drawer-log-header"
+					className="wppm-drawer-log-header"
 					justify="space-between"
 					align="center"
 					wrap
@@ -156,12 +156,12 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 					<div>
 						<Title level={3}>Log #{log.id}</Title>
 
-						<div className="wptl-drawer-log-subtitle">
+						<div className="wppm-drawer-log-subtitle">
 							<EventBadge event={log.event_label} />
 						</div>
 					</div>
 
-					<Flex className="wptl-drawer-log-header-actions" gap={8}>
+					<Flex className="wppm-drawer-log-header-actions" gap={8}>
 						{logActions.map((action) => (
 							<Button
 								key={action.key}
@@ -192,22 +192,22 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 					<Flex vertical gap={15}>
 						<Title level={5}>Overview</Title>
 
-						<div className="wptl-drawer-log-details-grid">
-							<div className="wptl-drawer-log-details-item">
-								<span className="wptl-drawer-log-details-label">
+						<div className="wppm-drawer-log-details-grid">
+							<div className="wppm-drawer-log-details-item">
+								<span className="wppm-drawer-log-details-label">
 									User
 								</span>
-								<span className="wptl-drawer-log-details-value">
+								<span className="wppm-drawer-log-details-value">
 									{log.user || '-'}
 								</span>
 							</div>
 
 							{log.object_label && (
-								<div className="wptl-drawer-log-details-item">
-									<span className="wptl-drawer-log-details-label">
+								<div className="wppm-drawer-log-details-item">
+									<span className="wppm-drawer-log-details-label">
 										Target
 									</span>
-									<span className="wptl-drawer-log-details-value">
+									<span className="wppm-drawer-log-details-value">
 										{log.object_url ? (
 											<a
 												href={log.object_url}
@@ -223,36 +223,36 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 								</div>
 							)}
 
-							<div className="wptl-drawer-log-details-item">
-								<span className="wptl-drawer-log-details-label">
+							<div className="wppm-drawer-log-details-item">
+								<span className="wppm-drawer-log-details-label">
 									Severity
 								</span>
 								<SeverityBadge severity={log.severity} />
 							</div>
 
-							<div className="wptl-drawer-log-details-item">
-								<span className="wptl-drawer-log-details-label">
+							<div className="wppm-drawer-log-details-item">
+								<span className="wppm-drawer-log-details-label">
 									Action
 								</span>
-								<span className="wptl-drawer-log-details-value">
+								<span className="wppm-drawer-log-details-value">
 									{log.action_label || '-'}
 								</span>
 							</div>
 
-							<div className="wptl-drawer-log-details-item">
-								<span className="wptl-drawer-log-details-label">
+							<div className="wppm-drawer-log-details-item">
+								<span className="wppm-drawer-log-details-label">
 									Date
 								</span>
-								<span className="wptl-drawer-log-details-value">
+								<span className="wppm-drawer-log-details-value">
 									{log.date}
 								</span>
 							</div>
 
-							<div className="wptl-drawer-log-details-item">
-								<span className="wptl-drawer-log-details-label">
+							<div className="wppm-drawer-log-details-item">
+								<span className="wppm-drawer-log-details-label">
 									IP Address
 								</span>
-								<span className="wptl-drawer-log-details-value">
+								<span className="wppm-drawer-log-details-value">
 									{log.ip}
 								</span>
 							</div>
@@ -264,7 +264,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 					<Flex vertical gap={10}>
 						<Title level={5}>Message</Title>
 
-						<div className="wptl-drawer-log-section-content">
+						<div className="wppm-drawer-log-section-content">
 							{log.message || '-'}
 						</div>
 					</Flex>
@@ -276,7 +276,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 							<Title level={5}>Changes</Title>
 
 							<Table
-								className="wptl-drawer-log-table"
+								className="wppm-drawer-log-table"
 								columns={diffColumns}
 								data={diffRows}
 								rowKey="key"
@@ -291,7 +291,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 							<Title level={5}>Details</Title>
 
 							<Table
-								className="wptl-drawer-log-table"
+								className="wppm-drawer-log-table"
 								columns={detailColumns}
 								data={detailRows}
 								rowKey="key"
@@ -306,7 +306,7 @@ const LogDetailsDrawer = ({ log = null, isOpen = false, onClose = null }) => {
 							<Title level={5}>Technical Details</Title>
 
 							<Table
-								className="wptl-drawer-log-table wptl-drawer-log-table-muted"
+								className="wppm-drawer-log-table wppm-drawer-log-table-muted"
 								columns={detailColumns}
 								data={technicalRows}
 								rowKey="key"

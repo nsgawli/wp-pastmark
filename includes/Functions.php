@@ -1,11 +1,11 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 
-namespace LogTrail;
+namespace Pastmark;
 
 /**
- * LogTrail Functions
+ * Pastmark Functions
  *
- * @package LogTrailPro
+ * @package Pastmark
  */
 class Functions {
 	/**

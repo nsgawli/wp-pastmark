@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\RestApi\Settings;
+namespace Pastmark\RestApi\Settings;
 
-use LogTrail\Installation\Settings\Exclude as InstallationExclude;
-use LogTrail\RestApi\BaseController;
+use Pastmark\Installation\Settings\Exclude as InstallationExclude;
+use Pastmark\RestApi\BaseController;
 use WP_REST_Request;
 
 // Exit if accessed directly.
@@ -125,7 +125,7 @@ class Exclude extends BaseController {
 
 		$settings = wp_parse_args(
 			get_option(
-				'logtrail_exclude_settings',
+				'pastmark_exclude_settings',
 				array()
 			),
 			InstallationExclude::get_default_settings()
@@ -159,7 +159,7 @@ class Exclude extends BaseController {
 		);
 
 		update_option(
-			'logtrail_exclude_settings',
+			'pastmark_exclude_settings',
 			$settings
 		);
 

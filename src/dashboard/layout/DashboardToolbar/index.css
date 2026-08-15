@@ -1,26 +1,26 @@
-.wptl-dashboard-toolbar {
+.wppm-dashboard-toolbar {
 	width: 100%;
 }
 
-.wptl-dashboard-toolbar-inner {
+.wppm-dashboard-toolbar-inner {
 	width: 100%;
 }
 
-.wptl-dashboard-range-select {
+.wppm-dashboard-range-select {
 	width: 220px;
 	max-width: 100%;
 }
 
-.wptl-dashboard-refresh-button {
+.wppm-dashboard-refresh-button {
 	white-space: nowrap;
 }
 
 @media (max-width: 768px) {
-	.wptl-dashboard-range-select {
+	.wppm-dashboard-range-select {
 		width: 100%;
 	}
 
-	.wptl-dashboard-refresh-button {
+	.wppm-dashboard-refresh-button {
 		width: 100%;
 		justify-content: center;
 	}

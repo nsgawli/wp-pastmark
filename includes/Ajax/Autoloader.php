@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Ajax;
+namespace Pastmark\Ajax;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {

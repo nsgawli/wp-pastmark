@@ -1,10 +1,10 @@
-.wptl-logs-timeline {
+.wppm-logs-timeline {
 	width: 100%;
 	box-sizing: border-box;
 	position: relative;
 }
 
-.wptl-timeline-loading-overlay {
+.wppm-timeline-loading-overlay {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -16,32 +16,32 @@
 	border-radius: 12px;
 }
 
-.wptl-timeline-loader {
+.wppm-timeline-loader {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 40px 0;
 }
 
-.wptl-timeline-empty {
+.wppm-timeline-empty {
 	padding: 50px 20px;
 	text-align: center;
 	color: #646970;
 	font-size: 13px;
 }
 
-.wptl-timeline-group + .wptl-timeline-group {
+.wppm-timeline-group + .wppm-timeline-group {
 	margin-top: 26px;
 }
 
-.wptl-timeline-day-header {
+.wppm-timeline-day-header {
 	display: flex;
 	align-items: baseline;
 	gap: 10px;
 	padding: 4px 0 12px;
 }
 
-.wptl-timeline-day-label {
+.wppm-timeline-day-label {
 	font-size: 13px;
 	font-weight: 700;
 	color: #101828;
@@ -49,17 +49,17 @@
 	letter-spacing: 0.03em;
 }
 
-.wptl-timeline-day-count {
+.wppm-timeline-day-count {
 	font-size: 12px;
 	color: #667085;
 }
 
-.wptl-timeline-list {
+.wppm-timeline-list {
 	position: relative;
 	padding-left: 28px;
 }
 
-.wptl-timeline-list::before {
+.wppm-timeline-list::before {
 	content: '';
 	position: absolute;
 	left: 9px;
@@ -69,7 +69,7 @@
 	background: #e4e9f0;
 }
 
-.wptl-timeline-item {
+.wppm-timeline-item {
 	position: relative;
 	display: flex;
 	gap: 14px;
@@ -82,25 +82,25 @@
 	transition: background-color 0.16s ease, box-shadow 0.16s ease;
 }
 
-.wptl-timeline-item:last-child {
+.wppm-timeline-item:last-child {
 	margin-bottom: 0;
 }
 
-.wptl-timeline-item-clickable {
+.wppm-timeline-item-clickable {
 	cursor: pointer;
 }
 
-.wptl-timeline-item-clickable:hover {
+.wppm-timeline-item-clickable:hover {
 	background: #f4f8ff;
 	box-shadow: 0 10px 22px rgba(16, 24, 40, 0.08);
 }
 
-.wptl-timeline-item-active {
+.wppm-timeline-item-active {
 	background: #eaf3ff;
 	border-color: #bfd8ff;
 }
 
-.wptl-timeline-marker {
+.wppm-timeline-marker {
 	position: absolute;
 	left: -27px;
 	top: 18px;
@@ -113,23 +113,23 @@
 	flex-shrink: 0;
 }
 
-.wptl-timeline-marker-success {
+.wppm-timeline-marker-success {
 	background: #12b76a;
 }
 
-.wptl-timeline-marker-info {
+.wppm-timeline-marker-info {
 	background: #2e90fa;
 }
 
-.wptl-timeline-marker-warning {
+.wppm-timeline-marker-warning {
 	background: #f79009;
 }
 
-.wptl-timeline-marker-error {
+.wppm-timeline-marker-error {
 	background: #f04438;
 }
 
-.wptl-timeline-content {
+.wppm-timeline-content {
 	flex: 1;
 	min-width: 0;
 	display: flex;
@@ -137,21 +137,21 @@
 	gap: 8px;
 }
 
-.wptl-timeline-item-header {
+.wppm-timeline-item-header {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 	flex-wrap: wrap;
 }
 
-.wptl-timeline-user {
+.wppm-timeline-user {
 	font-size: 13px;
 	font-weight: 600;
 	color: #101828;
 	white-space: nowrap;
 }
 
-.wptl-timeline-time {
+.wppm-timeline-time {
 	font-size: 12px;
 	font-weight: 600;
 	color: #475467;
@@ -159,17 +159,17 @@
 	white-space: nowrap;
 }
 
-.wptl-timeline-time-ago {
+.wppm-timeline-time-ago {
 	font-size: 12px;
 	color: #98a2b3;
 	white-space: nowrap;
 }
 
-.wptl-timeline-actions {
+.wppm-timeline-actions {
 	margin-left: auto;
 }
 
-.wptl-timeline-message {
+.wppm-timeline-message {
 	font-size: 13px;
 	line-height: 1.5;
 	color: #1f2937;
@@ -177,7 +177,7 @@
 	word-break: break-word;
 }
 
-.wptl-timeline-item-footer {
+.wppm-timeline-item-footer {
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -186,28 +186,28 @@
 	color: #667085;
 }
 
-.wptl-timeline-footer-sep {
+.wppm-timeline-footer-sep {
 	color: #d0d5dd;
 }
 
-.wptl-timeline-id {
+.wppm-timeline-id {
 	font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 640px) {
-	.wptl-timeline-list {
+	.wppm-timeline-list {
 		padding-left: 20px;
 	}
 
-	.wptl-timeline-marker {
+	.wppm-timeline-marker {
 		left: -19px;
 	}
 
-	.wptl-timeline-item {
+	.wppm-timeline-item {
 		padding: 12px;
 	}
 
-	.wptl-timeline-actions {
+	.wppm-timeline-actions {
 		margin-left: 0;
 	}
 }

@@ -1,10 +1,10 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers;
+namespace Pastmark\ActivityLoggers;
 
-use LogTrail\Constants\Severity;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\Constants\Severity;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;

@@ -25,11 +25,11 @@ const SeverityTooltip = ({ active, payload }) => {
 	const value = Number(entry?.value || 0).toLocaleString();
 
 	return (
-		<div className="wptl-dashboard-chart-tooltip">
-			<div className="wptl-dashboard-chart-tooltip-label">
+		<div className="wppm-dashboard-chart-tooltip">
+			<div className="wppm-dashboard-chart-tooltip-label">
 				{entry?.name}
 			</div>
-			<div className="wptl-dashboard-chart-tooltip-value">
+			<div className="wppm-dashboard-chart-tooltip-value">
 				{value} events
 			</div>
 		</div>
@@ -42,8 +42,8 @@ const SeverityDistribution = ({ data = [] }) => {
 
 	if (!data.length) {
 		return (
-			<Card className="wptl-dashboard-donut-card">
-				<h3 className="wptl-dashboard-chart-title">
+			<Card className="wppm-dashboard-donut-card">
+				<h3 className="wppm-dashboard-chart-title">
 					Severity Distribution
 				</h3>
 
@@ -58,12 +58,12 @@ const SeverityDistribution = ({ data = [] }) => {
 	}));
 
 	return (
-		<Card className="wptl-dashboard-donut-card">
-			<h3 className="wptl-dashboard-chart-title">
+		<Card className="wppm-dashboard-donut-card">
+			<h3 className="wppm-dashboard-chart-title">
 				Severity Distribution
 			</h3>
 
-			<div className="wptl-dashboard-donut-chart">
+			<div className="wppm-dashboard-donut-chart">
 				<ResponsiveContainer width="100%" height="100%">
 					<PieChart>
 						<Pie

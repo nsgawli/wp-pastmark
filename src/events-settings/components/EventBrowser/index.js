@@ -104,20 +104,20 @@ const EventBrowser = ({
 
 	if (search.trim().length > 0) {
 		return (
-			<div className="wptl-event-browser">
+			<div className="wppm-event-browser">
 				{searchRows.map((row) => (
 					<Card
 						key={`${row.eventKey}-${row.action.key}`}
-						className="wptl-events-card"
+						className="wppm-events-card"
 					>
 						<Flex justify="space-between" align="center">
-							<div className="wptl-event-info">
-								<div className="wptl-event-title">
+							<div className="wppm-event-info">
+								<div className="wppm-event-title">
 									{row.action.label}
 								</div>
 
 								{row.action.description && (
-									<div className="wptl-event-description">
+									<div className="wppm-event-description">
 										{row.action.description}
 									</div>
 								)}
@@ -158,7 +158,7 @@ const EventBrowser = ({
 	}
 
 	return (
-		<div className="wptl-event-browser">
+		<div className="wppm-event-browser">
 			{Object.entries(groups).map(([eventKey, group]) => {
 				const enabledCount = group.actions.filter(
 					(action) => settings?.[eventKey]?.[action.key] ?? true
@@ -168,24 +168,24 @@ const EventBrowser = ({
 				return (
 					<Card
 						key={eventKey}
-						className="wptl-events-card"
+						className="wppm-events-card"
 						clickable
 						onClick={() => toggleCategory(eventKey)}
 					>
-						<div className="wptl-event-group-header">
+						<div className="wppm-event-group-header">
 							<Flex
-								className="wptl-event-group-meta"
+								className="wppm-event-group-meta"
 								align="center"
 								gap={10}
 							>
 								<button
 									type="button"
-									className="wptl-event-group-toggle"
+									className="wppm-event-group-toggle"
 									aria-expanded={isExpanded}
 								>
 									<span
 										aria-hidden="true"
-										className="wptl-event-group-chevron"
+										className="wppm-event-group-chevron"
 									>
 										{isExpanded ? '▼' : '▶'}
 									</span>
@@ -197,10 +197,10 @@ const EventBrowser = ({
 								</Badge>
 							</Flex>
 
-							<Flex className="wptl-event-group-controls" gap={8}>
+							<Flex className="wppm-event-group-controls" gap={8}>
 								<Button
 									size="small"
-									className="wptl-event-group-button"
+									className="wppm-event-group-button"
 									onClick={(event) => {
 										event.stopPropagation();
 										enableAll(eventKey, group.actions);
@@ -211,7 +211,7 @@ const EventBrowser = ({
 
 								<Button
 									size="small"
-									className="wptl-event-group-button"
+									className="wppm-event-group-button"
 									onClick={(event) => {
 										event.stopPropagation();
 										disableAll(eventKey, group.actions);
@@ -225,7 +225,7 @@ const EventBrowser = ({
 						{expanded[eventKey] && (
 							// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events -- stops the click from bubbling to the card's expand/collapse handler; no new keyboard interaction is introduced here.
 							<div
-								className="wptl-event-actions"
+								className="wppm-event-actions"
 								onClick={(event) => event.stopPropagation()}
 							>
 								{group.actions.map((action) => {
@@ -236,22 +236,22 @@ const EventBrowser = ({
 									return (
 										<div
 											key={action.key}
-											className="wptl-event-row"
+											className="wppm-event-row"
 										>
-											<div className="wptl-event-main">
-												<div className="wptl-event-info">
-													<div className="wptl-event-title">
+											<div className="wppm-event-main">
+												<div className="wppm-event-info">
+													<div className="wppm-event-title">
 														{action.label}
 													</div>
 
 													{action.description && (
-														<div className="wptl-event-description">
+														<div className="wppm-event-description">
 															{action.description}
 														</div>
 													)}
 												</div>
 
-												<div className="wptl-event-meta">
+												<div className="wppm-event-meta">
 													<Badge>
 														{action.severity_label ||
 															action.severity}

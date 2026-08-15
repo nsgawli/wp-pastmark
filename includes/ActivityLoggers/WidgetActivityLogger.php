@@ -1,9 +1,9 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers;
+namespace Pastmark\ActivityLoggers;
 
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -139,7 +139,7 @@ class WidgetActivityLogger extends AbstractLogger {
 	protected function sidebar_label( string $sidebar_id ): string {
 
 		if ( 'wp_inactive_widgets' === $sidebar_id ) {
-			return __( 'Inactive Widgets', 'logtrail' );
+			return __( 'Inactive Widgets', 'pastmark' );
 		}
 
 		global $wp_registered_sidebars;

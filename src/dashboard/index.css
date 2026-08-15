@@ -1,9 +1,9 @@
-.wptl-dashboard-page {
+.wppm-dashboard-page {
 	width: 100%;
 }
 
-.wptl-dashboard-widget-title,
-.wptl-dashboard-chart-title {
+.wppm-dashboard-widget-title,
+.wppm-dashboard-chart-title {
 	margin: 0 0 14px;
 	font-size: 16px;
 	font-weight: 650;
@@ -12,16 +12,16 @@
 	color: #111827;
 }
 
-.wptl-dashboard-widget-header {
+.wppm-dashboard-widget-header {
 	margin-bottom: 14px;
 }
 
-.wptl-dashboard-chart-loading {
+.wppm-dashboard-chart-loading {
 	font-size: 13px;
 	color: #667085;
 }
 
-.wptl-dashboard-chart-tooltip {
+.wppm-dashboard-chart-tooltip {
 	background: #ffffff;
 	border: 1px solid #e5e7eb;
 	border-radius: 10px;
@@ -30,37 +30,37 @@
 	min-width: 120px;
 }
 
-.wptl-dashboard-chart-tooltip-label {
+.wppm-dashboard-chart-tooltip-label {
 	font-size: 12px;
 	line-height: 1.3;
 	color: #475467;
 	margin-bottom: 4px;
 }
 
-.wptl-dashboard-chart-tooltip-value {
+.wppm-dashboard-chart-tooltip-value {
 	font-size: 13px;
 	line-height: 1.25;
 	color: #111827;
 	font-weight: 600;
 }
 
-.wptl-dashboard-category-header span,
-.wptl-dashboard-user-row span,
-.wptl-dashboard-col-message,
-.wptl-dashboard-col-user {
+.wppm-dashboard-category-header span,
+.wppm-dashboard-user-row span,
+.wppm-dashboard-col-message,
+.wppm-dashboard-col-user {
 	color: #475467;
 }
 
-.wptl-dashboard-category-header strong,
-.wptl-dashboard-user-row strong {
+.wppm-dashboard-category-header strong,
+.wppm-dashboard-user-row strong {
 	color: #111827;
 	font-variant-numeric: tabular-nums;
 	font-feature-settings: "tnum" 1;
 }
 
 @media (max-width: 768px) {
-	.wptl-dashboard-widget-title,
-	.wptl-dashboard-chart-title {
+	.wppm-dashboard-widget-title,
+	.wppm-dashboard-chart-title {
 		font-size: 15px;
 		margin-bottom: 12px;
 	}

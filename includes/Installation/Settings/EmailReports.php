@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Installation\Settings;
+namespace Pastmark\Installation\Settings;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -19,7 +19,7 @@ class EmailReports {
 	public static function install() {
 
 		update_option(
-			'logtrail_email_reports_settings',
+			'pastmark_email_reports_settings',
 			self::get_default_settings()
 		);
 	}

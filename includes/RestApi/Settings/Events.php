@@ -1,11 +1,11 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\RestApi\Settings;
+namespace Pastmark\RestApi\Settings;
 
-use LogTrail\EventSettings\EventRegistry;
-use LogTrail\EventSettings\EventSettings;
-use LogTrail\RestApi\BaseController;
-use LogTrail\EventSettings\EventPresets;
+use Pastmark\EventSettings\EventRegistry;
+use Pastmark\EventSettings\EventSettings;
+use Pastmark\RestApi\BaseController;
+use Pastmark\EventSettings\EventPresets;
 use WP_REST_Request;
 
 defined( 'ABSPATH' ) || exit;

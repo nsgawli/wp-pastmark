@@ -1,12 +1,12 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\RestApi\Logs;
+namespace Pastmark\RestApi\Logs;
 
-use LogTrail\Constants\Actions;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Severity;
-use LogTrail\Models\LogTrail_Logs;
-use LogTrail\RestApi\BaseController;
-use LogTrail\Utils\Helpers;
+use Pastmark\Constants\Actions;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Severity;
+use Pastmark\Models\Pastmark_Logs;
+use Pastmark\RestApi\BaseController;
+use Pastmark\Utils\Helpers;
 use WP_REST_Request;
 use WP_REST_Server;
 
@@ -24,7 +24,7 @@ class Logs extends BaseController {
 	/**
 	 * Logs model.
 	 *
-	 * @var LogTrail_Logs
+	 * @var Pastmark_Logs
 	 */
 	protected $logs_model;
 
@@ -33,7 +33,7 @@ class Logs extends BaseController {
 	 */
 	public function __construct() {
 
-		$this->logs_model = new LogTrail_Logs();
+		$this->logs_model = new Pastmark_Logs();
 	}
 
 	/**
@@ -446,7 +446,7 @@ class Logs extends BaseController {
 		$snippet = mb_strlen( $snippet ) > 60 ? mb_substr( $snippet, 0, 60 ) . '…' : $snippet;
 
 		return array(
-			'label' => sprintf( '%s: %s', $comment->comment_author, $snippet ? $snippet : __( '(empty)', 'logtrail' ) ),
+			'label' => sprintf( '%s: %s', $comment->comment_author, $snippet ? $snippet : __( '(empty)', 'pastmark' ) ),
 			'url'   => get_edit_comment_link( $comment_id ),
 		);
 	}

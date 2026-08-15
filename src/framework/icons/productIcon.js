@@ -47,7 +47,7 @@ const ProductIcon = ({ className = '', style = {} }) => {
 				letterSpacing="-6"
 				fill="#fff"
 			>
-				LT
+				PM
 			</text>
 
 			<line

@@ -1,20 +1,20 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
-namespace LogTrail\Models;
+namespace Pastmark\Models;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use LogTrail\Constants\Actions;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Severity;
+use Pastmark\Constants\Actions;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Severity;
 
 /**
- * Class LogTrail_Logs
+ * Class Pastmark_Logs
  */
-class LogTrail_Logs {
+class Pastmark_Logs {
 
 
 	/**
@@ -30,7 +30,7 @@ class LogTrail_Logs {
 	public function __construct() {
 		global $wpdb;
 
-		$this->table = $wpdb->prefix . 'logtrail_logs';
+		$this->table = $wpdb->prefix . 'pastmark_logs';
 	}
 
 	/**
@@ -1012,7 +1012,7 @@ class LogTrail_Logs {
 
 			$row['name']       = $user
 			? $user->display_name
-			: __( 'Unknown User', 'logtrail' );
+			: __( 'Unknown User', 'pastmark' );
 			$row['avatar_url'] = get_avatar_url( (int) $row['user_id'] );
 		}
 

@@ -2,7 +2,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 export const fetchLogDetails = async (logId) => {
 	const response = await apiFetch({
-		path: `/logtrail/v1/logs/${logId}`,
+		path: `/pastmark/v1/logs/${logId}`,
 		method: 'GET',
 	});
 

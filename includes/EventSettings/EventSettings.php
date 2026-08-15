@@ -1,8 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\EventSettings;
+namespace Pastmark\EventSettings;
 
-use LogTrail\Installation\Settings\Events as InstallationEvents;
+use Pastmark\Installation\Settings\Events as InstallationEvents;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,14 +16,14 @@ class EventSettings {
 	 *
 	 * @var string
 	 */
-	const OPTION_NAME = 'logtrail_event_settings';
+	const OPTION_NAME = 'pastmark_event_settings';
 
 	/**
 	 * Log level option name.
 	 *
 	 * @var string
 	 */
-	const LOG_LEVEL_OPTION_NAME = 'logtrail_event_log_level';
+	const LOG_LEVEL_OPTION_NAME = 'pastmark_event_log_level';
 
 	/**
 	 * Allowed log levels.

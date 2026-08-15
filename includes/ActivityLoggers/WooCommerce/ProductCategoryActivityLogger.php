@@ -1,11 +1,11 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers\WooCommerce;
+namespace Pastmark\ActivityLoggers\WooCommerce;
 
-use LogTrail\ActivityLoggers\AbstractLogger;
-use LogTrail\Constants\Severity;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\ActivityLoggers\AbstractLogger;
+use Pastmark\Constants\Severity;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 
 defined( 'ABSPATH' ) || exit;
 

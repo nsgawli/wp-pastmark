@@ -1,8 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Services;
+namespace Pastmark\Services;
 
-use LogTrail\Installation\Settings\EmailReports as InstallationEmailReports;
-use LogTrail\Models\LogTrail_Logs;
+use Pastmark\Installation\Settings\EmailReports as InstallationEmailReports;
+use Pastmark\Models\Pastmark_Logs;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,12 +17,12 @@ class EmailReportsService {
 	/**
 	 * Daily report cron hook.
 	 */
-	private const DAILY_CRON_HOOK = 'logtrail_send_daily_report_cron';
+	private const DAILY_CRON_HOOK = 'pastmark_send_daily_report_cron';
 
 	/**
 	 * Weekly report cron hook.
 	 */
-	private const WEEKLY_CRON_HOOK = 'logtrail_send_weekly_report_cron';
+	private const WEEKLY_CRON_HOOK = 'pastmark_send_weekly_report_cron';
 
 	/**
 	 * Init hooks.
@@ -38,7 +38,7 @@ class EmailReportsService {
 		add_action( self::WEEKLY_CRON_HOOK, array( __CLASS__, 'send_weekly_report' ) );
 
 		add_action(
-			'update_option_logtrail_email_reports_settings',
+			'update_option_pastmark_email_reports_settings',
 			array( __CLASS__, 'on_settings_updated' ),
 			10,
 			2
@@ -206,26 +206,26 @@ class EmailReportsService {
 
 		$window = self::get_report_window( 24 );
 
-		$logs_model = new LogTrail_Logs();
+		$logs_model = new Pastmark_Logs();
 		$summary    = $logs_model->get_dashboard_summary( $window['from_utc'], $window['to_utc'] );
 		$top_events = $logs_model->get_top_events( $window['from_utc'], $window['to_utc'], 3 );
 
 		$subject = sprintf(
 			/* translators: %s: site name */
-			__( 'LogTrail Daily Activity Report - %s', 'logtrail' ),
+			__( 'Pastmark Daily Activity Report - %s', 'pastmark' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 		);
 
 		$total_events    = (int) $summary['total_events'];
 		$critical_events = (int) $summary['critical_events'];
 		$active_users    = (int) $summary['active_users'];
-		$logs_url        = esc_url( admin_url( 'admin.php?page=logtrail' ) );
+		$logs_url        = esc_url( admin_url( 'admin.php?page=pastmark' ) );
 
 		$event_rows_html = '';
 
 		if ( empty( $top_events ) ) {
 			$event_rows_html = '<tr><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;">' .
-				esc_html__( 'No events recorded.', 'logtrail' ) .
+				esc_html__( 'No events recorded.', 'pastmark' ) .
 			'</td><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;text-align:right;">0</td></tr>';
 		} else {
 			foreach ( $top_events as $event ) {
@@ -240,41 +240,41 @@ class EmailReportsService {
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f7fb;padding:24px 12px;"><tr><td align="center">';
 		$body_html .= '<table role="presentation" width="680" cellspacing="0" cellpadding="0" style="max-width:680px;background:#ffffff;border:1px solid #eaecf0;border-radius:14px;overflow:hidden;">';
 		$body_html .= '<tr><td style="padding:24px 28px;background:linear-gradient(120deg,#0f172a,#1d4ed8);color:#ffffff;">';
-		$body_html .= '<div style="font-size:13px;opacity:.9;letter-spacing:.3px;">' . esc_html__( 'LogTrail Daily Activity Report', 'logtrail' ) . '</div>';
+		$body_html .= '<div style="font-size:13px;opacity:.9;letter-spacing:.3px;">' . esc_html__( 'Pastmark Daily Activity Report', 'pastmark' ) . '</div>';
 		$body_html .= '<h1 style="margin:8px 0 4px;font-size:24px;line-height:1.25;">' . esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ) . '</h1>';
 		$body_html .= '<div style="font-size:13px;opacity:.92;">' .
 			// translators: %1$s: from timestamp, %2$s: to timestamp.
-			esc_html( sprintf( __( 'Window: %1$s to %2$s (UTC)', 'logtrail' ), $window['from_utc'], $window['to_utc'] ) ) .
+			esc_html( sprintf( __( 'Window: %1$s to %2$s (UTC)', 'pastmark' ), $window['from_utc'], $window['to_utc'] ) ) .
 		'</div>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:24px 28px 8px;color:#344054;font-size:14px;line-height:1.6;">';
-		$body_html .= '<p style="margin:0 0 12px;">' . esc_html__( 'Hello,', 'logtrail' ) . '</p>';
-		$body_html .= '<p style="margin:0;">' . esc_html__( 'Here is your organized daily operations snapshot for the last 24 hours.', 'logtrail' ) . '</p>';
+		$body_html .= '<p style="margin:0 0 12px;">' . esc_html__( 'Hello,', 'pastmark' ) . '</p>';
+		$body_html .= '<p style="margin:0;">' . esc_html__( 'Here is your organized daily operations snapshot for the last 24 hours.', 'pastmark' ) . '</p>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:8px 28px 20px;">';
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>';
-		$body_html .= '<td style="padding:0 8px 0 0;"><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#475467;">' . esc_html__( 'Total Events', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#0f172a;">' . $total_events . '</div></div></td>';
-		$body_html .= '<td style="padding:0 8px;"><div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#9a3412;">' . esc_html__( 'Critical Events', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#9a3412;">' . $critical_events . '</div></div></td>';
-		$body_html .= '<td style="padding:0 0 0 8px;"><div style="background:#ecfdf3;border:1px solid #abefc6;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#067647;">' . esc_html__( 'Active Users', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#067647;">' . $active_users . '</div></div></td>';
+		$body_html .= '<td style="padding:0 8px 0 0;"><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#475467;">' . esc_html__( 'Total Events', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#0f172a;">' . $total_events . '</div></div></td>';
+		$body_html .= '<td style="padding:0 8px;"><div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#9a3412;">' . esc_html__( 'Critical Events', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#9a3412;">' . $critical_events . '</div></div></td>';
+		$body_html .= '<td style="padding:0 0 0 8px;"><div style="background:#ecfdf3;border:1px solid #abefc6;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#067647;">' . esc_html__( 'Active Users', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#067647;">' . $active_users . '</div></div></td>';
 		$body_html .= '</tr></table>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:0 28px 18px;">';
-		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Top Event Categories Today', 'logtrail' ) . '</h3>';
+		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Top Event Categories Today', 'pastmark' ) . '</h3>';
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #eaecf0;border-radius:10px;overflow:hidden;background:#ffffff;">';
-		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Category', 'logtrail' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'logtrail' ) . '</th></tr>';
+		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Category', 'pastmark' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'pastmark' ) . '</th></tr>';
 		$body_html .= $event_rows_html;
 		$body_html .= '</table>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:0 28px 24px;">';
 		$body_html .= '<div style="padding:12px 14px;border-radius:10px;background:#eff8ff;border:1px solid #b2ddff;color:#1849a9;font-size:13px;line-height:1.5;">';
-		$body_html .= esc_html__( 'Recommended action: review any critical events immediately and investigate unusual category spikes.', 'logtrail' );
+		$body_html .= esc_html__( 'Recommended action: review any critical events immediately and investigate unusual category spikes.', 'pastmark' );
 		$body_html .= '</div>';
 		$body_html .= '<div style="padding-top:14px;">';
-		$body_html .= '<a href="' . $logs_url . '" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html__( 'View Activity Logs', 'logtrail' ) . '</a>';
+		$body_html .= '<a href="' . $logs_url . '" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html__( 'View Activity Logs', 'pastmark' ) . '</a>';
 		$body_html .= '</div>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:14px 28px;border-top:1px solid #eaecf0;background:#fcfcfd;color:#667085;font-size:12px;">';
-		$body_html .= esc_html__( 'This email was generated automatically by LogTrail.', 'logtrail' );
+		$body_html .= esc_html__( 'This email was generated automatically by Pastmark.', 'pastmark' );
 		$body_html .= '</td></tr>';
 		$body_html .= '</table></td></tr></table></body></html>';
 
@@ -294,7 +294,7 @@ class EmailReportsService {
 
 		$window = self::get_report_window( 24 * 7 );
 
-		$logs_model = new LogTrail_Logs();
+		$logs_model = new Pastmark_Logs();
 		$summary    = $logs_model->get_dashboard_summary( $window['from_utc'], $window['to_utc'] );
 		$top_events = $logs_model->get_top_events( $window['from_utc'], $window['to_utc'], 5 );
 		$timeline   = $logs_model->get_activity_timeline( $window['from_utc'], $window['to_utc'] );
@@ -303,21 +303,21 @@ class EmailReportsService {
 
 		$subject = sprintf(
 			/* translators: %s: site name */
-			__( 'LogTrail Weekly Activity Digest - %s', 'logtrail' ),
+			__( 'Pastmark Weekly Activity Digest - %s', 'pastmark' ),
 			wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES )
 		);
 
 		$total_events    = (int) $summary['total_events'];
 		$critical_events = (int) $summary['critical_events'];
 		$active_users    = (int) $summary['active_users'];
-		$logs_url        = esc_url( admin_url( 'admin.php?page=logtrail' ) );
+		$logs_url        = esc_url( admin_url( 'admin.php?page=pastmark' ) );
 
 		$event_rows_html = '';
 		$timeline_rows_html = '';
 
 		if ( empty( $top_events ) ) {
 			$event_rows_html = '<tr><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;">' .
-				esc_html__( 'No events recorded.', 'logtrail' ) .
+				esc_html__( 'No events recorded.', 'pastmark' ) .
 			'</td><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;text-align:right;">0</td></tr>';
 		} else {
 			foreach ( $top_events as $event ) {
@@ -330,7 +330,7 @@ class EmailReportsService {
 
 		if ( empty( $timeline ) ) {
 			$timeline_rows_html = '<tr><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;">' .
-				esc_html__( 'No events recorded.', 'logtrail' ) .
+				esc_html__( 'No events recorded.', 'pastmark' ) .
 			'</td><td style="padding:10px 12px;color:#475467;border-bottom:1px solid #eaecf0;text-align:right;">0</td></tr>';
 		} else {
 			foreach ( $timeline as $row ) {
@@ -345,54 +345,54 @@ class EmailReportsService {
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f7fb;padding:24px 12px;"><tr><td align="center">';
 		$body_html .= '<table role="presentation" width="680" cellspacing="0" cellpadding="0" style="max-width:680px;background:#ffffff;border:1px solid #eaecf0;border-radius:14px;overflow:hidden;">';
 		$body_html .= '<tr><td style="padding:24px 28px;background:linear-gradient(120deg,#1f2937,#7c3aed);color:#ffffff;">';
-		$body_html .= '<div style="font-size:13px;opacity:.9;letter-spacing:.3px;">' . esc_html__( 'LogTrail Weekly Activity Digest', 'logtrail' ) . '</div>';
+		$body_html .= '<div style="font-size:13px;opacity:.9;letter-spacing:.3px;">' . esc_html__( 'Pastmark Weekly Activity Digest', 'pastmark' ) . '</div>';
 		$body_html .= '<h1 style="margin:8px 0 4px;font-size:24px;line-height:1.25;">' . esc_html( wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ) ) . '</h1>';
 		$body_html .= '<div style="font-size:13px;opacity:.92;">' .
 			// translators: %1$s: from timestamp, %2$s: to timestamp.
-			esc_html( sprintf( __( 'Window: %1$s to %2$s (UTC)', 'logtrail' ), $window['from_utc'], $window['to_utc'] ) ) .
+			esc_html( sprintf( __( 'Window: %1$s to %2$s (UTC)', 'pastmark' ), $window['from_utc'], $window['to_utc'] ) ) .
 		'</div>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:24px 28px 8px;color:#344054;font-size:14px;line-height:1.6;">';
-		$body_html .= '<p style="margin:0 0 12px;">' . esc_html__( 'Hello,', 'logtrail' ) . '</p>';
-		$body_html .= '<p style="margin:0;">' . esc_html__( 'Here is your organized weekly performance digest for the last 7 days.', 'logtrail' ) . '</p>';
+		$body_html .= '<p style="margin:0 0 12px;">' . esc_html__( 'Hello,', 'pastmark' ) . '</p>';
+		$body_html .= '<p style="margin:0;">' . esc_html__( 'Here is your organized weekly performance digest for the last 7 days.', 'pastmark' ) . '</p>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:8px 28px 20px;">';
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>';
-		$body_html .= '<td style="padding:0 8px 0 0;"><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#475467;">' . esc_html__( 'Total Events (7d)', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#0f172a;">' . $total_events . '</div></div></td>';
-		$body_html .= '<td style="padding:0 8px;"><div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#6b21a8;">' . esc_html__( 'Avg / Day', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#6b21a8;">' . esc_html( (string) $average_per_day ) . '</div></div></td>';
-		$body_html .= '<td style="padding:0 0 0 8px;"><div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#be123c;">' . esc_html__( 'Critical Events', 'logtrail' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#be123c;">' . $critical_events . '</div></div></td>';
+		$body_html .= '<td style="padding:0 8px 0 0;"><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#475467;">' . esc_html__( 'Total Events (7d)', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#0f172a;">' . $total_events . '</div></div></td>';
+		$body_html .= '<td style="padding:0 8px;"><div style="background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#6b21a8;">' . esc_html__( 'Avg / Day', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#6b21a8;">' . esc_html( (string) $average_per_day ) . '</div></div></td>';
+		$body_html .= '<td style="padding:0 0 0 8px;"><div style="background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:12px;"><div style="font-size:12px;color:#be123c;">' . esc_html__( 'Critical Events', 'pastmark' ) . '</div><div style="margin-top:6px;font-size:24px;font-weight:700;color:#be123c;">' . $critical_events . '</div></div></td>';
 		$body_html .= '</tr></table>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:0 28px 10px;">';
 		$body_html .= '<div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:10px;padding:10px 12px;color:#155e75;font-size:13px;">';
 		// translators: %d: number of unique active users.
-		$body_html .= sprintf( esc_html__( 'Unique active users this week: %d', 'logtrail' ), $active_users );
+		$body_html .= sprintf( esc_html__( 'Unique active users this week: %d', 'pastmark' ), $active_users );
 		$body_html .= '</div>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:8px 28px 18px;">';
-		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Top Event Categories This Week', 'logtrail' ) . '</h3>';
+		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Top Event Categories This Week', 'pastmark' ) . '</h3>';
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #eaecf0;border-radius:10px;overflow:hidden;background:#ffffff;">';
-		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Category', 'logtrail' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'logtrail' ) . '</th></tr>';
+		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Category', 'pastmark' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'pastmark' ) . '</th></tr>';
 		$body_html .= $event_rows_html;
 		$body_html .= '</table>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:0 28px 18px;">';
-		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Event Count By Day', 'logtrail' ) . '</h3>';
+		$body_html .= '<h3 style="margin:0 0 10px;color:#111827;font-size:16px;">' . esc_html__( 'Event Count By Day', 'pastmark' ) . '</h3>';
 		$body_html .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #eaecf0;border-radius:10px;overflow:hidden;background:#ffffff;">';
-		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Date (UTC)', 'logtrail' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'logtrail' ) . '</th></tr>';
+		$body_html .= '<tr><th align="left" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Date (UTC)', 'pastmark' ) . '</th><th align="right" style="padding:10px 12px;font-size:12px;color:#475467;background:#f9fafb;border-bottom:1px solid #eaecf0;">' . esc_html__( 'Events', 'pastmark' ) . '</th></tr>';
 		$body_html .= $timeline_rows_html;
 		$body_html .= '</table>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:0 28px 24px;">';
 		$body_html .= '<div style="padding:12px 14px;border-radius:10px;background:#f5f3ff;border:1px solid #ddd6fe;color:#5b21b6;font-size:13px;line-height:1.5;">';
-		$body_html .= esc_html__( 'Recommended action: review trend spikes, compare weekly averages, and fine-tune event settings where noise is high.', 'logtrail' );
+		$body_html .= esc_html__( 'Recommended action: review trend spikes, compare weekly averages, and fine-tune event settings where noise is high.', 'pastmark' );
 		$body_html .= '</div>';
 		$body_html .= '<div style="padding-top:14px;">';
-		$body_html .= '<a href="' . $logs_url . '" style="display:inline-block;background:#5b21b6;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html__( 'View Activity Logs', 'logtrail' ) . '</a>';
+		$body_html .= '<a href="' . $logs_url . '" style="display:inline-block;background:#5b21b6;color:#ffffff;text-decoration:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html__( 'View Activity Logs', 'pastmark' ) . '</a>';
 		$body_html .= '</div>';
 		$body_html .= '</td></tr>';
 		$body_html .= '<tr><td style="padding:14px 28px;border-top:1px solid #eaecf0;background:#fcfcfd;color:#667085;font-size:12px;">';
-		$body_html .= esc_html__( 'This email was generated automatically by LogTrail.', 'logtrail' );
+		$body_html .= esc_html__( 'This email was generated automatically by Pastmark.', 'pastmark' );
 		$body_html .= '</td></tr>';
 		$body_html .= '</table></td></tr></table></body></html>';
 
@@ -564,7 +564,7 @@ class EmailReportsService {
 	 */
 	private static function get_settings() {
 
-		$settings = get_option( 'logtrail_email_reports_settings', array() );
+		$settings = get_option( 'pastmark_email_reports_settings', array() );
 
 		if ( ! is_array( $settings ) ) {
 			$settings = array();

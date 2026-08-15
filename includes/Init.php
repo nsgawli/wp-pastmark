@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail;
+namespace Pastmark;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,17 +25,17 @@ class Init {
 		}
 
 		// Load rest api functionality.
-		if ( WPLT_REST_REQUEST ) {
+		if ( PASTMARK_REST_REQUEST ) {
 			RestApi\Autoloader::init();
 		}
 
 		// Load admin interface.
-		if ( WPLT_ADMIN_INTERFACE ) {
+		if ( PASTMARK_ADMIN_INTERFACE ) {
 			Admin\Autoloader::run();
 		}
 
 		// Load frontend interface.
-		if ( WPLT_FRONTEND_INTERFACE ) {
+		if ( PASTMARK_FRONTEND_INTERFACE ) {
 			Frontend\Autoloader::run();
 		}
 

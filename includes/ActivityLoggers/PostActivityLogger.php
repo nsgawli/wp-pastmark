@@ -1,10 +1,10 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 
-namespace LogTrail\ActivityLoggers;
+namespace Pastmark\ActivityLoggers;
 
-use LogTrail\Constants\Severity;
-use LogTrail\Constants\Events;
-use LogTrail\Constants\Actions;
+use Pastmark\Constants\Severity;
+use Pastmark\Constants\Events;
+use Pastmark\Constants\Actions;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
@@ -380,8 +380,8 @@ class PostActivityLogger extends AbstractLogger {
 					'%s "%s" parent changed from "%s" to "%s".',
 					ucfirst( $post_after->post_type ),
 					$post_after->post_title,
-					$old_parent ? $old_parent->post_title : __( 'None', 'logtrail' ),
-					$new_parent ? $new_parent->post_title : __( 'None', 'logtrail' )
+					$old_parent ? $old_parent->post_title : __( 'None', 'pastmark' ),
+					$new_parent ? $new_parent->post_title : __( 'None', 'pastmark' )
 				),
 				'before_data' => wp_json_encode(
 					array( 'post_parent' => $post_before->post_parent )
@@ -871,8 +871,8 @@ class PostActivityLogger extends AbstractLogger {
 					'%s "%s" template changed from "%s" to "%s".',
 					ucfirst( $post->post_type ),
 					$post->post_title,
-					$old_template ? $old_template : __( 'Default', 'logtrail' ),
-					$meta_value ? $meta_value : __( 'Default', 'logtrail' )
+					$old_template ? $old_template : __( 'Default', 'pastmark' ),
+					$meta_value ? $meta_value : __( 'Default', 'pastmark' )
 				),
 				'before_data' => wp_json_encode( array( 'template' => $old_template ) ),
 				'after_data'  => wp_json_encode( array( 'template' => $meta_value ) ),

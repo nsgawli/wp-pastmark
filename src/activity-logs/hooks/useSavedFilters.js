@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const STORAGE_KEY = 'logtrail_saved_filters';
+const STORAGE_KEY = 'pastmark_saved_filters';
 
 const useSavedFilters = () => {
 	const [savedFilters, setSavedFilters] = useState(() => {

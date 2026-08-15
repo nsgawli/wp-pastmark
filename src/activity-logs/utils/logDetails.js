@@ -13,10 +13,10 @@ export const buildLogDetailsPath = (logId) => `/log/${logId}`;
 
 export const buildLogDetailsUrl = (logId) => {
 	if (!logId) {
-		return `${window.location.origin}${window.location.pathname}?page=logtrail`;
+		return `${window.location.origin}${window.location.pathname}?page=pastmark`;
 	}
 
-	return `${window.location.origin}${window.location.pathname}?page=logtrail#${buildLogDetailsPath(logId)}`;
+	return `${window.location.origin}${window.location.pathname}?page=pastmark#${buildLogDetailsPath(logId)}`;
 };
 
 /**

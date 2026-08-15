@@ -8,7 +8,7 @@ const MostCommonEvents = ({ data = [] }) => {
 	if (!data.length) {
 		return (
 			<Card>
-				<h3 className="wptl-dashboard-widget-title">Most Common Events</h3>
+				<h3 className="wppm-dashboard-widget-title">Most Common Events</h3>
 
 				<EmptyState title="No events found." />
 			</Card>
@@ -19,7 +19,7 @@ const MostCommonEvents = ({ data = [] }) => {
 
 	return (
 		<Card>
-			<h3 className="wptl-dashboard-widget-title">Most Common Events</h3>
+			<h3 className="wppm-dashboard-widget-title">Most Common Events</h3>
 
 			{data.map((item) => {
 				const percent = (Number(item.total) / max) * 100;
@@ -27,17 +27,17 @@ const MostCommonEvents = ({ data = [] }) => {
 				return (
 					<div
 						key={item.label}
-						className="wptl-dashboard-category-item"
+						className="wppm-dashboard-category-item"
 					>
-						<div className="wptl-dashboard-category-header">
+						<div className="wppm-dashboard-category-header">
 							<span>{item.label}</span>
 
 							<strong>{item.total}</strong>
 						</div>
 
-						<div className="wptl-dashboard-category-track">
+						<div className="wppm-dashboard-category-track">
 							<div
-								className="wptl-dashboard-category-fill"
+								className="wppm-dashboard-category-fill"
 								style={{
 									width: `${percent}%`,
 								}}

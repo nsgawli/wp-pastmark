@@ -27,11 +27,11 @@ const CategoryTooltip = ({ active, payload }) => {
 	const total = Number(entry?.value || 0).toLocaleString();
 
 	return (
-		<div className="wptl-dashboard-chart-tooltip">
-			<div className="wptl-dashboard-chart-tooltip-label">
+		<div className="wppm-dashboard-chart-tooltip">
+			<div className="wppm-dashboard-chart-tooltip-label">
 				{entry?.payload?.label}
 			</div>
-			<div className="wptl-dashboard-chart-tooltip-value">
+			<div className="wppm-dashboard-chart-tooltip-value">
 				{total} events
 			</div>
 		</div>
@@ -44,8 +44,8 @@ const TopCategories = ({ data = [] }) => {
 
 	if (!data.length) {
 		return (
-			<Card className="wptl-dashboard-bar-card">
-				<h3 className="wptl-dashboard-chart-title">Top Categories</h3>
+			<Card className="wppm-dashboard-bar-card">
+				<h3 className="wppm-dashboard-chart-title">Top Categories</h3>
 
 				<EmptyState title="No category data available." />
 			</Card>
@@ -58,10 +58,10 @@ const TopCategories = ({ data = [] }) => {
 	}));
 
 	return (
-		<Card className="wptl-dashboard-bar-card">
-			<h3 className="wptl-dashboard-chart-title">Top Categories</h3>
+		<Card className="wppm-dashboard-bar-card">
+			<h3 className="wppm-dashboard-chart-title">Top Categories</h3>
 
-			<div className="wptl-dashboard-bar-chart">
+			<div className="wppm-dashboard-bar-chart">
 				<ResponsiveContainer width="100%" height="100%">
 					<BarChart
 						data={chartData}

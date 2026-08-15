@@ -7,7 +7,7 @@ import App from './App';
 import { HashRouter as Router } from 'react-router-dom';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const element = document.getElementById('logtrail-activity-logs');
+	const element = document.getElementById('pastmark-activity-logs');
 	ReactDOM.createRoot(element).render(
 		<Router>
 			<ScreenSizeProvider element={element}>

@@ -20,7 +20,7 @@ const FailedLogins = ({ data = [] }) => {
 	if (!data.length) {
 		return (
 			<Card>
-				<h3 className="wptl-dashboard-widget-title">
+				<h3 className="wppm-dashboard-widget-title">
 					Failed Login Attempts
 				</h3>
 
@@ -34,12 +34,12 @@ const FailedLogins = ({ data = [] }) => {
 
 	return (
 		<Card>
-			<h3 className="wptl-dashboard-widget-title">
+			<h3 className="wppm-dashboard-widget-title">
 				Failed Login Attempts
 			</h3>
 
-			<div className="wptl-dashboard-failed-login-table-wrap">
-				<table className="wptl-dashboard-failed-login-table">
+			<div className="wppm-dashboard-failed-login-table-wrap">
+				<table className="wppm-dashboard-failed-login-table">
 					<thead>
 						<tr>
 							<th>IP Address</th>
@@ -55,7 +55,7 @@ const FailedLogins = ({ data = [] }) => {
 
 							return (
 								<tr key={`${item.label}-${item.username}`}>
-									<td className="wptl-dashboard-failed-login-ip">
+									<td className="wppm-dashboard-failed-login-ip">
 										{item.label}
 									</td>
 

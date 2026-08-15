@@ -1,5 +1,5 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
-namespace LogTrail\Installation;
+namespace Pastmark\Installation;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -36,12 +36,12 @@ class Autoloader {
 		if ( self::$is_upgrade ) {
 
 			// Do not allow parallel process to run.
-			if ( 'yes' === get_transient( 'logtrail_installing' ) ) {
+			if ( 'yes' === get_transient( 'pastmark_installing' ) ) {
 				return;
 			}
 
 			// Set transient.
-			set_transient( 'logtrail_installing', 'yes', MINUTE_IN_SECONDS * 10 );
+			set_transient( 'pastmark_installing', 'yes', MINUTE_IN_SECONDS * 10 );
 
 			// Run installation.
 			if ( self::$current_version == 0 ) {
@@ -51,7 +51,7 @@ class Autoloader {
 			}
 
 			// Delete transient.
-			delete_transient( 'logtrail_installing' );
+			delete_transient( 'pastmark_installing' );
 		}
 	}
 
@@ -83,23 +83,23 @@ class Autoloader {
 	 *
 	 * Bypasses the normal ActivityLoggers\PluginActivityLogger path since
 	 * it isn't registered yet at this point in the request (see
-	 * LogTrail::activate()).
+	 * Pastmark::activate()).
 	 *
 	 * @return void
 	 */
 	private static function log_self_activated() {
 
-		$logs_model = new \LogTrail\Models\LogTrail_Logs();
+		$logs_model = new \Pastmark\Models\Pastmark_Logs();
 
 		$logs_model->insert(
 			array(
 				'user_id'     => get_current_user_id(),
-				'event_type'  => \LogTrail\Constants\Events::PLUGIN,
+				'event_type'  => \Pastmark\Constants\Events::PLUGIN,
 				'object_type' => 'plugin',
-				'action'      => \LogTrail\Constants\Actions::ACTIVATE,
-				'message'     => __( 'LogTrail plugin activated.', 'logtrail' ),
-				'context'     => wp_json_encode( array( 'plugin' => WPLT_PLUGIN_BASENAME ) ),
-				'severity'    => \LogTrail\Constants\Severity::INFO,
+				'action'      => \Pastmark\Constants\Actions::ACTIVATE,
+				'message'     => __( 'Pastmark plugin activated.', 'pastmark' ),
+				'context'     => wp_json_encode( array( 'plugin' => PASTMARK_PLUGIN_BASENAME ) ),
+				'severity'    => \Pastmark\Constants\Severity::INFO,
 			)
 		);
 	}
@@ -108,14 +108,14 @@ class Autoloader {
 	 * Check version
 	 */
 	public static function get_current_version() {
-		self::$current_version = get_option( 'logtrail_current_version', 0 );
+		self::$current_version = get_option( 'pastmark_current_version', 0 );
 	}
 
 	/**
 	 * Check for upgrade
 	 */
 	public static function check_upgrade() {
-		if ( self::$current_version != WPLT_VERSION ) {
+		if ( self::$current_version != PASTMARK_VERSION ) {
 			self::$is_upgrade = true;
 		}
 	}
@@ -162,7 +162,7 @@ class Autoloader {
 			$collate = $wpdb->get_charset_collate();
 		}
 
-		$sql = "CREATE TABLE {$wpdb->prefix}logtrail_logs (
+		$sql = "CREATE TABLE {$wpdb->prefix}pastmark_logs (
 				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 				timestamp datetime NOT NULL,
 				user_id bigint(20) unsigned DEFAULT NULL,
@@ -203,8 +203,8 @@ class Autoloader {
 	 */
 	public static function set_installation_complete() {
 
-		update_option( 'logtrail_current_version', WPLT_VERSION );
-		self::$current_version = WPLT_VERSION;
+		update_option( 'pastmark_current_version', PASTMARK_VERSION );
+		self::$current_version = PASTMARK_VERSION;
 		self::$is_upgrade      = false;
 	}
 }
