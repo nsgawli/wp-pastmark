@@ -94,7 +94,7 @@ function App() {
 		<Flex vertical>
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
-				title="Pastmark - Activity Logs for WordPress"
+				title="Pastmark - User Activity Logs"
 			/>
 			<Flex style={{ padding: '1.5rem' }} gap={25}>
 				<SideMenu

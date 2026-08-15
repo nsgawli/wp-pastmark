@@ -373,7 +373,13 @@ class ThemeActivityLogger extends AbstractLogger {
 	protected function log_theme_network_state( string $stylesheet, bool $enabled ): void {
 
 		$theme = wp_get_theme( $stylesheet );
-		$name  = $theme->exists() ? $theme->get( 'Name' ) : $stylesheet;
+		$data  = $theme->exists()
+			? $this->prepare_theme_data( $theme )
+			: array(
+				'name'    => $stylesheet,
+				'version' => '',
+				'author'  => '',
+			);
 
 		$this->insert_event_log(
 			Events::THEME,
@@ -385,9 +391,15 @@ class ThemeActivityLogger extends AbstractLogger {
 				'severity'    => Severity::WARNING,
 				'message'     => sprintf(
 					'Theme "%s" %s network-wide.',
-					$name,
+					$data['name'],
 					$enabled ? 'enabled' : 'disabled'
 				),
+				// Mirrors PluginActivityLogger::log_plugin_activated()/
+				// log_plugin_deactivated(): the toggled-on side gets
+				// after_data, the toggled-off side gets before_data, so the
+				// diff table shows what was (de)activated.
+				'after_data'  => $enabled ? wp_json_encode( $data ) : '',
+				'before_data' => $enabled ? '' : wp_json_encode( $data ),
 				'context'     => array_merge(
 					$this->get_common_context(),
 					array(
