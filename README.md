@@ -1,9 +1,9 @@
-# LogTrail - User Activity Logs
+# Pastmark - User Activity Logs
 
 Easy & powerful WordPress activity log plugin that tracks logins, content changes, WooCommerce activity, and site settings changes in real time.
 
 ## Overview
-LogTrail keeps a complete audit trail of everything that happens on your WordPress site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, LogTrail records the user, timestamp, IP address, and contextual details behind every event in a dedicated database table — so you always know who did what, and when. Logs are searchable and filterable from a dashboard inside wp-admin, without slowing your site down.
+Pastmark keeps a complete audit trail of everything that happens on your WordPress site. From failed login attempts to post edits, plugin changes, and WooCommerce orders, Pastmark records the user, timestamp, IP address, and contextual details behind every event in a dedicated database table — so you always know who did what, and when. Logs are searchable and filterable from a dashboard inside wp-admin, without slowing your site down.
 
 ## Features
 
@@ -60,10 +60,10 @@ This repo ships source files that need to be built into the `build/` directory b
 2. Build assets:
    - `npm run start` — development build with watch
    - `npm run build` — production build
-3. Activate **LogTrail - User Activity Logs** from the WordPress Plugins screen.
+3. Activate **Pastmark - User Activity Logs** from the WordPress Plugins screen.
 
 ## Usage
-1. After activation, open the **LogTrail** menu in wp-admin.
+1. After activation, open the **Pastmark** menu in wp-admin.
 2. Review the activity log dashboard, or use the Events screen to choose an Essential/Recommended/Complete preset (or enable individual events).
 3. Configure exclusions (users, roles, IPs, post types, plugins, themes, etc.) under the Exclude settings.
 4. Set up daily/weekly email reports and log retention under Settings.
@@ -74,13 +74,13 @@ To generate the `.pot` file for translations:
 ```bash
 bash make-pot.sh
 ```
-This runs a production build and writes `languages/logtrail.pot` using `wp i18n make-pot`.
+This runs a production build and writes `languages/pastmark.pot` using `wp i18n make-pot`.
 
 ## Documentation & Support
 See [readme.txt](readme.txt) for the full WordPress.org plugin description, FAQ, and changelog.
 
 ## Contributing
-LogTrail is open source. View the source and contribute on GitHub: https://github.com/nsgawli/wp-logtrail
+Pastmark is open source. View the source and contribute on GitHub: https://github.com/nsgawli/wp-pastmark
 
 ## License
 GPLv3 or later. See [LICENSE](LICENSE) for details.
