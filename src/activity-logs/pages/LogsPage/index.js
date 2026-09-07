@@ -26,6 +26,7 @@ import LogDetailsDrawer from '../../components/LogDetailsDrawer';
 import useLogDetails from '../../hooks/useLogDetails';
 
 import useLogs from '../../hooks/useLogs';
+import useNewEvents from '../../hooks/useNewEvents';
 
 import SavedFilters from '../../components/SavedFilters';
 import useSavedFilters from '../../hooks/useSavedFilters';
@@ -39,8 +40,15 @@ import {
 } from '../../utils/logDetails';
 import { LOGS_PAGE_VIEW_MODES } from '../../utils/logsPageView';
 import {
+	LOGS_ROW_DENSITY,
+	readRowDensityFromCookie,
+	writeRowDensityToCookie,
+} from '../../utils/logsRowDensity';
+import {
 	SEVERITY_LABELS,
 	DATE_RANGE_LABELS,
+	ACTOR_TYPE_LABELS,
+	INTEGRATION_LABELS,
 } from '../../utils/logFilterOptions';
 
 import './index.css';
@@ -50,9 +58,20 @@ const FILTER_LABELS = {
 	event: 'Event',
 	severity: 'Severity',
 	ids: 'ID',
+	actor_type: 'Actor Type',
+	integration: 'Integration',
 	date_range: 'Date',
 	date_from: 'From',
 	date_to: 'To',
+};
+
+// Filters whose selected values are resolved through a static label map
+// (no server lookup needed) — same idea as `RESOLVABLE_FILTER_TYPES` below,
+// just for values that are already known up front rather than fetched.
+const STATIC_LABEL_MAPS = {
+	severity: SEVERITY_LABELS,
+	actor_type: ACTOR_TYPE_LABELS,
+	integration: INTEGRATION_LABELS,
 };
 
 // Filters whose applied value is a plain value (a user ID, an event key)
@@ -84,9 +103,9 @@ const formatDateForDisplay = (value) => {
 };
 
 const formatFilterValue = (key, value, resolvedLabels = {}) => {
-	if (key === 'severity' && Array.isArray(value)) {
+	if (STATIC_LABEL_MAPS[key] && Array.isArray(value)) {
 		return value
-			.map((item) => SEVERITY_LABELS[item] || item)
+			.map((item) => STATIC_LABEL_MAPS[key][item] || item)
 			.join(', ');
 	}
 
@@ -201,17 +220,60 @@ const LogsPage = () => {
 		refresh,
 	} = useLogs();
 
+	const { newEventsCount, acknowledge: acknowledgeNewEvents } = useNewEvents({
+		search,
+		filters,
+	});
+
+	const handleNewEventsClick = () => {
+		acknowledgeNewEvents();
+
+		// `setPage(1)` is a no-op re-render when already on page 1 (same
+		// state, same value) — `useLogs`'s reload effect only fires on an
+		// actual page change, so that case needs an explicit `refresh()`
+		// instead to pull in what's new.
+		if (page === 1) {
+			refresh();
+		} else {
+			setPage(1);
+		}
+	};
+
 	const [filtersOpen, setFiltersOpen] = useState(false);
+
+	// Row density (Default/Compact) is a per-browser preference only — read
+	// from and written back to a cookie, not synced through
+	// `pastmark_general_settings` like `logsPageViewMode` above, so each
+	// user on a shared install can pick their own without affecting others.
+	const [rowDensity, setRowDensity] = useState(readRowDensityFromCookie);
+
+	useEffect(() => {
+		writeRowDensityToCookie(rowDensity);
+	}, [rowDensity]);
 
 	const { log: selectedLog, loadLog, clearLog } = useLogDetails();
 
 	const { savedFilters, deleteFilter } = useSavedFilters();
 
+	// Seeded from the settings PHP already localized onto the page
+	// (`window.pastmarkActivityLogsConfig.initialGeneralSettings`) rather
+	// than a hardcoded default, so the first render already matches the
+	// admin's saved preference instead of flashing table/drawer and then
+	// swapping once `fetchGeneralSettings()` below resolves.
+	const initialGeneralSettings =
+		window.pastmarkActivityLogsConfig?.initialGeneralSettings || {};
+
 	const [detailsViewMode, setDetailsViewMode] = useState(
-		LOG_DETAILS_VIEW_MODES.drawer
+		initialGeneralSettings.logDetailsViewMode ===
+			LOG_DETAILS_VIEW_MODES.singlePage
+			? LOG_DETAILS_VIEW_MODES.singlePage
+			: LOG_DETAILS_VIEW_MODES.drawer
 	);
 	const [logsPageViewMode, setLogsPageViewMode] = useState(
-		LOGS_PAGE_VIEW_MODES.table
+		initialGeneralSettings.logsPageViewMode ===
+			LOGS_PAGE_VIEW_MODES.timeline
+			? LOGS_PAGE_VIEW_MODES.timeline
+			: LOGS_PAGE_VIEW_MODES.table
 	);
 
 	// Applied filters for user_ids/event/ids are plain values (a user ID, an
@@ -373,6 +435,8 @@ const LogsPage = () => {
 							<LogToolbar
 								search={search}
 								isRefreshing={isRefreshing}
+								newEventsCount={newEventsCount}
+								rowDensity={rowDensity}
 								actions={applyFilters(
 									'pastmark.activityLogs.toolbarActions',
 									[],
@@ -386,6 +450,8 @@ const LogsPage = () => {
 								onToggleFilters={() => {
 									setFiltersOpen((prev) => !prev);
 								}}
+								onNewEventsClick={handleNewEventsClick}
+								onRowDensityChange={setRowDensity}
 							/>
 
 							<SavedFilters
@@ -449,6 +515,7 @@ const LogsPage = () => {
 									<LogsTimeline
 										data={logs}
 										loading={loading}
+										density={rowDensity}
 										activeRowId={selectedLog?.id || null}
 										onRowClick={(log, event) => {
 											openLogDetails(log, event);
@@ -458,6 +525,12 @@ const LogsPage = () => {
 									<LogsTable
 										data={logs}
 										loading={loading}
+										density={
+											rowDensity ===
+											LOGS_ROW_DENSITY.compact
+												? 'compact'
+												: 'comfortable'
+										}
 										activeRowId={selectedLog?.id || null}
 										sortBy={sortBy}
 										sortOrder={sortOrder}

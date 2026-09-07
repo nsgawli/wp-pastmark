@@ -2,7 +2,7 @@ import React from 'react';
 
 import { applyFilters } from '@wordpress/hooks';
 
-import { Content, Flex } from '@framework/components';
+import { Button, Card, Content, EmptyState, Flex } from '@framework/components';
 
 import DashboardToolbar from '../DashboardToolbar';
 
@@ -27,7 +27,13 @@ const chunkPairs = (items) =>
 		return pairs;
 	}, []);
 
-const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
+const DashboardLayout = ({
+	dashboard,
+	loading,
+	error = null,
+	range,
+	loadDashboard,
+}) => {
 	const filterContext = { dashboard, loading, range };
 
 	/**
@@ -46,7 +52,9 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 			},
 			{
 				key: 'recent-alerts',
-				component: <RecentAlerts data={dashboard.recent_alerts} />,
+				component: (
+					<RecentAlerts data={dashboard.recent_alerts} />
+				),
 			},
 			{
 				key: 'activity-timeline',
@@ -103,21 +111,55 @@ const DashboardLayout = ({ dashboard, loading, range, loadDashboard }) => {
 					onRefresh={() => loadDashboard(range)}
 				/>
 
-				<Flex vertical gap={20}>
-					{topWidgets.map(({ key, component }) => (
-						<React.Fragment key={key}>{component}</React.Fragment>
-					))}
-				</Flex>
+				{/*
+					A failed `loadDashboard()` call (see `useDashboard.js`)
+					used to leave `dashboard` at its previous/initial value
+					with no other signal - the widgets below rendered
+					exactly like a real empty range, indistinguishable from
+					an outage. This renders instead of the widgets so it
+					can't be missed as just "no data this range."
+				*/}
+				{error && !loading && (
+					<Card>
+						<EmptyState
+							title="Couldn't load dashboard data"
+							description="Something went wrong while loading your dashboard. Please try again."
+							action={
+								<Button
+									type="primary"
+									onClick={() => loadDashboard(range)}
+								>
+									Retry
+								</Button>
+							}
+						/>
+					</Card>
+				)}
 
-				{chunkPairs(chartWidgets).map((pair, index) => (
-					<Flex key={index} gap={20} wrap align="stretch">
-						{pair.map(({ key, component }) => (
-							<div key={key} className="wppm-dashboard-chart-half">
-								{component}
-							</div>
+				{!error && (
+					<>
+						<Flex vertical gap={20}>
+							{topWidgets.map(({ key, component }) => (
+								<React.Fragment key={key}>
+									{component}
+								</React.Fragment>
+							))}
+						</Flex>
+
+						{chunkPairs(chartWidgets).map((pair, index) => (
+							<Flex key={index} gap={20} wrap align="stretch">
+								{pair.map(({ key, component }) => (
+									<div
+										key={key}
+										className="wppm-dashboard-chart-half"
+									>
+										{component}
+									</div>
+								))}
+							</Flex>
 						))}
-					</Flex>
-				))}
+					</>
+				)}
 			</Flex>
 		</Content>
 	);

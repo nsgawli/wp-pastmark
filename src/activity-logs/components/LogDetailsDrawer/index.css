@@ -51,7 +51,12 @@
 .wppm-drawer-log-table {
 	border: 1px solid #e4e7ec;
 	border-radius: 8px;
-	overflow: hidden;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.wppm-drawer-log-table .wppm-table {
+	min-width: 0;
 }
 
 .wppm-drawer-log-table-muted {
@@ -71,7 +76,22 @@
 	word-break: break-word;
 }
 
+.wppm-drawer-content-diff {
+	margin: 6px 0 0;
+	padding: 12px;
+	background: #f8fafc;
+	border: 1px solid #e4e7ec;
+	border-radius: 8px;
+	font-family: Consolas, Monaco, "Courier New", monospace;
+	font-size: 12px;
+	line-height: 1.6;
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-x: auto;
+}
+
 @media (max-width: 768px) {
+
 	.wppm-drawer-log-details {
 		padding: 12px 8px 16px;
 	}

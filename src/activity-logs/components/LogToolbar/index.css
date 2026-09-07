@@ -1,15 +1,74 @@
 .wppm-log-toolbar {
 	width: 100%;
 	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 15px;
+}
+
+.wppm-log-toolbar-search {
+	justify-self: start;
+	min-width: 0;
+}
+
+/* Empty (no NewEventsBanner to show) when there's nothing new — the grid
+ * cell then just collapses to zero width instead of leaving a gap, since
+ * the 1fr columns either side keep the search/actions columns balanced. */
+.wppm-log-toolbar-center {
+	display: flex;
+	justify-content: center;
+	justify-self: center;
 }
 
 .wppm-log-toolbar-actions {
 	justify-content: flex-end;
+	justify-self: end;
+}
+
+.wppm-log-density-toggle {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px;
+	border: 1px solid #d6dde6;
+	border-radius: 8px;
+	background: #f8fafc;
+}
+
+.wppm-log-density-option {
+	appearance: none;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	padding: 5px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: #475467;
+	border-radius: 6px;
+	transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.wppm-log-density-option:hover {
+	color: #101828;
+}
+
+.wppm-log-density-option-active,
+.wppm-log-density-option-active:hover {
+	background: #ffffff;
+	color: #194185;
+	box-shadow: 0 1px 3px rgba(16, 24, 40, 0.12);
 }
 
 @media (max-width: 768px) {
 	.wppm-log-toolbar {
-		align-items: stretch !important;
+		grid-template-columns: 1fr;
+	}
+
+	.wppm-log-toolbar-search,
+	.wppm-log-toolbar-center,
+	.wppm-log-toolbar-actions {
+		justify-self: stretch;
 	}
 
 	.wppm-log-toolbar .wppm-search-input {
@@ -23,5 +82,15 @@
 	.wppm-log-toolbar .psm-button {
 		flex: 1;
 		justify-content: center;
+	}
+
+	.wppm-log-density-toggle {
+		flex: 1;
+		justify-content: center;
+	}
+
+	.wppm-log-density-option {
+		flex: 1;
+		text-align: center;
 	}
 }

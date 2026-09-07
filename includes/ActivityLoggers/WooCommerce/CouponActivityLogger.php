@@ -18,6 +18,13 @@ defined( 'ABSPATH' ) || exit;
 class CouponActivityLogger extends AbstractLogger {
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @var string
+	 */
+	protected $integration = 'woocommerce';
+
+	/**
 	 * Coupon amount snapshots captured before a save, keyed by coupon ID.
 	 *
 	 * @var array<int, string>

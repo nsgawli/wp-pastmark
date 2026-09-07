@@ -56,6 +56,7 @@ const FIELD_LABELS = {
 	has_password: 'Password Protected',
 	sticky: 'Sticky',
 	template: 'Template',
+	content_diff: 'Content Changes',
 
 	// Media (MediaActivityLogger).
 	mime_type: 'File Type',
@@ -280,6 +281,19 @@ export const buildContextRows = (contextJson) => {
 };
 
 /**
+ * Diff/before-after keys that don't fit the normal two-column "before"
+ * vs "after" comparison and need their own single-value rendering
+ * instead - see `buildDiffRows()`'s `isContentDiff` flag.
+ *
+ * `content_diff` is `PostActivityLogger`/`CommentActivityLogger`'s
+ * (PM-142/PM-143) compact `ContentDiffer` output: a single unified-diff
+ * -style string that already represents both sides of the change, stored
+ * only in `after_data` (there's no separate "before" value to pair it
+ * with the way every other field has).
+ */
+const CONTENT_DIFF_KEYS = ['content_diff'];
+
+/**
  * Build rows for a before/after diff table out of a log's `before_data`
  * and `after_data` JSON, merging keys present on either side so a field
  * that was only added (or only removed) still shows up, with the other
@@ -292,9 +306,14 @@ export const buildContextRows = (contextJson) => {
  * could show several rows that aren't actually changes, alongside the
  * one that is.
  *
+ * A `content_diff` key (see `CONTENT_DIFF_KEYS`) is returned with
+ * `isContentDiff: true` and a single `diff` string instead of `before`/
+ * `after` - callers (the details drawer/page, the Markdown export) render
+ * it as one full-width diff block rather than a two-column row.
+ *
  * @param {string|null} beforeJson Raw `before_data` column value.
  * @param {string|null} afterJson  Raw `after_data` column value.
- * @return {Array<{key: string, label: string, before: string, after: string}>} Diff rows, changed fields only.
+ * @return {Array<{key: string, label: string, before: string, after: string}|{key: string, label: string, isContentDiff: true, diff: string}>} Diff rows, changed fields only.
  */
 export const buildDiffRows = (beforeJson, afterJson) => {
 	const before = parseJsonSafe(beforeJson) || {};
@@ -305,11 +324,22 @@ export const buildDiffRows = (beforeJson, afterJson) => {
 	);
 
 	return keys
-		.map((key) => ({
-			key,
-			label: humanizeKey(key),
-			before: formatFieldValue(before[key]),
-			after: formatFieldValue(after[key]),
-		}))
-		.filter((row) => row.before !== row.after);
+		.map((key) => {
+			if (CONTENT_DIFF_KEYS.includes(key)) {
+				return {
+					key,
+					label: humanizeKey(key),
+					isContentDiff: true,
+					diff: typeof after[key] === 'string' ? after[key] : '',
+				};
+			}
+
+			return {
+				key,
+				label: humanizeKey(key),
+				before: formatFieldValue(before[key]),
+				after: formatFieldValue(after[key]),
+			};
+		})
+		.filter((row) => row.isContentDiff || row.before !== row.after);
 };

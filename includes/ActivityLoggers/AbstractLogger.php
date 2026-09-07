@@ -4,6 +4,8 @@ namespace Pastmark\ActivityLoggers;
 
 use Pastmark\EventSettings\EventSettings;
 use Pastmark\Utils\ExcludeHelper;
+use Pastmark\Utils\IpAnonymizer;
+use Pastmark\Utils\SensitiveDataMasker;
 use WP_User;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,6 +21,17 @@ abstract class AbstractLogger {
 	 * @var \Pastmark\Models\Pastmark_Logs
 	 */
 	protected $logs_model;
+
+	/**
+	 * Which integration/source this logger's events belong to — `core` for
+	 * WordPress-native activity, `woocommerce` for WooCommerce loggers.
+	 * `Pastmark\ActivityLoggers\WooCommerce\*ActivityLogger` subclasses
+	 * override this; core loggers can rely on the default below instead of
+	 * repeating it.
+	 *
+	 * @var string
+	 */
+	protected $integration = 'core';
 
 	/**
 	 * Constructor.
@@ -57,33 +70,21 @@ abstract class AbstractLogger {
 	/**
 	 * Record a logger failure caught by `guarded()`.
 	 *
-	 * Only writes to the PHP error log (gated by WP_DEBUG_LOG, per WP
+	 * Delegates to the shared `ExceptionLogger::log()` helper (PM-149) -
+	 * only writes to the PHP error log (gated by WP_DEBUG_LOG, per WP
 	 * plugin convention) so a broken logger stays silent-but-safe on
 	 * production sites that don't have debug logging enabled, rather than
-	 * risking a second failure by routing back through our own log storage.
+	 * risking a second failure by routing back through our own log
+	 * storage. `IntegrationRegistry::load_all()` calls the same helper
+	 * for a failure caught during an integration's own bootstrap step,
+	 * so this behavior is defined in exactly one place.
 	 *
 	 * @param \Throwable $e Caught error/exception.
 	 * @return void
 	 */
 	protected function handle_logger_exception( \Throwable $e ): void {
 
-		if ( ! ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) ) {
-			return;
-		}
-
-		$hook = current_filter();
-
-		error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			sprintf(
-				'[Pastmark] %s caught in %s on hook "%s": %s in %s:%d',
-				get_class( $e ),
-				static::class,
-				$hook ? $hook : 'unknown',
-				$e->getMessage(),
-				$e->getFile(),
-				$e->getLine()
-			)
-		);
+		\Pastmark\Utils\ExceptionLogger::log( $e, static::class );
 	}
 
 	/**
@@ -107,6 +108,8 @@ abstract class AbstractLogger {
 			'after_data'  => '',
 			'context'     => array(),
 			'severity'    => 'info',
+			'actor_type'  => $this->detect_actor_type(),
+			'integration' => $this->integration,
 			'site_id'     => get_current_blog_id(),
 		);
 
@@ -116,9 +119,80 @@ abstract class AbstractLogger {
 			return false;
 		}
 
+		/*
+		 * Mask sensitive values (passwords, tokens, secrets, API keys, ...)
+		 * out of before/after/context data before it's ever written to
+		 * storage. Runs here — the one choke point every native logger and
+		 * the Public Logging API (`CustomEventLogger`) already funnel
+		 * through — so both are protected by a single change. See
+		 * `SensitiveDataMasker` and `docs/SECURITY-PRIVACY-BASELINE.md`.
+		 */
+		$data['before_data'] = SensitiveDataMasker::mask( $data['before_data'] );
+		$data['after_data']  = SensitiveDataMasker::mask( $data['after_data'] );
+		$data['context']     = SensitiveDataMasker::mask( $data['context'] );
+
+		/*
+		 * Anonymize the IP for storage only, after exclusion matching above
+		 * has already run against the real address — `ExcludeHelper`'s
+		 * `excludedIPs` rules must keep matching real IPs regardless of this
+		 * setting, or turning it on would silently un-exclude anyone
+		 * excluded by IP. See `IpAnonymizer`.
+		 */
+		$data['ip_address'] = IpAnonymizer::maybe_anonymize( $data['ip_address'] );
+
 		$data['context'] = wp_json_encode( $data['context'] );
 
-		return $this->logs_model->insert( $data );
+		$log_id = $this->logs_model->insert( $data );
+
+		if ( $log_id ) {
+
+			/**
+			 * Fires immediately after a log row is successfully written.
+			 *
+			 * `$data` here is exactly what was just written to
+			 * `wp_pastmark_logs` - already masked (`SensitiveDataMasker`)
+			 * and IP-anonymized (`IpAnonymizer`), with `context` already
+			 * JSON-encoded to a string. Does not fire for an event
+			 * `ExcludeHelper::should_exclude()` filtered out above, since
+			 * this point is only reached after that check already passed.
+			 *
+			 * The one real-time signal that a loggable event just
+			 * happened - built for Pastmark Pro's alert-rule engine so it
+			 * doesn't need to poll `wp_pastmark_logs` on a schedule, but
+			 * available to any consumer that needs to react to a log
+			 * write as it happens. See `docs/EXTENSION-POINTS.md`.
+			 *
+			 * @param int   $log_id The inserted row's ID.
+			 * @param array $data   The full row data that was written.
+			 */
+			do_action( 'pastmark_log_inserted', $log_id, $data );
+		}
+
+		return $log_id;
+	}
+
+	/**
+	 * Update an already-inserted row's message/context/severity.
+	 *
+	 * Used by throttling logic (see
+	 * `UserActivityLogger::log_login_failed()` and `Utils\LoginThrottle`) to
+	 * collapse a burst of repeated events into one row that keeps its count
+	 * current, instead of inserting a new row per event once a threshold is
+	 * crossed. `context` goes through the same masking pass as `insert_log()`
+	 * so an updated row is never less protected than a freshly inserted one.
+	 *
+	 * @param int   $id     Row ID to update.
+	 * @param array $fields Fields to update — see `Pastmark_Logs::update()`
+	 *                      for which keys are recognized.
+	 * @return bool
+	 */
+	protected function update_log( int $id, array $fields ): bool {
+
+		if ( array_key_exists( 'context', $fields ) ) {
+			$fields['context'] = wp_json_encode( SensitiveDataMasker::mask( $fields['context'] ) );
+		}
+
+		return $this->logs_model->update( $id, $fields );
 	}
 
 	/**
@@ -146,6 +220,105 @@ abstract class AbstractLogger {
 		$data['action']     = $action;
 
 		return $this->insert_log( $data );
+	}
+
+	/**
+	 * Determine which kind of actor performed the action being logged.
+	 *
+	 * Returns `scheduled` for WP-Cron-driven events, `system` for any other
+	 * context with no logged-in user (e.g. `DOING_AUTOSAVE`, an
+	 * unauthenticated REST callback, WP-CLI), `ai_agent` for a logged-in
+	 * request whose user agent heuristically matches a known AI-agent/
+	 * automation pattern, otherwise `human`.
+	 *
+	 * The `ai_agent` value is a heuristic, not a certainty — see
+	 * `is_ai_agent_user_agent()` and `docs/AI-ACTOR-DETECTION.md`.
+	 *
+	 * @return string
+	 */
+	protected function detect_actor_type(): string {
+
+		if ( wp_doing_cron() ) {
+			return 'scheduled';
+		}
+
+		if ( ! get_current_user_id() ) {
+			return 'system';
+		}
+
+		if ( $this->is_ai_agent_user_agent( $this->get_user_agent() ) ) {
+			return 'ai_agent';
+		}
+
+		return 'human';
+	}
+
+	/**
+	 * Heuristically match a user agent string against known AI-agent/
+	 * automation UA substrings.
+	 *
+	 * This is a signal, not proof: a human can spoof a UA string to
+	 * avoid/force this match, and a legitimate script can happen to share
+	 * a substring with the pattern list. It exists to surface a likely
+	 * AI-driven change for review, not to make an authentication claim —
+	 * see `docs/AI-ACTOR-DETECTION.md` for the full caveat.
+	 *
+	 * The pattern list is intentionally small and extensible via the
+	 * `pastmark_ai_agent_user_agent_patterns` filter rather than hardcoded,
+	 * so a site/integrator can add its own agent's UA substring (or
+	 * remove one producing false positives) without a core code change.
+	 *
+	 * @param string $user_agent User agent string to test (already the
+	 *                           current request's, via `get_user_agent()`).
+	 * @return bool
+	 */
+	protected function is_ai_agent_user_agent( string $user_agent ): bool {
+
+		if ( '' === $user_agent ) {
+			return false;
+		}
+
+		/**
+		 * Filters the list of user-agent substrings treated as AI-agent/
+		 * automation signals by `detect_actor_type()`.
+		 *
+		 * Matching is a case-insensitive substring search, so a pattern
+		 * like `claude` matches `Claude-Code/1.0`, `claude-3-opus`, etc.
+		 *
+		 * @param string[] $patterns Default UA substrings (lowercase).
+		 */
+		$patterns = (array) apply_filters(
+			'pastmark_ai_agent_user_agent_patterns',
+			array(
+				'claude',
+				'anthropic',
+				'gpt-',
+				'chatgpt',
+				'openai',
+				'gemini',
+				'copilot',
+				'langchain',
+				'autogpt',
+				'mcp-client',
+			)
+		);
+
+		$user_agent = strtolower( $user_agent );
+
+		foreach ( $patterns as $pattern ) {
+
+			$pattern = strtolower( trim( (string) $pattern ) );
+
+			if ( '' === $pattern ) {
+				continue;
+			}
+
+			if ( false !== strpos( $user_agent, $pattern ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

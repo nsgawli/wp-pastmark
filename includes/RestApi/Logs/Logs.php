@@ -68,6 +68,12 @@ class Logs extends BaseController {
 					'permission_callback' => array( $this, 'permission_callback' ),
 					'args'                => $this->get_collection_params(),
 				),
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_log' ),
+					'permission_callback' => array( $this, 'permission_callback' ),
+					'args'                => $this->get_create_log_params(),
+				),
 			)
 		);
 
@@ -97,6 +103,27 @@ class Logs extends BaseController {
 
 		register_rest_route(
 			$this->namespace,
+			'/logs/new-count',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_new_logs_count' ),
+					'permission_callback' => array( $this, 'permission_callback' ),
+					'args'                => array_merge(
+						$this->get_collection_params(),
+						array(
+							'since_id' => array(
+								'default'           => 0,
+								'sanitize_callback' => 'absint',
+							),
+						)
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/logs/filter-options',
 			array(
 				array(
@@ -116,59 +143,67 @@ class Logs extends BaseController {
 	protected function get_collection_params() {
 
 		return array(
-			'page'       => array(
+			'page'        => array(
 				'default'           => 1,
 				'sanitize_callback' => 'absint',
 			),
 
-			'per_page'   => array(
+			'per_page'    => array(
 				'default'           => 20,
 				'sanitize_callback' => 'absint',
 			),
 
-			'search'     => array(
+			'search'      => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'severity'   => array(
+			'severity'    => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'event'      => array(
+			'event'       => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'user_ids'   => array(
+			'actor_type'  => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'ids'        => array(
+			'integration' => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'date_range' => array(
+			'user_ids'    => array(
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+
+			'ids'         => array(
+				'sanitize_callback' => 'sanitize_text_field',
+			),
+
+			'date_range'  => array(
 				'default'           => 'all',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'date_from'  => array(
+			'date_from'   => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'date_to'    => array(
+			'date_to'     => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'ip_address' => array(
+			'ip_address'  => array(
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'orderby'    => array(
+			'orderby'     => array(
 				'default'           => 'id',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
 
-			'order'      => array(
+			'order'       => array(
 				'default'           => 'DESC',
 				'sanitize_callback' => 'sanitize_text_field',
 			),
@@ -176,7 +211,136 @@ class Logs extends BaseController {
 	}
 
 	/**
+	 * REST args schema for `POST /logs` (the public Logging API's write
+	 * endpoint). Only `event_type`/`action` are `required` — WordPress
+	 * rejects a request missing either with a 400 before `create_log()`
+	 * ever runs. Everything else is deliberately typed but not otherwise
+	 * validated here: real validation (sanitization, severity checking,
+	 * exclusion rules) all happens once, inside `pastmark_log_event()`
+	 * (see PM-128's `Pastmark\Api\CustomEventLogger`), not duplicated here.
+	 *
+	 * @return array
+	 */
+	protected function get_create_log_params() {
+
+		return array(
+			'event_type'  => array(
+				'required' => true,
+				'type'     => 'string',
+			),
+
+			'action'      => array(
+				'required' => true,
+				'type'     => 'string',
+			),
+
+			'message'     => array(
+				'type' => 'string',
+			),
+
+			'object_type' => array(
+				'type' => 'string',
+			),
+
+			'object_id'   => array(
+				'type' => 'integer',
+			),
+
+			'severity'    => array(
+				'type' => 'string',
+			),
+
+			'context'     => array(
+				'type' => 'object',
+			),
+
+			'before_data' => array(
+				'type' => 'string',
+			),
+
+			'after_data'  => array(
+				'type' => 'string',
+			),
+
+			'integration' => array(
+				'type' => 'string',
+			),
+		);
+	}
+
+	/**
+	 * Create a custom log entry — the REST half of the public Logging API.
+	 *
+	 * Delegates entirely to `pastmark_log_event()` (PM-128) rather than
+	 * re-implementing sanitization/exclusion/severity-validation logic a
+	 * second time; this method's only job is mapping the request's params
+	 * to that function's `$args` shape and its return value to a REST
+	 * response. Requires the same `manage_options` capability as every
+	 * other Pastmark REST route (see `BaseController::permission_callback()`)
+	 * — a scoped/token-based access model is explicitly Pro-tier future
+	 * work, not built here.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public function create_log( WP_REST_Request $request ) {
+
+		$event_type = (string) $request->get_param( 'event_type' );
+		$action     = (string) $request->get_param( 'action' );
+
+		$args = array();
+
+		foreach ( array( 'message', 'object_type', 'severity', 'before_data', 'after_data', 'integration' ) as $field ) {
+
+			$value = $request->get_param( $field );
+
+			if ( null !== $value ) {
+				$args[ $field ] = $value;
+			}
+		}
+
+		$object_id = $request->get_param( 'object_id' );
+
+		if ( null !== $object_id ) {
+			$args['object_id'] = $object_id;
+		}
+
+		$context = $request->get_param( 'context' );
+
+		if ( is_array( $context ) ) {
+			$args['context'] = $context;
+		}
+
+		$log_id = pastmark_log_event( $event_type, $action, $args );
+
+		if ( ! $log_id ) {
+
+			return $this->error_response(
+				'create_failed',
+				__( 'Unable to create the log entry. event_type/action may have been empty after sanitization, or this site\'s exclusion settings blocked it.', 'pastmark' )
+			);
+		}
+
+		return $this->success_response(
+			array(
+				'id' => $log_id,
+			)
+		);
+	}
+
+	/**
 	 * Get logs.
+	 *
+	 * Each returned item includes `actor_type` (`human`/`system`/
+	 * `scheduled`/`ai_agent`) and `integration` (`core`/`woocommerce`/...)
+	 * alongside the existing fields; both are also accepted as comma-
+	 * separated filter params (`actor_type`, `integration`), matching how
+	 * `severity`/`event` already filter.
+	 *
+	 * Each item also includes `object_type`, `object_id`, `object_label`,
+	 * and `object_url` - the same object reference `get_log_details()`
+	 * resolves, via the shared `resolve_object_reference()` logic, so a
+	 * "go to object" row action doesn't need a second details fetch.
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
@@ -197,25 +361,14 @@ class Logs extends BaseController {
 
 		$offset = ( $page - 1 ) * $per_page;
 
-		$date_range = $this->resolve_date_range(
-			$request->get_param( 'date_range' ),
-			$request->get_param( 'date_from' ),
-			$request->get_param( 'date_to' )
-		);
-
-		$args = array(
-			'number'     => $per_page,
-			'offset'     => $offset,
-			'search'     => $request->get_param( 'search' ),
-			'severity'   => $this->parse_csv_text( $request->get_param( 'severity' ) ),
-			'event'      => $this->parse_csv_text( $request->get_param( 'event' ) ),
-			'user_ids'   => $this->parse_csv_int( $request->get_param( 'user_ids' ) ),
-			'ids'        => $this->parse_csv_int( $request->get_param( 'ids' ) ),
-			'date_from'  => $date_range['from'],
-			'date_to'    => $date_range['to'],
-			'ip_address' => $request->get_param( 'ip_address' ),
-			'order'      => $request->get_param( 'order' ),
-			'orderby'    => $request->get_param( 'orderby' ),
+		$args = array_merge(
+			$this->get_filter_args_from_request( $request ),
+			array(
+				'number'  => $per_page,
+				'offset'  => $offset,
+				'order'   => $request->get_param( 'order' ),
+				'orderby' => $request->get_param( 'orderby' ),
+			)
 		);
 
 		$items = $this->logs_model->get_logs( $args );
@@ -228,7 +381,8 @@ class Logs extends BaseController {
 
 			foreach ( $items as $item ) {
 
-				$user = get_user_by( 'id', $item->user_id );
+				$user   = get_user_by( 'id', $item->user_id );
+				$target = $this->resolve_object_reference( $item );
 
 				$formatted_items[] = array(
 					'id'             => (int) $item->id,
@@ -240,11 +394,14 @@ class Logs extends BaseController {
 					'action_label'   => Actions::resolve_label( (string) $item->action ),
 					'severity'       => $item->severity,
 					'severity_label' => Severity::resolve_label( (string) $item->severity ),
+					'actor_type'     => $item->actor_type,
+					'integration'    => $item->integration,
 					'ip'             => $item->ip_address,
 					'message'        => $item->message,
-					'before_data'    => $item->before_data,
-					'after_data'     => $item->after_data,
-					'context'        => $item->context,
+					'object_type'    => $item->object_type,
+					'object_id'      => $item->object_id,
+					'object_label'   => $target['label'],
+					'object_url'     => $target['url'],
 				);
 			}
 		}
@@ -263,7 +420,85 @@ class Logs extends BaseController {
 	}
 
 	/**
+	 * Build the search/severity/event/actor-type/integration/user/id/
+	 * date-range/ip-address filter args shared by `get_logs()` and
+	 * `get_new_logs_count()` from a request - everything `get_logs()`
+	 * takes except its pagination (`page`/`per_page`) and sort
+	 * (`orderby`/`order`) params, which `get_new_logs_count()` has no use
+	 * for since it only ever reports a count/latest-id, never a list.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return array
+	 */
+	protected function get_filter_args_from_request( WP_REST_Request $request ): array {
+
+		$date_range = $this->resolve_date_range(
+			$request->get_param( 'date_range' ),
+			$request->get_param( 'date_from' ),
+			$request->get_param( 'date_to' )
+		);
+
+		return array(
+			'search'      => $request->get_param( 'search' ),
+			'severity'    => $this->parse_csv_text( $request->get_param( 'severity' ) ),
+			'event'       => $this->parse_csv_text( $request->get_param( 'event' ) ),
+			'actor_type'  => $this->parse_csv_text( $request->get_param( 'actor_type' ) ),
+			'integration' => $this->parse_csv_text( $request->get_param( 'integration' ) ),
+			'user_ids'    => $this->parse_csv_int( $request->get_param( 'user_ids' ) ),
+			'ids'         => $this->parse_csv_int( $request->get_param( 'ids' ) ),
+			'date_from'   => $date_range['from'],
+			'date_to'     => $date_range['to'],
+			'ip_address'  => $request->get_param( 'ip_address' ),
+		);
+	}
+
+	/**
+	 * Get the count of logs newer than `since_id` matching the current
+	 * search/filters, plus the actual latest matching id - the "N new
+	 * events" polling endpoint behind the Logs page's live-update badge
+	 * (see `useNewEvents`/`NewEventsBanner` on the frontend).
+	 *
+	 * `since_id` is a baseline id the client already has (typically the
+	 * newest row it loaded); `latest_id` always comes back regardless of
+	 * `since_id` so the client can (re)establish that baseline - e.g. on
+	 * its very first poll, or after filters/search change - without a
+	 * separate request. `count` only runs the (heavier) `COUNT(*)` query
+	 * when there's actually a `since_id` to compare against and the
+	 * cheap `MAX(id)` lookup already shows something newer exists.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function get_new_logs_count( WP_REST_Request $request ) {
+
+		$since_id = absint( $request->get_param( 'since_id' ) );
+
+		$filter_args = $this->get_filter_args_from_request( $request );
+
+		$latest_id = $this->logs_model->get_max_id( $filter_args );
+
+		$count = 0;
+
+		if ( $since_id > 0 && $latest_id > $since_id ) {
+			$count = $this->logs_model->count_logs(
+				array_merge( $filter_args, array( 'min_id' => $since_id ) )
+			);
+		}
+
+		return $this->success_response(
+			array(
+				'count'     => $count,
+				'latest_id' => $latest_id,
+			)
+		);
+	}
+
+	/**
 	 * Get log details.
+	 *
+	 * Response includes `actor_type` and `integration` alongside the
+	 * existing fields (see `get_logs()`).
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
@@ -301,6 +536,8 @@ class Logs extends BaseController {
 				'event_label'    => Events::resolve_label( (string) $item->event_type ),
 				'severity'       => $item->severity,
 				'severity_label' => Severity::resolve_label( (string) $item->severity ),
+				'actor_type'     => $item->actor_type,
+				'integration'    => $item->integration,
 				'ip'             => $item->ip_address,
 				'message'        => $item->message,
 				'before_data'    => $item->before_data,
@@ -324,16 +561,30 @@ class Logs extends BaseController {
 	 *
 	 * `object_type` on a log row is either 'user', a handful of
 	 * plugin-defined labels (comment, review, nav_menu, nav_menu_item,
-	 * product_cat, shop_order, ...), or - for content types, which is most
-	 * loggers - the actual WordPress/WooCommerce post type (post, page,
-	 * attachment, product, shop_coupon, ...). Rather than enumerate every
-	 * post type, anything not explicitly matched below falls through to
-	 * `resolve_post_reference()`, since a real, resolvable `object_id`
-	 * on anything else is a `WP_Post` ID in practice.
+	 * product_cat, shop_order, site_icon, ...), or - for content types,
+	 * which is most loggers - the actual WordPress/WooCommerce post type
+	 * (post, page, attachment, product, shop_coupon, ...). Rather than
+	 * enumerate every post type, anything not explicitly matched below
+	 * falls through to `resolve_post_reference()`, but only when
+	 * `object_type` is itself a real, registered post type (see the
+	 * `post_type_exists()` guard below) — every native logger's
+	 * object_type used this way genuinely is one.
+	 *
+	 * That guard matters because of PM-128/129's Public Logging API
+	 * (`pastmark_log_event()` / `POST /pastmark/v1/logs`): an external
+	 * caller can pass any `object_id` under any made-up `object_type`,
+	 * with no guarantee it corresponds to a real WordPress post at all.
+	 * Without the guard, a coincidental `object_id` match against an
+	 * unrelated real post would produce a misleading "go to object" link.
+	 * `site_icon` is the one native exception — it's really an attachment
+	 * ID, but "site_icon" itself was never a registered post type, so it's
+	 * called out explicitly rather than relying on the (now guarded)
+	 * fallback.
 	 *
 	 * Returns nulls when there's no object, when the acting user IS the
-	 * object (nothing extra to show), or when the referenced object no
-	 * longer exists (e.g. already deleted).
+	 * object (nothing extra to show), when the referenced object no
+	 * longer exists (e.g. already deleted), or when `object_type` isn't
+	 * a type this method can safely resolve.
 	 *
 	 * @param object $item Raw log row.
 	 * @return array{label: string|null, url: string|null}
@@ -369,8 +620,15 @@ class Logs extends BaseController {
 			case 'shop_order':
 				return $this->resolve_order_reference( $object_id );
 
-			default:
+			case 'site_icon':
 				return $this->resolve_post_reference( $object_id );
+
+			default:
+				if ( post_type_exists( (string) $item->object_type ) ) {
+					return $this->resolve_post_reference( $object_id );
+				}
+
+				return $empty;
 		}
 	}
 

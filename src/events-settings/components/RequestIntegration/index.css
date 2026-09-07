@@ -1,0 +1,49 @@
+.wppm-request-integration-card.wppm-card-padding {
+	padding: 18px 20px;
+	background: #f5f4ff;
+	border: 1px dashed #c7c3f5;
+}
+
+.wppm-request-integration-icon {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: #ffffff;
+	color: var(--psmfr-primary-color, #4f46e5);
+	font-size: 18px;
+}
+
+.wppm-request-integration-copy {
+	flex: 1;
+	min-width: 200px;
+}
+
+.wppm-request-integration-title {
+	font-weight: 600;
+	color: #1f2937;
+	margin-bottom: 4px;
+}
+
+.wppm-request-integration-description {
+	font-size: 13px;
+	color: #646970;
+}
+
+.wppm-request-integration-button {
+	flex: 0 0 auto;
+	white-space: nowrap;
+}
+
+@media (max-width: 782px) {
+	.wppm-request-integration-card.wppm-card-padding {
+		padding: 14px 16px;
+	}
+
+	.wppm-request-integration-button {
+		width: 100%;
+	}
+}

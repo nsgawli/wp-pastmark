@@ -2,9 +2,9 @@
 Contributors: nsgawli
 Tags: activity log, audit log, user activity, security, woocommerce
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -23,6 +23,7 @@ Without a user activity log, it's nearly impossible to answer basic questions af
 = Track user & security activity =
 
 * Log successful and failed login attempts.
+* Throttle repeated failed login attempts from the same user and IP address, so a brute-force run collapses into a single updating log entry instead of one row per attempt.
 * Track user registrations, profile updates, and role changes.
 * Monitor password changes and account-level activity.
 * Keep a security audit log to help spot suspicious behavior early.
@@ -50,12 +51,28 @@ If WooCommerce is active, Pastmark automatically extends its logging to your sto
 * Log product category changes and deletions.
 * Track coupon and product review activity.
 
+= Third-party plugin integrations =
+
+If any of the following plugins are active, Pastmark automatically extends its logging to them:
+
+* **Advanced Custom Fields (ACF):** field-group and individual-field create, update, delete, trash, restore, and duplicate — down to which field changed.
+* **WPForms:** form create, edit, trash, restore, duplicate, delete, activate/deactivate, import/export; real visitor form submissions; best-effort notification-failure detection; global settings, service-integration, and addon changes; confirmation and notification changes.
+* **Gravity Forms:** form create, edit, trash, restore, duplicate, delete, activate/deactivate, import/export; real visitor form submissions; reliable notification-failure detection; global settings, confirmation, and notification changes; entry moderation (star, read, trash, notes, admin edits, exports).
+* **Yoast SEO:** global SEO settings and per-post SEO meta changes (title, meta description, focus keyword, indexing, canonical URL, schema, and more).
+* **RankMath:** global SEO settings and per-post SEO meta changes (title, meta description, focus keyword, robots meta, canonical URL, and more), plus module toggles.
+* **Redirection:** redirect rule and redirect group create, edit, enable/disable, and delete.
+* **TablePress:** table create, edit (with a diff), copy, and delete.
+* **bbPress:** forum, topic, and reply create, edit, close/open, stick/unstick, trash, restore, and delete; forum settings changes.
+* **WP 2FA:** two-factor method changes, policy changes, user lock/unlock, and enrollment activity.
+* **Ultimate Member:** member registration, profile field changes, and role changes.
+* **Wordfence:** login lockouts, firewall blocks/throttling, country-block changes, and security settings changes.
+* **Tutor LMS:** course, lesson, topic, and quiz create/edit/delete; student enrollment; and lesson/quiz/course completion.
+
 = Dashboard, reports & exports =
 
 * Searchable, filterable activity log dashboard inside wp-admin.
 * At-a-glance activity summary via an optional dashboard widget.
 * Daily and weekly email activity reports sent to the recipients you choose.
-* Export logs to CSV for reporting, audits, or compliance needs.
 * Automatic cleanup of old log entries with a configurable retention period.
 
 = Fine-grained control over what gets logged =
@@ -68,8 +85,18 @@ If WooCommerce is active, Pastmark automatically extends its logging to your sto
 = Privacy & security by design =
 
 * Activity logs are only accessible to administrators (`manage_options` capability).
+* Sensitive values such as passwords, tokens, and API keys are automatically detected and masked before they're stored in the log.
+* Optionally anonymize stored IP addresses from the Security & Privacy settings.
 * Integrates with WordPress's built-in Personal Data Export and Erase Personal Data tools, so Pastmark-collected data is included in GDPR data requests.
 * Does not send any data to external servers — everything stays on your site.
+
+= Built for developers =
+
+* A public `pastmark_log_event()` function and a REST API endpoint let other plugins, themes, or automation tools log their own custom events into Pastmark's activity log, through the same validation and exclusion rules as every built-in event.
+
+= Other Plugins By Us =
+
+* [BugTrace - Debug Log Tool](https://wordpress.org/plugins/debug-log-tool/): A minimalist debugging companion for WordPress. View and download your debug log, toggle `WP_DEBUG`, `WP_DEBUG_LOG`, `WP_DEBUG_DISPLAY`, and `SCRIPT_DEBUG` without editing `wp-config.php`, and inspect server info, `wp-config.php`, `.htaccess`, and PHP info — all from your dashboard.
 
 == Contribute ==
 Pastmark - User Activity Logs is an open-source project. You can view the full sources (unminified JS) and contribute to the project on GitHub: [Click here](https://github.com/nsgawli/wp-pastmark)
@@ -132,9 +159,17 @@ Yes. Pastmark can automatically delete log entries older than a period you choos
 
 Yes. The Exclude settings let you leave out specific users, roles, IP addresses, post types, post statuses, plugins, themes, menus, widgets, and even specific post meta or user meta keys.
 
-= Can I export the activity logs? =
+= Does Pastmark ever store passwords or other sensitive data in the log? =
 
-Yes. Logs can be exported to CSV directly from the activity log dashboard, which is useful for reporting, audits, or compliance records.
+No. Pastmark automatically detects common sensitive fields — passwords, tokens, API keys, and similar values — and masks them before the log entry is stored.
+
+= Can I anonymize IP addresses or limit failed login attempts? =
+
+Yes. The Security & Privacy settings let you anonymize stored IP addresses and configure how repeated failed login attempts from the same user and IP are throttled, instead of logging every single attempt.
+
+= Can other plugins or automation tools log their own events to Pastmark? =
+
+Yes. Pastmark provides a `pastmark_log_event()` function and a REST API endpoint so other plugins, themes, or external tools can log their own custom events, using the same exclusion rules and validation as Pastmark's built-in events. See the developer documentation on [GitHub](https://github.com/nsgawli/wp-pastmark) for details.
 
 = Can I get email reports of site activity? =
 
@@ -160,8 +195,47 @@ Logs are preserved when the plugin is deactivated. Uninstalling the plugin remov
 4. Settings
 5. Email Settings
 6. Log Exclude Settings
+7. Security & Privacy
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.4 (5 September 2026) =
+* New: The Activity Logs list now shows a "N new events" banner above the log list when new events arrive, letting you refresh to load them without leaving the page.
+* New: Toggle the Activity Logs list between Default and Compact row spacing, in both Table and Timeline view.
+* New: TablePress integration.
+* New: bbPress integration.
+* New: WP 2FA integration.
+* New: Ultimate Member integration.
+* New: Wordfence integration.
+* New: Tutor LMS integration.
+
+= 1.0.3 (30 August 2026) =
+* New: Advanced Custom Fields (ACF) integration.
+* New: WPForms integration, with expanded event coverage.
+* New: Gravity Forms integration, with expanded event coverage.
+* New: Yoast SEO integration.
+* New: RankMath integration.
+* New: Redirection integration.
+* Fixed: The Activity Logs page's Severity filter could never select "Critical" or "Debug", and its Integration filter couldn't filter by ACF, WPForms, or Gravity Forms, even though the underlying data always supported it.
+
+= 1.0.2 (25 August 2026) =
+* New: Public Logging API — a `pastmark_log_event()` function and a writable REST endpoint let other plugins, themes, or automation tools log their own custom events into Pastmark's activity log.
+* New: Security & Privacy settings — anonymize stored IP addresses and configure failed-login throttling window and threshold.
+* New: Failed login attempts from the same user and IP address are now throttled, collapsing repeated attempts into a single, continuously updated log entry instead of one row per attempt.
+* New: Sensitive values such as passwords, tokens, and API keys are now automatically detected and masked before being stored in log details.
+* New: Large post and comment content edits now store a compact diff instead of duplicating the full content twice, reducing database size for big edits. Small edits are stored exactly as before.
+* Improved: Activity Logs Timeline view now shows a severity badge for every severity level, not just "Warning".
+* Improved: The dashboard now shows a clear error message with a retry option if activity data fails to load, instead of silently appearing empty.
+
+= 1.0.1 (22 August 2026) =
+* New: Activity Logs (list and detail views) now show a direct link to the object each event relates to — the edited post, order, or user.
+* New: Filter activity logs by Actor Type (human, system, scheduled, or AI agent) and by Integration (Core or WooCommerce).
+* New: Events likely triggered by an AI agent or automation tool are now heuristically detected, flagged with a badge, and filterable.
+* Improved: WooCommerce order edits now log the actual before/after change to the order total.
+* Improved: WooCommerce refunds now log real before/after refund amounts instead of an empty diff.
+* Fixed: A duplicate "Order edited" event no longer appears immediately after placing a new WooCommerce order.
+* Fixed: Deactivating the plugin now properly clears its scheduled cron events.
+* Fixed: Uninstalling with "Remove data on uninstall" enabled now also removes the event log level setting, instead of leaving it behind.
+
+= 1.0.0 (16 August 2026) =
 * Initial release.

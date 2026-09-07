@@ -1,0 +1,44 @@
+.wppm-new-events-banner {
+	display: inline-flex;
+	align-self: flex-start;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: auto;
+	max-width: 100%;
+	padding: 8px 14px;
+	border: 1px solid var(--psmfr-info-color, #2563eb);
+	border-radius: 999px;
+	background: var(--psmfr-info-soft-color, #eff6ff);
+	color: var(--psmfr-info-color, #2563eb);
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.2;
+	white-space: nowrap;
+	cursor: pointer;
+	box-sizing: border-box;
+	animation: wppm-new-events-banner-in 0.15s ease-out;
+}
+
+.wppm-new-events-banner:hover {
+	background: var(--psmfr-info-color, #2563eb);
+	color: #fff;
+}
+
+.wppm-new-events-banner-icon {
+	font-size: 14px;
+	flex-shrink: 0;
+}
+
+@keyframes wppm-new-events-banner-in {
+
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

@@ -17,7 +17,13 @@ import { applyFilters } from '@wordpress/hooks';
 
 import ProductIcon from '@framework/icons/productIcon';
 
-import { FiSettings, FiMinusCircle, FiTool, FiMail } from 'react-icons/fi';
+import {
+	FiSettings,
+	FiMinusCircle,
+	FiTool,
+	FiMail,
+	FiShield,
+} from 'react-icons/fi';
 
 import './index.css';
 
@@ -26,6 +32,7 @@ import GeneralSettings from './general-settings';
 import EmailReports from './email-reports';
 import ExcludeSettings from './exclude-settings';
 import DataManagement from './data-management';
+import SecuritySettings from './security-settings';
 
 const defaultTabs = [
 	{
@@ -55,6 +62,13 @@ const defaultTabs = [
 		icon: <FiTool />,
 		label: __('Data Management', 'pastmark'),
 		element: <DataManagement />,
+	},
+	{
+		key: 'security-settings',
+		path: '/security-settings',
+		icon: <FiShield />,
+		label: __('Security & Privacy', 'pastmark'),
+		element: <SecuritySettings />,
 	},
 ];
 
@@ -95,6 +109,7 @@ function App() {
 			<AdminPageHeader
 				icon={<ProductIcon className="product-icon" />}
 				title="Pastmark - User Activity Logs"
+				helpLink="https://wordpress.org/support/plugin/pastmark/"
 			/>
 			<Flex style={{ padding: '1.5rem' }} gap={25}>
 				<SideMenu

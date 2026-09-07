@@ -28,11 +28,17 @@ Pastmark keeps a complete audit trail of everything that happens on your WordPre
 - Product creation, updates, stock/status changes, and deletions
 - Product category, coupon, and product review activity
 
+**Third-party plugin integrations** (auto-enabled when the plugin is active)
+- **Advanced Custom Fields (ACF):** field-group and individual-field create/update/delete/trash/restore/duplicate, down to which field changed
+- **WPForms:** form create/edit/trash/restore/duplicate/delete, real visitor submissions, and best-effort notification-failure detection
+- **Gravity Forms:** form create/edit/trash/restore/duplicate/delete, real visitor submissions, and reliable notification-failure detection
+- Built on an open integration framework — see [`docs/BUILDING-AN-INTEGRATION.md`](docs/BUILDING-AN-INTEGRATION.md) if you want to add logging for another plugin
+
 **Dashboard, reports & exports**
 - Searchable, filterable activity log dashboard in wp-admin
 - Optional dashboard widget with an at-a-glance activity summary
 - Daily and weekly email activity reports
-- CSV export for reporting, audits, or compliance
+- CSV export for reporting, audits, or compliance (requires the Pastmark Pro add-on)
 - Configurable automatic cleanup of old log entries
 
 **Fine-grained control**
@@ -43,8 +49,13 @@ Pastmark keeps a complete audit trail of everything that happens on your WordPre
 
 **Privacy & security**
 - Logs are only accessible to administrators (`manage_options` capability)
+- Sensitive values (passwords, tokens, API keys, secrets) are automatically masked before storage
+- Failed-login bursts are throttled so a brute-force attempt can't flood the database
+- Optional IP address anonymization, without breaking your existing IP-based exclusion rules
 - Integrates with WordPress's Personal Data Export / Erase Personal Data tools
 - Does not send any data to external servers — everything stays on your site
+
+See [`docs/SECURITY-PRIVACY-BASELINE.md`](docs/SECURITY-PRIVACY-BASELINE.md) for the full detail on masking, throttling, and IP anonymization.
 
 ## Requirements
 - WordPress 6.2+
@@ -66,8 +77,11 @@ This repo ships source files that need to be built into the `build/` directory b
 1. After activation, open the **Pastmark** menu in wp-admin.
 2. Review the activity log dashboard, or use the Events screen to choose an Essential/Recommended/Complete preset (or enable individual events).
 3. Configure exclusions (users, roles, IPs, post types, plugins, themes, etc.) under the Exclude settings.
-4. Set up daily/weekly email reports and log retention under Settings.
-5. Export logs to CSV as needed for audits or compliance.
+4. Set up daily/weekly email reports, log retention, and Security & Privacy options (failed-login throttling, IP anonymization) under Settings.
+5. Export logs to CSV as needed for audits or compliance (requires the Pastmark Pro add-on).
+
+## For Developers
+Other plugins, themes, and automation scripts can record their own events into Pastmark's activity log — no core changes, one function call or one authenticated REST request. See [`docs/PUBLIC-LOGGING-API.md`](docs/PUBLIC-LOGGING-API.md).
 
 ## Translation
 To generate the `.pot` file for translations:

@@ -5,6 +5,7 @@ namespace Pastmark\ActivityLoggers;
 use Pastmark\Constants\Severity;
 use Pastmark\Constants\Events;
 use Pastmark\Constants\Actions;
+use Pastmark\Utils\ContentDiffer;
 use WP_Comment;
 
 defined( 'ABSPATH' ) || exit;
@@ -133,6 +134,13 @@ class CommentActivityLogger extends AbstractLogger {
 	/**
 	 * Log comment edit.
 	 *
+	 * `comment_content` specifically is routed through `ContentDiffer`
+	 * (PM-141/PM-143): when a compact diff is worthwhile, it replaces both
+	 * sides' `comment_content` entry with a single `content_diff` entry on
+	 * `$after` — the other edited fields (author/email/URL) still store
+	 * their plain before/after values exactly as before this ticket. When
+	 * diffing isn't worthwhile, storage is unchanged.
+	 *
 	 * @param int $comment_id Comment ID.
 	 * @return void
 	 */
@@ -159,6 +167,13 @@ class CommentActivityLogger extends AbstractLogger {
 
 		if ( $before === $after ) {
 			return;
+		}
+
+		$diff = ContentDiffer::diff( $before['comment_content'] ?? '', $after['comment_content'] );
+
+		if ( null !== $diff ) {
+			unset( $before['comment_content'], $after['comment_content'] );
+			$after['content_diff'] = $diff;
 		}
 
 		$post = get_post( $comment->comment_post_ID );
@@ -309,6 +324,13 @@ class CommentActivityLogger extends AbstractLogger {
 	/**
 	 * Log permanent comment deletion.
 	 *
+	 * **PM-143 implementation note:** deliberately *not* routed through
+	 * `ContentDiffer` — a deletion snapshot only has one side (there's no
+	 * subsequent "after" version to diff the removed content against), so
+	 * unlike `log_comment_edited()`'s two-sided edit, there's nothing for a
+	 * diff to represent here. `prepare_comment_data()`'s full-content
+	 * storage is intentional and unchanged.
+	 *
 	 * @param int        $comment_id Comment ID.
 	 * @param WP_Comment $comment Comment object.
 	 * @return void
@@ -371,6 +393,12 @@ class CommentActivityLogger extends AbstractLogger {
 
 	/**
 	 * Prepare comment data for storage.
+	 *
+	 * Used by `log_comment_posted()` (create, `after_data` only) and
+	 * `log_comment_deleted()` (delete, `before_data` only) — both
+	 * single-sided snapshots, not a before/after pair, so `ContentDiffer`
+	 * (PM-141) doesn't apply here; only `log_comment_edited()`'s two-sided
+	 * edit is diffed (PM-143).
 	 *
 	 * @param WP_Comment $comment Comment object.
 	 * @return array

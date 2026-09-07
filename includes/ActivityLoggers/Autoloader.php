@@ -1,11 +1,18 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 namespace Pastmark\ActivityLoggers;
 
+use Pastmark\Integrations\IntegrationRegistry;
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Instantiates every core `AbstractLogger` subclass, then hands
+ * third-party-plugin integration loading off to `IntegrationRegistry`
+ * (PM-149/PM-150).
+ */
 class Autoloader {
 
 	/**
@@ -34,17 +41,10 @@ class Autoloader {
 
 		new WidgetActivityLogger();
 
-		if ( class_exists( 'WooCommerce' ) ) {
-
-			new WooCommerce\ProductActivityLogger();
-
-			new WooCommerce\ProductCategoryActivityLogger();
-
-			new WooCommerce\OrderActivityLogger();
-
-			new WooCommerce\CouponActivityLogger();
-
-			new WooCommerce\ReviewActivityLogger();
-		}
+		// Third-party-plugin integrations (WooCommerce today; more join
+		// via IntegrationRegistry::register() from Sprint 8 onward) load
+		// through the generic registry (PM-149/PM-150) instead of a
+		// hardcoded `if ( class_exists( 'WooCommerce' ) )` block here.
+		IntegrationRegistry::load_all();
 	}
 }

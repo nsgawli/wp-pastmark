@@ -21,6 +21,7 @@ import Pagination from './Pagination';
 import SearchInput from './SearchInput';
 import EventBadge from './EventBadge';
 import SeverityBadge from './SeverityBadge';
+import AiAgentBadge from './AiAgentBadge';
 import Avatar from './Avatar';
 
 export {
@@ -47,5 +48,6 @@ export {
 	SearchInput,
 	EventBadge,
 	SeverityBadge,
+	AiAgentBadge,
 	Avatar,
 };

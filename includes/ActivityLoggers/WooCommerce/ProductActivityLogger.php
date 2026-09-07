@@ -17,6 +17,13 @@ defined( 'ABSPATH' ) || exit;
 class ProductActivityLogger extends AbstractLogger {
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @var string
+	 */
+	protected $integration = 'woocommerce';
+
+	/**
 	 * Product field snapshots captured before a save, keyed by product ID.
 	 *
 	 * There's no reliable "after" hook that also hands back the pre-save

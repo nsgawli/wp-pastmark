@@ -4,19 +4,14 @@ import {
 	parseJsonSafe,
 } from './logFieldFormat';
 
+export {
+	buildLogDetailsPath,
+	buildLogDetailsUrl,
+} from '@framework/utils/logDetailsUrl';
+
 export const LOG_DETAILS_VIEW_MODES = {
 	drawer: 'drawer',
 	singlePage: 'single_page',
-};
-
-export const buildLogDetailsPath = (logId) => `/log/${logId}`;
-
-export const buildLogDetailsUrl = (logId) => {
-	if (!logId) {
-		return `${window.location.origin}${window.location.pathname}?page=pastmark`;
-	}
-
-	return `${window.location.origin}${window.location.pathname}?page=pastmark#${buildLogDetailsPath(logId)}`;
 };
 
 /**
@@ -93,7 +88,14 @@ export const getLogMarkdown = (log = {}) => {
 	const diffRows = buildDiffRows(log.before_data, log.after_data);
 	const { rows: detailRows } = buildContextRows(log.context);
 
-	const diffTable = markdownTable(diffRows, [
+	// `content_diff` rows (PM-142/PM-143) are a single multi-line diff
+	// string, not a before/after pair - escapeMarkdownCell() would flatten
+	// their newlines and make the diff unreadable inside a table cell, so
+	// each gets its own fenced code block instead of a table row.
+	const fieldDiffRows = diffRows.filter((row) => !row.isContentDiff);
+	const contentDiffRows = diffRows.filter((row) => row.isContentDiff);
+
+	const diffTable = markdownTable(fieldDiffRows, [
 		{ key: 'label', title: 'Field' },
 		{ key: 'before', title: 'Before' },
 		{ key: 'after', title: 'After' },
@@ -102,6 +104,10 @@ export const getLogMarkdown = (log = {}) => {
 	if (diffTable) {
 		lines.push('', '**Changes**', '', diffTable);
 	}
+
+	contentDiffRows.forEach((row) => {
+		lines.push('', `**${row.label}**`, '', '```diff', row.diff, '```');
+	});
 
 	const detailsTable = markdownTable(detailRows, [
 		{ key: 'label', title: 'Field' },
