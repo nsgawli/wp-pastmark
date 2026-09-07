@@ -10,11 +10,49 @@ defined( 'ABSPATH' ) || exit;
 class ExcludeHelper {
 
 	/**
+	 * Option name `get_settings()` reads and this class memoizes.
+	 */
+	const OPTION_NAME = 'pastmark_exclude_settings';
+
+	/**
 	 * Cached settings.
 	 *
 	 * @var array|null
 	 */
 	protected static ?array $settings = null;
+
+	/**
+	 * Register the hooks that keep `self::$settings` from going stale
+	 * within a single PHP process.
+	 *
+	 * `get_settings()` memoizes the option for the process's entire
+	 * lifetime with no invalidation - harmless on the overwhelmingly common
+	 * path (a fresh PHP process per HTTP request, so a fresh empty cache
+	 * every time), but wrong for the one request that both saves new
+	 * exclude settings *and* triggers a logger call depending on the new
+	 * value in that same request (e.g. `WPSettingsActivityLogger`'s own
+	 * `updated_option`-triggered logging of the settings change itself).
+	 * Found during Sprint 5's PM-140 regression pass.
+	 *
+	 * @return void
+	 */
+	public static function init(): void {
+
+		add_action( 'update_option_' . self::OPTION_NAME, array( self::class, 'invalidate_cache' ) );
+		add_action( 'add_option_' . self::OPTION_NAME, array( self::class, 'invalidate_cache' ) );
+		add_action( 'delete_option_' . self::OPTION_NAME, array( self::class, 'invalidate_cache' ) );
+	}
+
+	/**
+	 * Drop the memoized settings so the next `get_settings()` call in this
+	 * process re-reads the option's real, current value.
+	 *
+	 * @return void
+	 */
+	public static function invalidate_cache(): void {
+
+		self::$settings = null;
+	}
 
 	/**
 	 * Should exclude log.
@@ -196,7 +234,7 @@ class ExcludeHelper {
 		}
 
 		$settings = wp_parse_args(
-			get_option( 'pastmark_exclude_settings', array() ),
+			get_option( self::OPTION_NAME, array() ),
 			array(
 				'excludedUsers'       => array(),
 				'excludedRoles'       => array(),
@@ -406,60 +444,6 @@ class ExcludeHelper {
 			(string) $status,
 			$settings['excludedStatuses']
 		);
-	}
-
-	/**
-	 * Match meta key.
-	 *
-	 * Supports:
-	 *
-	 * acf_*
-	 * rank_math_*
-	 * _edit_lock
-	 *
-	 * @param string $value Value.
-	 * @param array  $patterns Patterns.
-	 *
-	 * @return bool
-	 */
-	protected static function match_meta_key(
-		string $value,
-		array $patterns
-	): bool {
-
-		if ( empty( $value ) ) {
-			return false;
-		}
-
-		$value = strtolower( $value );
-
-		foreach ( $patterns as $pattern ) {
-
-			$pattern = strtolower( $pattern );
-
-			if ( false === strpos( $pattern, '*' ) ) {
-
-				if ( $pattern === $value ) {
-					return true;
-				}
-
-				continue;
-			}
-
-			$regex = '/^' .
-				str_replace(
-					'\*',
-					'.*',
-					preg_quote( $pattern, '/' )
-				) .
-				'$/i';
-
-			if ( preg_match( $regex, $value ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

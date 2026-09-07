@@ -2,7 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { applyFilters } from '@wordpress/hooks';
 import { useAlerts } from '@framework/hooks/useAlerts';
 
-import { FiEye, FiLink, FiCopy, FiFileText, FiCode } from 'react-icons/fi';
+import {
+	FiEye,
+	FiExternalLink,
+	FiLink,
+	FiCopy,
+	FiFileText,
+	FiCode,
+} from 'react-icons/fi';
 
 import {
 	buildLogDetailsUrl,
@@ -113,6 +120,21 @@ const LogActionsDropdown = ({ log, onView }) => {
 			label: 'View Details',
 			icon: <FiEye />,
 		},
+		// Built-in "go to object" item (PM-122): only present when PM-121's
+		// list-response resolution found a live object to link to - hidden
+		// entirely (not shown disabled) otherwise, e.g. a deleted post or an
+		// event type the resolver doesn't cover.
+		...(log.object_url
+			? [
+					{
+						key: 'go-to-object',
+						label: log.object_label
+							? `View ${log.object_label}`
+							: 'View Object',
+						icon: <FiExternalLink />,
+					},
+				]
+			: []),
 		{
 			key: 'link',
 			label: 'Copy Event Link',
@@ -173,6 +195,16 @@ const LogActionsDropdown = ({ log, onView }) => {
 		switch (key) {
 			case 'view':
 				onView(log);
+				break;
+
+			case 'go-to-object':
+				if (log.object_url) {
+					window.open(
+						log.object_url,
+						'_blank',
+						'noopener,noreferrer'
+					);
+				}
 				break;
 
 			case 'link': {

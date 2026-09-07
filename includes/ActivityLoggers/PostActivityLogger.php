@@ -5,6 +5,7 @@ namespace Pastmark\ActivityLoggers;
 use Pastmark\Constants\Severity;
 use Pastmark\Constants\Events;
 use Pastmark\Constants\Actions;
+use Pastmark\Utils\ContentDiffer;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
@@ -30,6 +31,54 @@ class PostActivityLogger extends AbstractLogger {
 	 * blank, confusingly-worded "Shop_order_placehold "" created." entry
 	 * here for every single order.
 	 *
+	 * `acf-field-group`/`acf-field` (added PM-154) are ACF's own custom
+	 * post types - real `WP_Post`s under the hood, so without this
+	 * exclusion every field-group/field save this sprint's new
+	 * `FieldGroupActivityLogger`/`FieldActivityLogger` already log cleanly
+	 * also produced a second, confusingly-capitalized generic entry here
+	 * (e.g. "Acf-field-group "..." updated."), confirmed live during this
+	 * ticket's own verification pass - same class of duplicate-logging
+	 * bug PM-119 fixed for WooCommerce order creation in Sprint 2, just
+	 * caught before shipping instead of after.
+	 *
+	 * `wpforms`/`wpforms-template` (added PM-155) are WPForms' own custom
+	 * post types - same shape as the ACF pair above, added proactively
+	 * this time since the ACF finding already showed exactly what to look
+	 * for; still re-verified live rather than just assumed.
+	 *
+	 * `tablepress_table` (added PM-170, Sprint 11) is TablePress' own
+	 * custom post type (`models/model-post.php` confirms a real
+	 * `register_post_type()` call) - same shape as the ACF/WPForms pairs
+	 * above, added proactively for the same reason: without it, every
+	 * table create/edit this sprint's new `TableActivityLogger` already
+	 * logs cleanly would also produce a second, confusingly-worded
+	 * generic "Tablepress_table ... updated." entry here.
+	 *
+	 * `forum`/`topic`/`reply` (added PM-171, Sprint 11) are bbPress' own
+	 * three custom post types - same shape again, confirmed against the
+	 * real installed source (`includes/forums|topics|replies/functions.php`
+	 * all call `wp_insert_post()`/`wp_update_post()` under the hood, and
+	 * bbPress' own trash/untrash/delete lifecycle is wired through
+	 * WordPress' native `wp_trash_post`/`untrash_post`/`before_delete_post`
+	 * actions). Without this, every forum/topic/reply create/edit/trash/
+	 * restore/delete this sprint's new `ForumActivityLogger`/
+	 * `TopicActivityLogger`/`ReplyActivityLogger` already log cleanly
+	 * would also produce a second, generic "Forum/Topic/Reply ... "
+	 * entry here.
+	 *
+	 * `courses`/`lesson`/`topics`/`tutor_quiz` (added PM-176, Sprint 12)
+	 * are Tutor LMS's own four custom post types - same shape again,
+	 * confirmed against the real installed source (`classes/
+	 * Post_types.php`'s `register_post_type()` calls; course/lesson/
+	 * topic/quiz creation and editing all confirmed to route through
+	 * `wp_insert_post()`/`wp_update_post()`, including topic creation
+	 * via `Course::tutor_save_topic()` and quiz creation via
+	 * `QuizBuilder`) - without this, every course/lesson/topic/quiz
+	 * create/edit/trash/restore/delete this sprint's new
+	 * `CourseContentActivityLogger` already logs cleanly would also
+	 * produce a second, generic "Courses/Lesson/Topics/Tutor_quiz ..."
+	 * entry here.
+	 *
 	 * @var string[]
 	 */
 	protected const EXCLUDED_POST_TYPES = array(
@@ -41,6 +90,18 @@ class PostActivityLogger extends AbstractLogger {
 		'nav_menu_item',
 		'customize_changeset',
 		'custom_css',
+		'acf-field-group',
+		'acf-field',
+		'wpforms',
+		'wpforms-template',
+		'tablepress_table',
+		'forum',
+		'topic',
+		'reply',
+		'courses',
+		'lesson',
+		'topics',
+		'tutor_quiz',
 	);
 
 	/**
@@ -403,6 +464,13 @@ class PostActivityLogger extends AbstractLogger {
 	/**
 	 * Log post content body change.
 	 *
+	 * Routes the before/after content through `ContentDiffer` first
+	 * (PM-141): when a compact diff is worthwhile, the row stores just that
+	 * diff (under `after_data['content_diff']`) instead of duplicating the
+	 * full field into both `before_data` and `after_data`. When diffing
+	 * isn't worthwhile (short content, or the differ decides against it),
+	 * storage is byte-for-byte what this method did before PM-142.
+	 *
 	 * @param WP_Post $post_before Post object before update.
 	 * @param WP_Post $post_after Post object after update.
 	 * @return void
@@ -413,33 +481,38 @@ class PostActivityLogger extends AbstractLogger {
 			return;
 		}
 
-		$this->insert_event_log(
-			Events::CONTENT,
-			Actions::CONTENT_CHANGE,
-			array(
-				'object_type' => $post_after->post_type,
-				'object_id'   => $post_after->ID,
-				'user_id'     => get_current_user_id(),
-				'message'     => sprintf(
-					'%s "%s" content updated.',
-					ucfirst( $post_after->post_type ),
-					$post_after->post_title
-				),
-				'before_data' => wp_json_encode(
-					array( 'post_content' => $post_before->post_content )
-				),
-				'after_data'  => wp_json_encode(
-					array( 'post_content' => $post_after->post_content )
-				),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'post_type'   => $post_after->post_type,
-						'post_status' => $post_after->post_status,
-					)
-				),
-			)
+		$diff = ContentDiffer::diff( $post_before->post_content, $post_after->post_content );
+
+		$log_data = array(
+			'object_type' => $post_after->post_type,
+			'object_id'   => $post_after->ID,
+			'user_id'     => get_current_user_id(),
+			'message'     => sprintf(
+				'%s "%s" content updated.',
+				ucfirst( $post_after->post_type ),
+				$post_after->post_title
+			),
+			'context'     => array_merge(
+				$this->get_common_context(),
+				array(
+					'post_type'   => $post_after->post_type,
+					'post_status' => $post_after->post_status,
+				)
+			),
 		);
+
+		if ( null !== $diff ) {
+			$log_data['after_data'] = wp_json_encode( array( 'content_diff' => $diff ) );
+		} else {
+			$log_data['before_data'] = wp_json_encode(
+				array( 'post_content' => $post_before->post_content )
+			);
+			$log_data['after_data']  = wp_json_encode(
+				array( 'post_content' => $post_after->post_content )
+			);
+		}
+
+		$this->insert_event_log( Events::CONTENT, Actions::CONTENT_CHANGE, $log_data );
 	}
 
 	/**

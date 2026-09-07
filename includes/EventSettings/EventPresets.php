@@ -128,13 +128,13 @@ class EventPresets {
 
 		$complete_only = array(
 
-			Events::USER        => array(
+			Events::USER         => array(
 				Actions::USER_META_ADD,
 				Actions::USER_META_UPDATE,
 				Actions::USER_META_DELETE,
 			),
 
-			Events::CONTENT     => array(
+			Events::CONTENT      => array(
 				Actions::SLUG_CHANGE,
 				Actions::DATE_CHANGE,
 				Actions::STICKY_CHANGE,
@@ -143,26 +143,26 @@ class EventPresets {
 				Actions::CONTENT_CHANGE,
 			),
 
-			Events::COMMENT     => array(
+			Events::COMMENT      => array(
 				Actions::UPDATE,
 				Actions::RESTORE,
 			),
 
-			Events::MEDIA       => array(
+			Events::MEDIA        => array(
 				Actions::UPDATE,
 				Actions::FEATURED_IMAGE_CHANGE,
 			),
 
-			Events::MENU        => array(
+			Events::MENU         => array(
 				Actions::UPDATE,
 				Actions::ITEM_UPDATE,
 			),
 
-			Events::WIDGET      => array(
+			Events::WIDGET       => array(
 				Actions::UPDATE,
 			),
 
-			Events::WOOCOMMERCE => array(
+			Events::WOOCOMMERCE  => array(
 				Actions::PRODUCT_RESTORE,
 				Actions::PRODUCT_RENAME,
 				Actions::PRODUCT_CATEGORY_CHANGE,
@@ -181,6 +181,16 @@ class EventPresets {
 				Actions::REVIEW_APPROVE,
 				Actions::REVIEW_UNAPPROVE,
 				Actions::REVIEW_TRASH,
+			),
+
+			// `ENTRY_READ`/`ENTRY_UNREAD` fire on effectively every entry-detail
+			// page view (Gravity Forms marks an entry read the first time an
+			// admin opens it) - fine-grained, high-volume bookkeeping in the
+			// same spirit as the WooCommerce stock actions above, not a
+			// meaningful security signal for a default install.
+			Events::GRAVITYFORMS => array(
+				Actions::ENTRY_READ,
+				Actions::ENTRY_UNREAD,
 			),
 		);
 

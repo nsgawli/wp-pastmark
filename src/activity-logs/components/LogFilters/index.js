@@ -26,6 +26,8 @@ import { fetchLogFilterOptions } from '../../services/logsApi';
 import {
 	SEVERITY_OPTIONS,
 	DATE_RANGE_OPTIONS,
+	ACTOR_TYPE_OPTIONS,
+	INTEGRATION_OPTIONS,
 } from '../../utils/logFilterOptions';
 
 import './index.css';
@@ -63,6 +65,8 @@ const LogFilters = ({
 	} = useForm({
 		defaultValues: {
 			severity: [],
+			actor_type: [],
+			integration: [],
 			date_range: 'all',
 			date_from: '',
 			date_to: '',
@@ -133,6 +137,8 @@ const LogFilters = ({
 			event: [],
 			severity: [],
 			ids: [],
+			actor_type: [],
+			integration: [],
 			date_range: 'all',
 			date_from: '',
 			date_to: '',
@@ -209,6 +215,24 @@ const LogFilters = ({
 							label="Severity"
 							placeholder="Select severities..."
 							options={SEVERITY_OPTIONS}
+							isMulti
+						/>
+
+						<InputSelect
+							name="actor_type"
+							control={control}
+							label="Actor Type"
+							placeholder="Select actor types..."
+							options={ACTOR_TYPE_OPTIONS}
+							isMulti
+						/>
+
+						<InputSelect
+							name="integration"
+							control={control}
+							label="Integration"
+							placeholder="Select integrations..."
+							options={INTEGRATION_OPTIONS}
 							isMulti
 						/>
 

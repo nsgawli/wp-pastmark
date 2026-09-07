@@ -16,11 +16,39 @@ defined( 'ABSPATH' ) || exit;
 class OrderActivityLogger extends AbstractLogger {
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @var string
+	 */
+	protected $integration = 'woocommerce';
+
+	/**
 	 * Order billing/shipping/note snapshots captured before a save, keyed by order ID.
 	 *
 	 * @var array<int, array>
 	 */
 	protected $pending_order_snapshots = array();
+
+	/**
+	 * Order IDs created (not merely updated) during the current request,
+	 * keyed by order ID.
+	 *
+	 * WooCommerce's own order-creation flow (checkout, or any script that
+	 * calls `WC_Order::calculate_totals()` right after adding items) saves
+	 * a brand-new order more than once internally before it's ever handed
+	 * back to the caller — each of those saves fires
+	 * `woocommerce_before_order_object_save/woocommerce_update_order` the
+	 * same as a genuine later edit would. Without this tracking, that
+	 * produces a spurious "Order edited" event (e.g. "total changed from
+	 * $0 to $12") for values that were never actually edited by anyone —
+	 * they were just being set for the first time as part of placing the
+	 * order. `log_order_edited()` uses this to suppress edit logging for
+	 * an order for the remainder of the request it was created in, since
+	 * `order_placed` already captures its as-placed state.
+	 *
+	 * @var array<int, true>
+	 */
+	protected $newly_created_order_ids = array();
 
 	/**
 	 * Constructor.
@@ -38,6 +66,8 @@ class OrderActivityLogger extends AbstractLogger {
 	 * @return void
 	 */
 	protected function register_hooks(): void {
+
+		add_action( 'woocommerce_new_order', $this->guarded( array( $this, 'mark_newly_created_order' ) ) );
 
 		add_action( 'woocommerce_checkout_order_processed', $this->guarded( array( $this, 'log_order_placed' ) ) );
 
@@ -61,6 +91,19 @@ class OrderActivityLogger extends AbstractLogger {
 		add_action( 'woocommerce_before_order_object_save', $this->guarded( array( $this, 'capture_before_save' ) ) );
 
 		add_action( 'woocommerce_update_order', $this->guarded( array( $this, 'log_order_edited' ) ), 10, 2 );
+	}
+
+	/**
+	 * Record that an order was newly created (not merely updated) in the
+	 * current request, so its own creation-time internal saves don't get
+	 * logged as a spurious "edited" event. See `$newly_created_order_ids`.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return void
+	 */
+	public function mark_newly_created_order( int $order_id ): void {
+
+		$this->newly_created_order_ids[ $order_id ] = true;
 	}
 
 	/**
@@ -192,7 +235,16 @@ class OrderActivityLogger extends AbstractLogger {
 	}
 
 	/**
-	 * Log order refund.
+	 * Log order refund, with the order's net-of-refunds total before and
+	 * after this refund plus the refund's own reason (when given).
+	 *
+	 * `WC_Order::get_total()` is never reduced by a refund — WooCommerce
+	 * tracks refunds separately via `get_total_refunded()` — and by the
+	 * time `woocommerce_order_refunded` fires, `get_total_refunded()`
+	 * already includes this refund. So the order's actual net total has
+	 * to be derived as `total - total_refunded` for the after value, and
+	 * that same figure plus this refund's own amount for the before value
+	 * (verified live against both a partial and a full refund).
 	 *
 	 * @param int $order_id Order ID.
 	 * @param int $refund_id Refund ID.
@@ -207,17 +259,32 @@ class OrderActivityLogger extends AbstractLogger {
 			return;
 		}
 
+		$refund_total = abs( (float) $refund->get_total() );
+		$total_after  = round( (float) $order->get_total() - (float) $order->get_total_refunded(), 2 );
+		$total_before = round( $total_after + $refund_total, 2 );
+
+		$after_data = array(
+			'refund_total' => $refund_total,
+			'total'        => $total_after,
+		);
+
+		$reason = $refund->get_reason();
+
+		if ( '' !== $reason ) {
+			$after_data['reason'] = $reason;
+		}
+
 		$this->log_event(
 			Actions::ORDER_REFUND,
 			$order,
 			sprintf(
 				'Order #%d refunded (%s).',
 				$order->get_order_number(),
-				$this->format_price( abs( (float) $refund->get_total() ) )
+				$this->format_price( $refund_total )
 			),
 			Severity::WARNING,
-			array(),
-			array( 'refund_total' => abs( (float) $refund->get_total() ) )
+			array( 'total' => $total_before ),
+			$after_data
 		);
 	}
 
@@ -271,7 +338,14 @@ class OrderActivityLogger extends AbstractLogger {
 	}
 
 	/**
-	 * Capture order billing, shipping and customer note before a save.
+	 * Capture order billing, shipping, customer note and total before a save.
+	 *
+	 * Skips orders created earlier in this same request (see
+	 * `$newly_created_order_ids`/`mark_newly_created_order()`) — not
+	 * capturing a snapshot here means `log_order_edited()`'s existing
+	 * "nothing pending" guard naturally suppresses logging for
+	 * WooCommerce's own internal creation-time saves, with no separate
+	 * check needed there.
 	 *
 	 * @param WC_Order $order Order being saved.
 	 * @return void
@@ -280,7 +354,7 @@ class OrderActivityLogger extends AbstractLogger {
 
 		$order_id = $order->get_id();
 
-		if ( ! $order_id ) {
+		if ( ! $order_id || isset( $this->newly_created_order_ids[ $order_id ] ) ) {
 			return;
 		}
 
@@ -290,6 +364,7 @@ class OrderActivityLogger extends AbstractLogger {
 			'billing'       => $data['billing'],
 			'shipping'      => $data['shipping'],
 			'customer_note' => $data['customer_note'],
+			'total'         => $data['total'],
 		);
 	}
 
@@ -316,6 +391,7 @@ class OrderActivityLogger extends AbstractLogger {
 			'billing'       => $data['billing'],
 			'shipping'      => $data['shipping'],
 			'customer_note' => $data['customer_note'],
+			'total'         => $data['total'],
 		);
 
 		list( $before, $after ) = $this->diff_order_fields( $before_snapshot, $after_snapshot );
@@ -336,8 +412,8 @@ class OrderActivityLogger extends AbstractLogger {
 
 	/**
 	 * Diff two order detail snapshots down to just the individual
-	 * billing/shipping address fields (and the customer note) that
-	 * actually changed.
+	 * billing/shipping address fields, the order total, and the
+	 * customer note that actually changed.
 	 *
 	 * Flattens each address into `billing_<field>`/`shipping_<field>`
 	 * keys rather than diffing the two address arrays wholesale, so
@@ -373,6 +449,14 @@ class OrderActivityLogger extends AbstractLogger {
 				$before_out[ $key ] = $old_value;
 				$after_out[ $key ]  = $new_value;
 			}
+		}
+
+		$old_total = $before['total'] ?? '';
+		$new_total = $after['total'] ?? '';
+
+		if ( $old_total !== $new_total ) {
+			$before_out['total'] = $old_total;
+			$after_out['total']  = $new_total;
 		}
 
 		$old_note = $before['customer_note'] ?? '';

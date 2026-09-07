@@ -1,8 +1,9 @@
 <?php // phpcs:ignore
 /**
  * Plugin Name: Pastmark - User Activity Logs
+ * Plugin URI: https://wordpress.org/plugins/pastmark/
  * Description: Easy & Powerful User Activity Log Plugin for WordPress. Track user activity, changes, and events in your WordPress site with ease.
- * Version: 1.0.0
+ * Version: 1.0.4
  * Author: nsgawli
  * License: GPL v3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +24,7 @@ final class Pastmark {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.0.0';
+	public static $version = '1.0.4';
 
 	/**
 	 * The single instance of the class.
@@ -60,6 +61,27 @@ final class Pastmark {
 	}
 
 	/**
+	 * Plugin deactivation callback.
+	 *
+	 * Fires immediately when the plugin is deactivated, same boot
+	 * pattern as activate() above (constants + autoloader only, since
+	 * `plugins_loaded` hasn't necessarily run for this request). Clears
+	 * every cron event the plugin schedules during normal operation so
+	 * none of them keep firing - or simply linger registered in
+	 * WP-Cron - once the plugin is off.
+	 *
+	 * @return void
+	 */
+	public static function deactivate() {
+
+		self::define_constants();
+
+		require_once PASTMARK_ABSPATH . 'vendor/autoload.php';
+
+		Pastmark\Installation\Autoloader::deactivate();
+	}
+
+	/**
 	 * Include the plugin files.
 	 */
 	public static function includes() {
@@ -69,6 +91,10 @@ final class Pastmark {
 
 		// load plugin files.
 		require_once PASTMARK_ABSPATH . 'vendor/autoload.php';
+
+		// Public functions (e.g. pastmark_log_event()) other plugins/themes
+		// call — not autoloadable via PSR-4 since they aren't classes.
+		require_once PASTMARK_ABSPATH . 'includes/pastmark-api.php';
 
 		Pastmark\Init::run();
 	}
@@ -128,12 +154,14 @@ final class Pastmark {
 	 */
 	public static function add_plugin_links( $links ) {
 		$custom_links = array(
-			'<a href="' . admin_url( 'admin.php?page=pastmark' ) . '">' . __( 'Settings', 'pastmark' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=pastmark' ) . '">' . __( 'Logs', 'pastmark' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=settings' ) . '">' . __( 'Settings', 'pastmark' ) . '</a>',
 		);
 		return array_merge( $links, $custom_links );
 	}
 }
 
 register_activation_hook( __FILE__, array( 'Pastmark', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'Pastmark', 'deactivate' ) );
 
 Pastmark::init();

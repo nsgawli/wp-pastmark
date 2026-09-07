@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Card, Badge, Button, EmptyState, Flex } from '@framework/components';
 
 import EventSwitch from '../EventSwitch';
+import RequestIntegration from '../RequestIntegration';
 
 import './index.css';
 
@@ -144,16 +145,22 @@ const EventBrowser = ({
 						</Flex>
 					</Card>
 				))}
+
+				<RequestIntegration />
 			</div>
 		);
 	}
 
 	if (!Object.keys(groups).length) {
 		return (
-			<EmptyState
-				title="No Actions Found"
-				description="Try changing filters."
-			/>
+			<div className="wppm-event-browser">
+				<EmptyState
+					title="No Actions Found"
+					description="Try changing filters."
+				/>
+
+				<RequestIntegration />
+			</div>
 		);
 	}
 
@@ -277,6 +284,8 @@ const EventBrowser = ({
 					</Card>
 				);
 			})}
+
+			<RequestIntegration />
 		</div>
 	);
 };

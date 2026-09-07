@@ -12,6 +12,7 @@ use Pastmark\RestApi\Settings\Events;
 use Pastmark\RestApi\Settings\Exclude;
 use Pastmark\RestApi\Settings\DataManagement;
 use Pastmark\RestApi\Settings\EmailReports;
+use Pastmark\RestApi\Settings\Security;
 use Pastmark\RestApi\Dashboard\DashboardController;
 
 /**
@@ -32,6 +33,7 @@ class Autoloader {
 		Exclude::init();
 		DataManagement::init();
 		EmailReports::init();
+		Security::init();
 		DashboardController::init();
 	}
 }

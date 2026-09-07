@@ -1,6 +1,6 @@
 {
 	"name": "pastmark",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "User activity log for WordPress",
 	"scripts": {
 		"build": "wp-scripts build --webpack-copy-php",

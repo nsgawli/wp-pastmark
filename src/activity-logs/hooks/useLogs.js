@@ -10,6 +10,8 @@ const FILTER_SCHEMA = {
 	event: 'array-text',
 	severity: 'array-text',
 	ids: 'array-int',
+	actor_type: 'array-text',
+	integration: 'array-text',
 	date_range: 'text',
 	date_from: 'text',
 	date_to: 'text',

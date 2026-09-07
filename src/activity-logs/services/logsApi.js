@@ -42,6 +42,36 @@ export const fetchLogs = async ({
 	};
 };
 
+// Polled by `useNewEvents` to power the Logs page's "N new events" badge —
+// how many log rows (matching the current search/filters) exist past
+// `sinceId`, plus the actual latest matching id so the hook can (re)seed
+// that baseline itself instead of needing a separate lookup.
+export const fetchNewLogsCount = async ({
+	sinceId = 0,
+	search = '',
+	filters = {},
+} = {}) => {
+	const query = buildLogsQuery({
+		search,
+		filters,
+		includePagination: false,
+	});
+
+	query.since_id = sinceId;
+
+	const path = addQueryArgs('/pastmark/v1/logs/new-count', query);
+
+	const response = await apiFetch({
+		path,
+		method: 'GET',
+	});
+
+	return {
+		count: response?.data?.count || 0,
+		latestId: response?.data?.latest_id || 0,
+	};
+};
+
 export const fetchLogFilterOptions = async ({
 	type = '',
 	search = '',

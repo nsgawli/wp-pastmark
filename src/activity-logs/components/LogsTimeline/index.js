@@ -1,7 +1,7 @@
 import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
-import { Spinner, SeverityBadge } from '@framework/components';
+import { Spinner, SeverityBadge, AiAgentBadge } from '@framework/components';
 
 import LogActionsDropdown from '../LogActionsDropdown';
 
@@ -88,15 +88,21 @@ const groupLogsByDay = (logs = []) => {
 const LogsTimeline = ({
 	data = [],
 	loading = false,
+	density = 'default',
 	activeRowId = null,
 	onRowClick = null,
 	emptyText = 'No activity logs found',
 }) => {
 	const hasRows = data.length > 0;
 	const groups = groupLogsByDay(data);
+	const isCompact = density === 'compact';
 
 	return (
-		<div className="wppm-logs-timeline">
+		<div
+			className={`wppm-logs-timeline${
+				isCompact ? ' wppm-logs-timeline-compact' : ''
+			}`}
+		>
 			{loading && hasRows && (
 				<div className="wppm-timeline-loading-overlay">
 					<Spinner />
@@ -158,6 +164,11 @@ const LogsTimeline = ({
 													{log.user || '-'}
 												</span>
 
+												{log.actor_type ===
+													'ai_agent' && (
+													<AiAgentBadge />
+												)}
+
 												<span className="wppm-timeline-time">
 													{log.date || '-'}
 												</span>
@@ -166,12 +177,6 @@ const LogsTimeline = ({
 													<span className="wppm-timeline-time-ago">
 														({timeAgo})
 													</span>
-												)}
-
-												{log.severity === 'warning' && (
-													<SeverityBadge
-														severity={log.severity}
-													/>
 												)}
 
 												<span
@@ -200,17 +205,24 @@ const LogsTimeline = ({
 											</div>
 
 											<div className="wppm-timeline-item-footer">
-												{log.action_label && (
-													<span className="wppm-timeline-action">
-														{log.action_label}
-													</span>
-												)}
+												<SeverityBadge
+													severity={log.severity}
+												/>
 
 												{log.action_label && (
-													<span className="wppm-timeline-footer-sep">
-														&bull;
-													</span>
+													<>
+														<span className="wppm-timeline-footer-sep">
+															&bull;
+														</span>
+														<span className="wppm-timeline-action">
+															{log.action_label}
+														</span>
+													</>
 												)}
+
+												<span className="wppm-timeline-footer-sep">
+													&bull;
+												</span>
 
 												<span className="wppm-timeline-id">
 													#{log.id}

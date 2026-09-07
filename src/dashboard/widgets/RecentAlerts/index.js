@@ -9,6 +9,8 @@ import {
 	SeverityBadge,
 } from '@framework/components';
 
+import { buildLogDetailsUrl } from '@framework/utils/logDetailsUrl';
+
 import './index.css';
 
 const parseLogTimestamp = (timestamp) => {
@@ -36,6 +38,14 @@ const formatAlertTime = (timestamp) => {
 	const timeAgo = formatDistanceToNow(parsedDate, { addSuffix: true });
 
 	return `${formatted} (${timeAgo})`;
+};
+
+const openLogDetails = (logId) => {
+	if (!logId) {
+		return;
+	}
+
+	window.open(buildLogDetailsUrl(logId), '_blank', 'noopener,noreferrer');
 };
 
 const RecentAlerts = ({ data = [] }) => {
@@ -77,42 +87,65 @@ const RecentAlerts = ({ data = [] }) => {
 							</tr>
 						)}
 
-						{data.map((item) => (
-							<tr key={item.id}>
-								<td className="wppm-dashboard-col-event">
-									<EventBadge event={item.event_label} />
-								</td>
-
-								<td className="wppm-dashboard-col-severity">
-									<SeverityBadge severity={item.severity} />
-								</td>
-
-								<td className="wppm-dashboard-col-user">
-									<div className="wppm-dashboard-user-cell">
-										<Avatar
-											src={item.avatar_url}
-											name={item.user_name || 'System'}
-											size={24}
-										/>
-
-										<span>
-											{item.user_name || 'System'}
-										</span>
-									</div>
-								</td>
-
-								<td
-									className="wppm-dashboard-col-message"
-									title={item.message || ''}
+						{data.map((item) => {
+							return (
+								<tr
+									key={item.id}
+									className="wppm-dashboard-alert-row"
+									tabIndex={0}
+									role="link"
+									onClick={() => {
+										openLogDetails(item.id);
+									}}
+									onKeyDown={(event) => {
+										if (
+											event.key === 'Enter' ||
+											event.key === ' '
+										) {
+											event.preventDefault();
+											openLogDetails(item.id);
+										}
+									}}
 								>
-									{item.message || '-'}
-								</td>
+									<td className="wppm-dashboard-col-event">
+										<EventBadge event={item.event_label} />
+									</td>
 
-								<td className="wppm-dashboard-col-time">
-									{formatAlertTime(item.timestamp)}
-								</td>
-							</tr>
-						))}
+									<td className="wppm-dashboard-col-severity">
+										<SeverityBadge
+											severity={item.severity}
+										/>
+									</td>
+
+									<td className="wppm-dashboard-col-user">
+										<div className="wppm-dashboard-user-cell">
+											<Avatar
+												src={item.avatar_url}
+												name={
+													item.user_name || 'System'
+												}
+												size={24}
+											/>
+
+											<span>
+												{item.user_name || 'System'}
+											</span>
+										</div>
+									</td>
+
+									<td
+										className="wppm-dashboard-col-message"
+										title={item.message || ''}
+									>
+										{item.message || '-'}
+									</td>
+
+									<td className="wppm-dashboard-col-time">
+										{formatAlertTime(item.timestamp)}
+									</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 			</div>

@@ -16,6 +16,12 @@ class Init {
 	 */
 	public static function run() {
 
+		// Keep ExcludeHelper's memoized settings from going stale within a
+		// single PHP process (PM-146) - registered unconditionally, first,
+		// so it's active regardless of which interface(s) below end up
+		// loading for this request.
+		Utils\ExcludeHelper::init();
+
 		// Load installation functionality.
 		Installation\Autoloader::run();
 

@@ -43,23 +43,7 @@ class Pastmark_Logs {
 
 		global $wpdb;
 
-		$defaults = array(
-			'timestamp'   => current_time( 'mysql', true ),
-			'user_id'     => 0,
-			'ip_address'  => '',
-			'event_type'  => '',
-			'object_type' => '',
-			'object_id'   => 0,
-			'action'      => '',
-			'message'     => '',
-			'before_data' => '',
-			'after_data'  => '',
-			'context'     => '',
-			'severity'    => 'info',
-			'site_id'     => get_current_blog_id(),
-		);
-
-		$log = wp_parse_args( $log, $defaults );
+		$log = wp_parse_args( $log, $this->get_insert_defaults() );
 
 		$inserted = $wpdb->insert(
 			$this->table,
@@ -76,6 +60,8 @@ class Pastmark_Logs {
 				'after_data'  => $log['after_data'],
 				'context'     => $log['context'],
 				'severity'    => $log['severity'],
+				'actor_type'  => $log['actor_type'],
+				'integration' => $log['integration'],
 				'site_id'     => $log['site_id'],
 			),
 			array(
@@ -85,6 +71,8 @@ class Pastmark_Logs {
 				'%s',
 				'%s',
 				'%d',
+				'%s',
+				'%s',
 				'%s',
 				'%s',
 				'%s',
@@ -103,6 +91,87 @@ class Pastmark_Logs {
 	}
 
 	/**
+	 * Update an already-inserted row's `message`/`context`/`severity`.
+	 *
+	 * Intentionally narrow: this exists for `LoginThrottle`-style
+	 * aggregation (collapsing a burst of repeated events into one row that
+	 * keeps its count current) rather than as a general-purpose log editor —
+	 * only these three columns are ever recognized, so a caller can't
+	 * accidentally rewrite a row's identity (`event_type`, `object_id`,
+	 * `user_id`, `timestamp`, ...) through this method.
+	 *
+	 * @param int   $id     Row ID to update.
+	 * @param array $fields Fields to update — only `message`, `context`,
+	 *                      `severity` keys are recognized; anything else is
+	 *                      ignored. `context` must already be JSON-encoded,
+	 *                      same as `insert()` expects.
+	 * @return bool
+	 */
+	public function update( int $id, array $fields ): bool {
+
+		global $wpdb;
+
+		$allowed_columns = array( 'message', 'context', 'severity' );
+
+		$data   = array();
+		$format = array();
+
+		foreach ( $allowed_columns as $column ) {
+
+			if ( ! array_key_exists( $column, $fields ) ) {
+				continue;
+			}
+
+			$data[ $column ] = $fields[ $column ];
+			$format[]        = '%s';
+		}
+
+		if ( empty( $data ) ) {
+			return false;
+		}
+
+		$updated = $wpdb->update(
+			$this->table,
+			$data,
+			array( 'id' => $id ),
+			$format,
+			array( '%d' )
+		);
+
+		return false !== $updated;
+	}
+
+	/**
+	 * Default values applied to a log row before insert.
+	 *
+	 * Shared by `insert()` and `insert_bulk()` so a caller that doesn't pass
+	 * every column (e.g. only the fields relevant to their event) still
+	 * ends up with a complete row.
+	 *
+	 * @return array
+	 */
+	private function get_insert_defaults(): array {
+
+		return array(
+			'timestamp'   => current_time( 'mysql', true ),
+			'user_id'     => 0,
+			'ip_address'  => '',
+			'event_type'  => '',
+			'object_type' => '',
+			'object_id'   => 0,
+			'action'      => '',
+			'message'     => '',
+			'before_data' => '',
+			'after_data'  => '',
+			'context'     => '',
+			'severity'    => 'info',
+			'actor_type'  => 'human',
+			'integration' => 'core',
+			'site_id'     => get_current_blog_id(),
+		);
+	}
+
+	/**
 	 * Bulk insert logs.
 	 *
 	 * @param  array $logs Logs.
@@ -116,7 +185,11 @@ class Pastmark_Logs {
 			return;
 		}
 
+		$defaults = $this->get_insert_defaults();
+
 		foreach ( $logs as $log ) {
+
+			$log = wp_parse_args( $log, $defaults );
 
 			$wpdb->insert(
 				$this->table,
@@ -133,6 +206,8 @@ class Pastmark_Logs {
 					'after_data'  => $log['after_data'],
 					'context'     => $log['context'],
 					'severity'    => $log['severity'],
+					'actor_type'  => $log['actor_type'],
+					'integration' => $log['integration'],
 					'site_id'     => $log['site_id'],
 				),
 				array(
@@ -142,6 +217,8 @@ class Pastmark_Logs {
 					'%s',
 					'%s',
 					'%d',
+					'%s',
+					'%s',
 					'%s',
 					'%s',
 					'%s',
@@ -165,18 +242,22 @@ class Pastmark_Logs {
 		global $wpdb;
 
 		$defaults = array(
-			'number'     => 20,
-			'offset'     => 0,
-			'search'     => '',
-			'severity'   => array(),
-			'event'      => array(),
-			'user_ids'   => array(),
-			'ids'        => array(),
-			'date_from'  => '',
-			'date_to'    => '',
-			'ip_address' => '',
-			'orderby'    => 'id',
-			'order'      => 'DESC',
+			'number'      => 20,
+			'offset'      => 0,
+			'search'      => '',
+			'severity'    => array(),
+			'event'       => array(),
+			'action'      => array(),
+			'actor_type'  => array(),
+			'integration' => array(),
+			'user_ids'    => array(),
+			'ids'         => array(),
+			'min_id'      => 0,
+			'date_from'   => '',
+			'date_to'     => '',
+			'ip_address'  => '',
+			'orderby'     => 'id',
+			'order'       => 'DESC',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -203,7 +284,9 @@ class Pastmark_Logs {
 		? 'ASC'
 		: 'DESC';
 
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d", $this->table, $args['number'], $args['offset'] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is pre-escaped via build_where_clause(); $orderby/$order are validated against a fixed allow-list above.
+		$list_columns = 'id, timestamp, user_id, ip_address, event_type, object_type, object_id, action, message, severity, actor_type, integration, site_id';
+
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT {$list_columns} FROM %i {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d", $this->table, $args['number'], $args['offset'] ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is pre-escaped via build_where_clause(); $orderby/$order are validated against a fixed allow-list above; $list_columns is a fixed literal.
 
 		return is_array( $results ) ? $results : array();
 	}
@@ -219,14 +302,18 @@ class Pastmark_Logs {
 		global $wpdb;
 
 		$defaults = array(
-			'search'     => '',
-			'severity'   => array(),
-			'event'      => array(),
-			'user_ids'   => array(),
-			'ids'        => array(),
-			'date_from'  => '',
-			'date_to'    => '',
-			'ip_address' => '',
+			'search'      => '',
+			'severity'    => array(),
+			'event'       => array(),
+			'action'      => array(),
+			'actor_type'  => array(),
+			'integration' => array(),
+			'user_ids'    => array(),
+			'ids'         => array(),
+			'min_id'      => 0,
+			'date_from'   => '',
+			'date_to'     => '',
+			'ip_address'  => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -241,6 +328,53 @@ class Pastmark_Logs {
 		);
 
 		return (int) $total;
+	}
+
+	/**
+	 * Get the highest log ID matching the given filters.
+	 *
+	 * Used by the "new events" polling endpoint to establish a baseline
+	 * ID (so the client knows what "newer than this" means) and to
+	 * cheaply decide whether a `count_logs()` call is even needed. Always
+	 * ignores `min_id` on the passed-in `$args` - a baseline lookup is by
+	 * definition not itself scoped to "since a given id", it always wants
+	 * the true latest matching id.
+	 *
+	 * @param  array $args Query args (same shape as `count_logs()`).
+	 * @return int
+	 */
+	public function get_max_id( array $args = array() ): int {
+
+		global $wpdb;
+
+		$defaults = array(
+			'search'      => '',
+			'severity'    => array(),
+			'event'       => array(),
+			'action'      => array(),
+			'actor_type'  => array(),
+			'integration' => array(),
+			'user_ids'    => array(),
+			'ids'         => array(),
+			'date_from'   => '',
+			'date_to'     => '',
+			'ip_address'  => '',
+		);
+
+		$args = wp_parse_args( $args, $defaults );
+
+		unset( $args['min_id'] );
+
+		$where = $this->build_where_clause( $args );
+
+		$max_id = $wpdb->get_var( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where is pre-escaped via build_where_clause().
+			$wpdb->prepare(
+				"SELECT MAX(id) FROM %i {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where is pre-escaped via build_where_clause().
+				$this->table
+			)
+		);
+
+		return (int) $max_id;
 	}
 
 	/**
@@ -302,6 +436,39 @@ class Pastmark_Logs {
 			);
 		}
 
+		$actions = $this->normalize_text_values( $args['action'] ?? array() );
+
+		if ( ! empty( $actions ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $actions ), '%s' ) );
+
+			$where .= $wpdb->prepare(
+				" AND action IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() length is dynamic; $placeholders holds exactly one %s per value in $actions below.
+				...$actions
+			);
+		}
+
+		$actor_types = $this->normalize_text_values( $args['actor_type'] ?? array() );
+
+		if ( ! empty( $actor_types ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $actor_types ), '%s' ) );
+
+			$where .= $wpdb->prepare(
+				" AND actor_type IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() length is dynamic; $placeholders holds exactly one %s per value in $actor_types below.
+				...$actor_types
+			);
+		}
+
+		$integrations = $this->normalize_text_values( $args['integration'] ?? array() );
+
+		if ( ! empty( $integrations ) ) {
+			$placeholders = implode( ',', array_fill( 0, count( $integrations ), '%s' ) );
+
+			$where .= $wpdb->prepare(
+				" AND integration IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() length is dynamic; $placeholders holds exactly one %s per value in $integrations below.
+				...$integrations
+			);
+		}
+
 		$user_ids = $this->normalize_int_values( $args['user_ids'] ?? array() );
 
 		if ( ! empty( $user_ids ) ) {
@@ -322,6 +489,12 @@ class Pastmark_Logs {
 				" AND id IN ({$placeholders})", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- IN() length is dynamic; $placeholders holds exactly one %d per value in $ids below.
 				...$ids
 			);
+		}
+
+		$min_id = ! empty( $args['min_id'] ) ? (int) $args['min_id'] : 0;
+
+		if ( $min_id > 0 ) {
+			$where .= $wpdb->prepare( ' AND id > %d', $min_id );
 		}
 
 		$date_from = ! empty( $args['date_from'] )

@@ -4,6 +4,7 @@ namespace Pastmark\ActivityLoggers;
 use Pastmark\Constants\Severity;
 use Pastmark\Constants\Events;
 use Pastmark\Constants\Actions;
+use Pastmark\Utils\LoginThrottle;
 use WP_User;
 
 defined( 'ABSPATH' ) || exit;
@@ -85,6 +86,36 @@ class UserActivityLogger extends AbstractLogger {
 	 * @var array<int, bool>
 	 */
 	protected $newly_created_user_ids = array();
+
+	/**
+	 * User IDs whose profile-field writes are currently being driven by
+	 * Ultimate Member's own `UM()->user()->update_profile()` call (PM-174,
+	 * Sprint 12) - set by
+	 * `Pastmark\ActivityLoggers\UltimateMember\ProfileActivityLogger::capture_before_values()`
+	 * just before that call runs, cleared just after. While a user ID is
+	 * set here, this class' own generic profile/meta-diff hooks
+	 * (`log_profile_updated()`, `log_user_meta_added()`,
+	 * `log_user_meta_updated()`) defer to Ultimate Member's own, richer
+	 * logger instead of double-logging the same single edit under two
+	 * different event types - confirmed as a genuine overlap (not just a
+	 * theoretical one) by reading `UM()->user()->update_profile()`'s real
+	 * source: it writes core columns via `wp_update_user()` (firing this
+	 * class' `profile_update` hook) and any other field via plain
+	 * `update_user_meta()` (firing `updated_user_meta`/`added_user_meta`),
+	 * so both of this class' existing mechanisms would otherwise fire for
+	 * every Ultimate Member profile save.
+	 *
+	 * Public and static, deliberately - the two classes have no
+	 * inheritance relationship, and this is a narrower, more targeted
+	 * coupling than either editing this file to know about Ultimate
+	 * Member directly or duplicating this class' diff logic in the
+	 * integration itself. `log_role_changed()` is deliberately NOT gated
+	 * by this flag - see `UltimateMember\RoleActivityLogger`'s own
+	 * docblock for why no overlap exists there.
+	 *
+	 * @var array<int, bool>
+	 */
+	public static $suppress_generic_profile_log_for_user = array();
 
 	/**
 	 * Constructor.
@@ -249,27 +280,83 @@ class UserActivityLogger extends AbstractLogger {
 	public function log_login_failed( $username ): void {
 
 		$matched_user = get_user_by( 'login', $username );
+		$ip           = $this->get_ip_address();
 
-		$this->insert_event_log(
+		$context = array_merge(
+			$this->get_common_context(),
+			array(
+				'attempted_username'     => $username,
+				'attempted_display_name' => $matched_user ? $matched_user->display_name : '',
+			)
+		);
+
+		/*
+		 * DB-protection: a brute-force run against the same username/IP pair
+		 * would otherwise insert one row per attempt, unbounded. Beyond
+		 * `LoginThrottle::get_max_attempts()` individual rows in the current
+		 * window, further attempts update one running summary row instead of
+		 * each creating a new one. See `Utils\LoginThrottle`.
+		 */
+		$throttle = LoginThrottle::record_attempt( $username, $ip );
+
+		if ( 'update' === $throttle['action'] ) {
+
+			$this->update_log(
+				$throttle['row_id'],
+				array(
+					'message'  => $this->format_throttled_login_message( $username, $ip, $throttle['count'] ),
+					'context'  => array_merge( $context, array( 'attempt_count' => $throttle['count'] ) ),
+					'severity' => Severity::ERROR,
+				)
+			);
+
+			return;
+		}
+
+		$is_summary = 'summarize' === $throttle['action'];
+
+		$id = $this->insert_event_log(
 			Events::AUTHENTICATION,
 			Actions::FAILED_LOGIN,
 			array(
 				'object_type' => 'user',
 				'object_id'   => 0,
 				'user_id'     => 0,
-				'severity'    => Severity::WARNING,
-				'message'     => sprintf(
-					'Failed login attempt for "%s".',
-					$username
-				),
-				'context'     => array_merge(
-					$this->get_common_context(),
-					array(
-						'attempted_username'     => $username,
-						'attempted_display_name' => $matched_user ? $matched_user->display_name : '',
-					)
-				),
+				'severity'    => $is_summary ? Severity::ERROR : Severity::WARNING,
+				'message'     => $is_summary
+					? $this->format_throttled_login_message( $username, $ip, $throttle['count'] )
+					: sprintf(
+						'Failed login attempt for "%s".',
+						$username
+					),
+				'context'     => $is_summary
+					? array_merge( $context, array( 'attempt_count' => $throttle['count'] ) )
+					: $context,
 			)
+		);
+
+		if ( $is_summary && $id ) {
+			LoginThrottle::remember_row_id( $username, $ip, $id );
+		}
+	}
+
+	/**
+	 * Build the message for a throttled failed-login summary row.
+	 *
+	 * @param string $username Attempted username.
+	 * @param string $ip       Requesting IP address.
+	 * @param int    $count    Total attempts recorded in the current window.
+	 * @return string
+	 */
+	protected function format_throttled_login_message( string $username, string $ip, int $count ): string {
+
+		return sprintf(
+			/* translators: 1: attempt count, 2: attempted username, 3: IP address, 4: throttle window in seconds. */
+			__( '%1$d failed login attempts for "%2$s" from %3$s in the last %4$d seconds — further attempts in this window update this entry instead of creating new rows.', 'pastmark' ),
+			$count,
+			$username,
+			'' !== $ip ? $ip : __( 'an unknown IP', 'pastmark' ),
+			LoginThrottle::get_window()
 		);
 	}
 
@@ -475,6 +562,14 @@ class UserActivityLogger extends AbstractLogger {
 	 * @return void
 	 */
 	public function log_profile_updated( $user_id, $old_user_data ): void {
+
+		if ( ! empty( self::$suppress_generic_profile_log_for_user[ $user_id ] ) ) {
+			// An Ultimate Member profile save is driving this write -
+			// UltimateMember\ProfileActivityLogger logs its own, richer
+			// event for it. See $suppress_generic_profile_log_for_user's
+			// own docblock.
+			return;
+		}
 
 		$user = get_userdata( $user_id );
 
@@ -1050,6 +1145,11 @@ class UserActivityLogger extends AbstractLogger {
 	 */
 	public function log_user_meta_added( $mid, $user_id, $meta_key, $meta_value ): void {
 
+		if ( ! empty( self::$suppress_generic_profile_log_for_user[ $user_id ] ) ) {
+			// See $suppress_generic_profile_log_for_user's own docblock.
+			return;
+		}
+
 		if ( $this->is_reserved_user_meta_key( $meta_key ) ) {
 			return;
 		}
@@ -1092,15 +1192,23 @@ class UserActivityLogger extends AbstractLogger {
 	 */
 	public function log_user_meta_updated( $meta_id, $user_id, $meta_key, $meta_value ): void {
 
-		if ( $this->is_reserved_user_meta_key( $meta_key ) ) {
-			return;
-		}
-
 		$pending_key = $user_id . ':' . $meta_key;
 
 		$old_value = $this->pending_user_meta_values[ $pending_key ] ?? '';
 
 		unset( $this->pending_user_meta_values[ $pending_key ] );
+
+		if ( ! empty( self::$suppress_generic_profile_log_for_user[ $user_id ] ) ) {
+			// See $suppress_generic_profile_log_for_user's own docblock.
+			// The pending-value capture above still runs (and still gets
+			// cleaned up) even while suppressed, so it never leaks stale
+			// entries into a later, non-suppressed write for this key.
+			return;
+		}
+
+		if ( $this->is_reserved_user_meta_key( $meta_key ) ) {
+			return;
+		}
 
 		if ( $old_value === $meta_value ) {
 			return;

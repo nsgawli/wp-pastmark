@@ -1,6 +1,8 @@
 <?php // phpcs:ignore WordPress.Files.FileName.NotHyphenatedLowercase
 namespace Pastmark\Admin;
 
+use Pastmark\Installation\Settings\General as InstallationGeneral;
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -170,8 +172,23 @@ class ActivityLogsPage {
 			true
 		);
 
+		// Localized up front (rather than fetched over `GET /settings/general-settings`
+		// after mount) so the page can pick its initial layout - table vs.
+		// timeline - before first paint. Without this, the view briefly
+		// mounts with a hardcoded default and then swaps once the REST
+		// request resolves, flashing the wrong layout on every refresh
+		// whenever the saved preference differs from that default.
+		$general_settings = wp_parse_args(
+			get_option( 'pastmark_general_settings', array() ),
+			InstallationGeneral::get_default_settings()
+		);
+
 		$script_data = array(
 			'initialAdvancedFilters' => self::get_initial_advanced_filters(),
+			'initialGeneralSettings' => array(
+				'logDetailsViewMode' => $general_settings['logDetailsViewMode'],
+				'logsPageViewMode'   => $general_settings['logsPageViewMode'],
+			),
 		);
 
 		wp_add_inline_script(
@@ -208,6 +225,8 @@ class ActivityLogsPage {
 			'event',
 			'severity',
 			'ids',
+			'actor_type',
+			'integration',
 			'date_range',
 			'date_from',
 			'date_to',
@@ -218,6 +237,8 @@ class ActivityLogsPage {
 			'event',
 			'severity',
 			'ids',
+			'actor_type',
+			'integration',
 		);
 
 		$filters = array();

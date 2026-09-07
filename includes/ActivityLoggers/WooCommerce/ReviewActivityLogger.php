@@ -16,6 +16,13 @@ defined( 'ABSPATH' ) || exit;
 class ReviewActivityLogger extends AbstractLogger {
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @var string
+	 */
+	protected $integration = 'woocommerce';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {

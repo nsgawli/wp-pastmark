@@ -79,6 +79,27 @@ class Autoloader {
 	}
 
 	/**
+	 * Handle plugin deactivation.
+	 *
+	 * Called from `register_deactivation_hook()`. Clears every cron
+	 * hook the plugin schedules during normal operation
+	 * (`AutoDeleteLogsService`, `EmailReportsService`) via
+	 * `wp_clear_scheduled_hook()`, so none of them keep firing - or
+	 * simply linger registered in WP-Cron - once the plugin is off.
+	 * Hook names are duplicated here as literals rather than reaching
+	 * into those classes' `private` constants, matching `uninstall.php`'s
+	 * existing style of listing option names as literals too.
+	 *
+	 * @return void
+	 */
+	public static function deactivate() {
+
+		wp_clear_scheduled_hook( 'pastmark_auto_delete_logs_cron' );
+		wp_clear_scheduled_hook( 'pastmark_send_daily_report_cron' );
+		wp_clear_scheduled_hook( 'pastmark_send_weekly_report_cron' );
+	}
+
+	/**
 	 * Record the plugin's own activation as a log entry.
 	 *
 	 * Bypasses the normal ActivityLoggers\PluginActivityLogger path since
@@ -142,6 +163,9 @@ class Autoloader {
 		// Event settings.
 		Settings\Events::install();
 
+		// Security & Privacy settings.
+		Settings\Security::install();
+
 		self::set_installation_complete();
 	}
 
@@ -176,6 +200,8 @@ class Autoloader {
 				after_data longtext DEFAULT NULL,
 				context text DEFAULT NULL,
 				severity varchar(20) DEFAULT 'info',
+				actor_type varchar(20) DEFAULT 'human',
+				integration varchar(50) DEFAULT 'core',
 				site_id INT DEFAULT 1,
 				PRIMARY KEY (id),
 				KEY idx_user_id (user_id),
@@ -183,6 +209,8 @@ class Autoloader {
 				KEY idx_timestamp (timestamp),
 				KEY idx_object_type (object_type),
 				KEY idx_action (action),
+				KEY idx_actor_type (actor_type),
+				KEY idx_integration (integration),
 				KEY idx_site_id (site_id)
 		) $collate;";
 

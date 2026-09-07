@@ -34,6 +34,19 @@
 	border-bottom: none;
 }
 
+.wppm-dashboard-alert-row {
+	cursor: pointer;
+}
+
+.wppm-dashboard-alert-row:hover {
+	background-color: #f8fafc;
+}
+
+.wppm-dashboard-alert-row:focus-visible {
+	outline: 2px solid #2563eb;
+	outline-offset: -2px;
+}
+
 .wppm-dashboard-alert-table td:last-child {
 	white-space: nowrap;
 

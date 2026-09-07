@@ -268,7 +268,7 @@ const ExcludeSettings = () => {
 									label={__('Post Meta Keys', 'pastmark')}
 									control={control}
 									extaInfo={__(
-										'One meta key per line.',
+										'One meta key per line. Wildcards are supported (e.g. _wc_*).',
 										'pastmark'
 									)}
 								/>
@@ -278,7 +278,7 @@ const ExcludeSettings = () => {
 									label={__('User Meta Keys', 'pastmark')}
 									control={control}
 									extaInfo={__(
-										'One meta key per line.',
+										'One meta key per line. Wildcards are supported (e.g. _wc_*).',
 										'pastmark'
 									)}
 								/>

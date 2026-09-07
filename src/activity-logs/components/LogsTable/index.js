@@ -2,7 +2,12 @@ import React from 'react';
 
 import { applyFilters } from '@wordpress/hooks';
 
-import { Table, SeverityBadge, EventBadge } from '@framework/components';
+import {
+	Table,
+	SeverityBadge,
+	EventBadge,
+	AiAgentBadge,
+} from '@framework/components';
 
 import LogActionsDropdown from '../LogActionsDropdown';
 
@@ -61,6 +66,20 @@ const LogsTable = ({
 			dataIndex: 'user',
 			width: 140,
 			className: 'wppm-col-user',
+			render: (value, row) => {
+				if (row?.actor_type !== 'ai_agent') {
+					return value || '-';
+				}
+
+				return (
+					<span className="wppm-user-cell">
+						<span className="wppm-user-cell-name">
+							{value || '-'}
+						</span>
+						<AiAgentBadge />
+					</span>
+				);
+			},
 		},
 		{
 			key: 'event',

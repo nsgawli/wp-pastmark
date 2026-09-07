@@ -13,6 +13,7 @@ import {
 	ScreenLoader,
 	SeverityBadge,
 	EventBadge,
+	AiAgentBadge,
 	Dropdown,
 } from '@framework/components';
 
@@ -36,6 +37,8 @@ import {
 } from '../../utils/logDetails';
 
 import { buildContextRows, buildDiffRows } from '../../utils/logFieldFormat';
+
+import { ACTOR_TYPE_LABELS } from '../../utils/logFilterOptions';
 
 import '../LogsPage/index.css';
 import './index.css';
@@ -84,6 +87,13 @@ const LogDetailsPage = () => {
 
 	const diffRows = buildDiffRows(log?.before_data, log?.after_data);
 	const { rows: detailRows, technicalRows } = buildContextRows(log?.context);
+
+	// `content_diff` rows (PM-142/PM-143's compact ContentDiffer output)
+	// are a single diff string, not a before/after pair - rendered as
+	// their own full-width, pre-formatted block below the field table
+	// rather than forced into a two-column row.
+	const fieldDiffRows = diffRows.filter((row) => !row.isContentDiff);
+	const contentDiffRows = diffRows.filter((row) => row.isContentDiff);
 
 	const diffColumns = [
 		{ key: 'field', title: 'Field', dataIndex: 'label', width: '30%' },
@@ -281,6 +291,23 @@ const LogDetailsPage = () => {
 											</span>
 										</div>
 
+										<div className="wppm-log-details-item">
+											<span className="wppm-log-details-label">
+												Actor Type
+											</span>
+											{log.actor_type === 'ai_agent' ? (
+												<AiAgentBadge />
+											) : (
+												<span className="wppm-log-details-value">
+													{ACTOR_TYPE_LABELS[
+														log.actor_type
+													] ||
+														log.actor_type ||
+														'-'}
+												</span>
+											)}
+										</div>
+
 										{log.object_label && (
 											<div className="wppm-log-details-item">
 												<span className="wppm-log-details-label">
@@ -353,17 +380,31 @@ const LogDetailsPage = () => {
 								</Flex>
 							</Card>
 
-							{diffRows.length > 0 && (
+							{(fieldDiffRows.length > 0 ||
+								contentDiffRows.length > 0) && (
 								<Card>
 									<Flex vertical gap={10}>
 										<Title level={5}>Changes</Title>
 
-										<Table
-											className="wppm-log-table"
-											columns={diffColumns}
-											data={diffRows}
-											rowKey="key"
-										/>
+										{fieldDiffRows.length > 0 && (
+											<Table
+												className="wppm-log-table"
+												columns={diffColumns}
+												data={fieldDiffRows}
+												rowKey="key"
+											/>
+										)}
+
+										{contentDiffRows.map((row) => (
+											<div key={row.key}>
+												<div className="wppm-log-details-label">
+													{row.label}
+												</div>
+												<pre className="wppm-log-content-diff">
+													{row.diff}
+												</pre>
+											</div>
+										))}
 									</Flex>
 								</Card>
 							)}
